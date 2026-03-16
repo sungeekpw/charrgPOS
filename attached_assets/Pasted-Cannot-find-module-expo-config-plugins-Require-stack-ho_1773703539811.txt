@@ -1,0 +1,21 @@
+Cannot find module '@expo/config-plugins'
+Require stack:
+- /home/runner/workspace/artifacts/pos-mobile/plugins/withNexGoSDK.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@expo/config-plugins/build/plugins/withStaticPlugin.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@expo/config-plugins/build/plugins/withPlugins.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@expo/config-plugins/build/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/build/build/android/syncProjectConfiguration.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/build/build/android/build.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/build/build/runBuildAndSubmit.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/build/commands/build/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/module-loader.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/help/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/errors/handle.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/errors/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/config/config.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/config/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/command.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/node_modules/@oclif/core/lib/index.js
+- /home/runner/workspace/.config/npm/node_global/lib/node_modules/eas-cli/bin/run
+    Error: build command failed.

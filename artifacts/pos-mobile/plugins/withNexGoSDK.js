@@ -1,6 +1,9 @@
-const { withDangerousMod, withMainApplication } = require("@expo/config-plugins");
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
+const configPluginsPath = require.resolve("@expo/config-plugins", {
+  paths: [path.join(__dirname, "..")],
+});
+const { withDangerousMod, withMainApplication } = require(configPluginsPath);
 
 function withNexGoSDK(config) {
   config = withNexGoAAR(config);
@@ -164,7 +167,7 @@ function findAAR(workspaceRoot) {
 
   const files = fs.readdirSync(attachedDir);
   const aar = files.find(
-    (f) => f.startsWith("nexgo-smartpos-sdk") && f.endsWith(".aar")
+    (f) => f.toLowerCase().includes("nexgo") && f.endsWith(".aar")
   );
 
   return aar ? path.join(attachedDir, aar) : null;
