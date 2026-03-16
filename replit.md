@@ -48,6 +48,33 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
 
+## Artifacts
+
+### `artifacts/pos-mobile` (`@workspace/pos-mobile`)
+
+NexGo POS mobile app built with Expo Router. Targets NexGo Android POS hardware running the NexGo AAR SDK.
+
+**Features:**
+- Standalone charge mode: enter amount + tip via numeric keypad, then initiate card read
+- TCP listener mode (port 9090): accepts JSON payment requests from external POS systems over TCP
+- NexGo SDK bridge via native module (`NativeModules.NexGoSDK`) — falls back to simulation when SDK not present
+- Payments sent to `https://api.charrg.com/v1/charge`
+- Transaction history with status, auth codes, card brand/last4
+- Dark theme with teal accent (`#00C896`)
+
+**Key files:**
+- `app/(tabs)/index.tsx` — Charge screen (amount + tip entry)
+- `app/(tabs)/history.tsx` — Transaction history
+- `app/(tabs)/remote.tsx` — TCP listener toggle + integration guide
+- `app/payment.tsx` — Card reading + payment processing screen
+- `services/nexgo-sdk.ts` — NexGo SDK bridge (native + simulation)
+- `services/charrg-api.ts` — Charrg API client
+- `services/tcp-server.ts` — TCP server bridge (native + stub)
+- `services/transaction-storage.ts` — AsyncStorage persistence
+- `context/pos-context.tsx` — App-wide state context
+
+**NexGo SDK integration:** Place the AAR in `android/libs/` and build a custom dev build to enable hardware card reading. Without the AAR, the app runs in simulation mode.
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)

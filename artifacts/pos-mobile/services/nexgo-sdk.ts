@@ -1,0 +1,154 @@
+import { Platform } from "react-native";
+import type { CardData } from "./charrg-api";
+
+export type SDKEventType =
+  | "card_inserted"
+  | "card_swiped"
+  | "card_tapped"
+  | "card_removed"
+  | "reading_started"
+  | "reading_complete"
+  | "reading_failed"
+  | "pin_requested"
+  | "pin_entered"
+  | "timeout";
+
+export type SDKListener = (event: SDKEventType, data?: unknown) => void;
+
+let nexgoModule: NexGoNativeModule | null = null;
+
+interface NexGoNativeModule {
+  initialize: () => Promise<boolean>;
+  startCardRead: (amount: number) => Promise<void>;
+  cancelCardRead: () => Promise<void>;
+  addListener: (eventType: string, listener: SDKListener) => void;
+  removeListener: (eventType: string, listener: SDKListener) => void;
+}
+
+export function isSDKAvailable(): boolean {
+  if (Platform.OS !== "android") return false;
+  try {
+    const NativeModules = require("react-native").NativeModules;
+    return !!NativeModules.NexGoSDK;
+  } catch {
+    return false;
+  }
+}
+
+export function getNexGoModule(): NexGoNativeModule | null {
+  if (!isSDKAvailable()) return null;
+  if (nexgoModule) return nexgoModule;
+  try {
+    const NativeModules = require("react-native").NativeModules;
+    nexgoModule = NativeModules.NexGoSDK as NexGoNativeModule;
+    return nexgoModule;
+  } catch {
+    return null;
+  }
+}
+
+export async function initializeSDK(): Promise<boolean> {
+  const mod = getNexGoModule();
+  if (!mod) return false;
+  try {
+    return await mod.initialize();
+  } catch {
+    return false;
+  }
+}
+
+export async function startCardRead(
+  amount: number,
+  onEvent: SDKListener
+): Promise<CardData> {
+  const mod = getNexGoModule();
+
+  if (!mod) {
+    return simulateCardRead(amount, onEvent);
+  }
+
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      mod.removeListener("card_read_complete", handleComplete);
+      mod.removeListener("reading_failed", handleFailed);
+      mod.removeListener("timeout", handleTimeout);
+    };
+
+    const handleComplete = (_: SDKEventType, data: unknown) => {
+      cleanup();
+      const raw = data as Record<string, string>;
+      resolve({
+        pan: raw.pan,
+        expiryDate: raw.expiry,
+        cardholderName: raw.cardholder_name,
+        track1: raw.track1,
+        track2: raw.track2,
+        emvData: raw.emv_data,
+        entryMode: (raw.entry_mode as CardData["entryMode"]) ?? "chip",
+        last4: raw.pan?.slice(-4) ?? raw.last4,
+        cardBrand: raw.card_brand,
+      });
+    };
+
+    const handleFailed = (_: SDKEventType, data: unknown) => {
+      cleanup();
+      const raw = data as Record<string, string>;
+      reject(new Error(raw.message ?? "Card read failed"));
+    };
+
+    const handleTimeout = () => {
+      cleanup();
+      reject(new Error("Card read timed out"));
+    };
+
+    mod.addListener("card_read_complete", handleComplete);
+    mod.addListener("reading_failed", handleFailed);
+    mod.addListener("timeout", handleTimeout);
+
+    mod.addListener("card_inserted", onEvent);
+    mod.addListener("card_swiped", onEvent);
+    mod.addListener("card_tapped", onEvent);
+    mod.addListener("reading_started", onEvent);
+    mod.addListener("pin_requested", onEvent);
+    mod.addListener("pin_entered", onEvent);
+
+    mod.startCardRead(amount).catch((err: Error) => {
+      cleanup();
+      reject(err);
+    });
+  });
+}
+
+export async function cancelCardRead(): Promise<void> {
+  const mod = getNexGoModule();
+  if (mod) {
+    await mod.cancelCardRead();
+  }
+}
+
+async function simulateCardRead(
+  _amount: number,
+  onEvent: SDKListener
+): Promise<CardData> {
+  await delay(800);
+  onEvent("reading_started");
+  await delay(1200);
+  onEvent("card_tapped");
+  await delay(1000);
+  onEvent("reading_complete");
+
+  return {
+    pan: "4111111111111111",
+    expiryDate: "12/28",
+    cardholderName: "TEST CARDHOLDER",
+    track2: "4111111111111111=2812101234567890",
+    emvData: "9F260821B0A2D04BE9D0F2",
+    entryMode: "contactless",
+    last4: "1111",
+    cardBrand: "Visa",
+  };
+}
+
+function delay(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}

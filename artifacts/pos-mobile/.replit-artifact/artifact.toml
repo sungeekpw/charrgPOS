@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "NexGo POS"
+version = "1.0.0"
+id = "artifacts/pos-mobile"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+localPort = 21435
+name = "expo"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/pos-mobile run dev"
+
+[services.env]
+PORT = "21435"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/pos-mobile", "run", "build"]
+run = ["pnpm", "--filter", "@workspace/pos-mobile", "run", "serve"]
