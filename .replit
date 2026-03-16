@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "java-graalvm22.3"]
 
 [[artifacts]]
 id = "artifacts/api-server"
@@ -31,3 +31,7 @@ timeoutMs = 20000
 KEYSTORE_PASS = "CharrgPOS2025Release!"
 KEY_ALIAS = "charrg"
 KEY_PASS = "CharrgPOS2025Release!"
+
+[nix]
+channel = "stable-25_05"
+packages = ["android-tools"]

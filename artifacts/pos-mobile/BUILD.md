@@ -1,103 +1,110 @@
 # CharrgPOS — Android Build Guide
 
-## Prerequisites
-
-- Node.js 18+
-- Java JDK 17+ (`java -version`)
-- Android SDK (via Android Studio or `ANDROID_HOME` env var)
-- pnpm
+Building an Android APK requires Java + the full Android SDK (several GB). Rather than
+installing all of that locally, we use **EAS Build** — Expo's cloud build service — which
+handles everything in the cloud and returns a ready-to-install APK.
 
 ---
 
-## One-time Setup (already done)
+## Quick Start
 
-### 1. Release Keystore
+### 1. Install EAS CLI
 
-A release keystore has been generated and stored at:
+```bash
+npm install -g eas-cli
+```
+
+### 2. Log in to Expo
+
+```bash
+eas login
+```
+
+You'll need a free account at https://expo.dev — create one if you don't have one.
+
+### 3. Link the project to your Expo account
+
+```bash
+cd artifacts/pos-mobile
+eas init --id <your-project-id>
+```
+
+Or just run the build — EAS will prompt you to create a project automatically.
+
+### 4. Build the APK in the cloud
+
+```bash
+pnpm --filter @workspace/pos-mobile run build:eas:cloud
+```
+
+EAS will:
+- Upload your source code to Expo's build servers
+- Run `expo prebuild` + Gradle in the cloud (no local Android SDK needed)
+- Sign the APK with the keystore in `android-signing/charrg-release.p12`
+- Give you a download link when done (~5–15 min)
+
+---
+
+## Credentials & Keystore
+
+The release keystore lives at:
 
 ```
 artifacts/pos-mobile/android-signing/charrg-release.p12
 ```
 
-The credentials are stored as Replit Secrets:
+`credentials.json` (gitignored) tells EAS to use this local keystore instead of
+generating its own. It's recreated automatically — do not commit it.
 
-| Secret         | Value                        |
-|----------------|------------------------------|
-| `KEYSTORE_PASS` | keystore + key password      |
-| `KEY_ALIAS`    | `charrg`                     |
-| `KEY_PASS`     | same as `KEYSTORE_PASS`      |
+Keystore details:
+| Field           | Value                    |
+|-----------------|--------------------------|
+| Alias           | `charrg`                 |
+| Password        | stored as Replit Secret  |
 
-> **IMPORTANT:** Back up `android-signing/charrg-release.p12` somewhere safe (e.g. a password manager or secure cloud storage). If you lose this keystore you cannot publish updates to devices that have the current version installed.
+> **Back up `charrg-release.p12` securely.** Losing it means you cannot push
+> updates to devices that have the current version installed.
 
-### 2. NexGo AAR
+---
 
-Place the NexGo SDK AAR file in:
+## NexGo AAR
+
+Place the NexGo SDK AAR in:
 
 ```
 artifacts/pos-mobile/attached_assets/nexgo-sdk-<version>.aar
 ```
 
-The build plugin will automatically copy it into the Android project during `expo prebuild`. Without the AAR the app builds and runs in **simulation mode** (card reads are mocked).
+It will be bundled automatically during the build. Without it, the app builds and
+runs in **simulation mode** (card reads are mocked — safe for UI/API testing).
 
 ---
 
-## Building the APK
+## Installing on the NexGo Device
 
-From the workspace root:
+After the build completes, download `CharrgPOS.apk` from the EAS dashboard link.
 
-```bash
-pnpm --filter @workspace/pos-mobile run build:apk
-```
-
-Or from inside `artifacts/pos-mobile/`:
+### Via ADB
 
 ```bash
-node scripts/build-apk.js
-```
-
-The signed APK will be written to:
-
-```
-artifacts/pos-mobile/dist/CharrgPOS.apk
-```
-
-Build steps:
-1. `expo prebuild --platform android --clean` — generates the native Android project
-2. Injects signing credentials into `gradle.properties` and `app/build.gradle`
-3. `./gradlew assembleRelease` — compiles and signs the APK
-4. Copies the APK to `dist/CharrgPOS.apk`
-
----
-
-## Installing on NexGo Device
-
-### Via ADB (recommended)
-
-```bash
-adb devices                           # verify device is connected
-adb install dist/CharrgPOS.apk       # install
-adb shell am start -n com.charrg.pos/.MainActivity  # launch
+adb devices                        # confirm device is connected
+adb install CharrgPOS.apk
 ```
 
 ### Via File Transfer
 
-1. Copy `dist/CharrgPOS.apk` to the device (USB or SD card)
-2. Open the Files app on the NexGo device
-3. Navigate to the APK and tap to install
-4. If prompted, enable "Install from unknown sources" in Settings → Security
+Copy the APK to the device over USB or SD card, open the Files app, tap the APK,
+and follow the install prompt. Enable "Install from unknown sources" if asked.
 
 ---
 
-## Regenerating the Keystore
+## Build Profiles
 
-> Only do this if the keystore file is lost. Regenerating creates a new signing identity — existing installations cannot be updated with the new APK without uninstalling first.
-
-```bash
-rm artifacts/pos-mobile/android-signing/charrg-release.p12
-pnpm --filter @workspace/pos-mobile run generate-keystore
-```
-
-Then update the Replit Secrets with the new credentials shown in the output.
+| Profile   | Command                                       | Output     |
+|-----------|-----------------------------------------------|------------|
+| `release` | `pnpm --filter @workspace/pos-mobile run build:eas:cloud` | Signed APK |
+| `preview` | `eas build -p android --profile preview`      | Internal APK |
+| `dev`     | `eas build -p android --profile development`  | Dev client |
 
 ---
 
@@ -105,7 +112,7 @@ Then update the Replit Secrets with the new credentials shown in the output.
 
 The app listens on **port 9090** (enable via the Remote tab in the app).
 
-Send a JSON request over TCP:
+Send a JSON payload over TCP:
 
 ```json
 {
@@ -116,27 +123,21 @@ Send a JSON request over TCP:
 }
 ```
 
-The device will prompt the customer to present their card and complete the transaction automatically. The result is sent back over the same TCP connection.
+The result is sent back over the same TCP connection.
 
 ---
 
 ## Charrg API
 
-Payments are sent to: `https://api.charrg.com/v1/charge`
+Payments POST to `https://api.charrg.com/v1/charge`.
 
-Endpoint payload:
 ```json
 {
   "transaction_id": "TXN-...",
   "amount": 1250,
   "tip": 200,
   "total": 1450,
-  "card": {
-    "entry_mode": "contactless",
-    "last4": "1234",
-    "brand": "Visa",
-    "emv_data": "..."
-  },
+  "card": { "entry_mode": "contactless", "last4": "1234", "brand": "Visa" },
   "timestamp": "2026-03-16T..."
 }
 ```

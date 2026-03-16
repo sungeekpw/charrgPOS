@@ -26,6 +26,7 @@ android/
 
 # Never commit plaintext credential exports
 android-signing/.keystore-env
+credentials.json
 
 # NexGo AAR (provided separately by NexGo vendor, not redistributable)
 attached_assets/*.aar
