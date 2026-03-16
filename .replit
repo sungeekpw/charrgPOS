@@ -24,3 +24,10 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+KEYSTORE_PASS = "CharrgPOS2025Release!"
+KEY_ALIAS = "charrg"
+KEY_PASS = "CharrgPOS2025Release!"

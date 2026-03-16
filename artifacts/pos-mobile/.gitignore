@@ -15,9 +15,20 @@ android/
 *.orig.*
 *.jks
 *.p8
-*.p12
 *.key
 *.mobileprovision
+
+# Keep the release keystore in the project for builds
+# (back it up securely — losing it means you can't publish updates)
+# android-signing/charrg-release.p12  ← intentionally NOT ignored
+*.p12
+!android-signing/charrg-release.p12
+
+# Never commit plaintext credential exports
+android-signing/.keystore-env
+
+# NexGo AAR (provided separately by NexGo vendor, not redistributable)
+attached_assets/*.aar
 
 # Metro
 .metro-health-check*
