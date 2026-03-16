@@ -75,6 +75,13 @@ NexGo POS mobile app built with Expo Router. Targets NexGo Android POS hardware 
 
 **NexGo SDK integration:** Place the AAR in `android/libs/` and build a custom dev build to enable hardware card reading. Without the AAR, the app runs in simulation mode.
 
+**Native module files:**
+- `plugins/native/nexgo/NexGoSDKModule.kt` — Kotlin native module wrapping NexGo AAR (`initialize`, `startCardRead`, `cancelCardRead`), emits events via `RCTDeviceEventEmitter`
+- `plugins/native/nexgo/NexGoSDKPackage.kt` — React Native package registration
+- `plugins/withNexGoSDK.js` — Expo config plugin that copies AAR, patches build.gradle, registers NexGoSDKPackage, and copies Kotlin sources from `plugins/native/nexgo/` into `android/` during `expo prebuild`
+- `scripts/build-apk.js` — APK build script: runs `expo prebuild --platform android --clean` → `./gradlew assembleRelease` → copies APK to `dist/CharrgPOS.apk`
+- `build:apk` npm script in package.json runs the APK build
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)

@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Platform, NativeEventEmitter } from "react-native";
 import type { CardData } from "./charrg-api";
 
 export type SDKEventType =
@@ -25,6 +25,47 @@ interface NexGoNativeModule {
   removeListener: (eventType: string, listener: SDKListener) => void;
 }
 
+type Subscription = { remove: () => void };
+
+function createNexGoWrapper(
+  nativeModule: Record<string, unknown>,
+): NexGoNativeModule {
+  const emitter = new NativeEventEmitter(nativeModule as never);
+  const subscriptions = new Map<string, Map<SDKListener, Subscription>>();
+
+  return {
+    initialize: () =>
+      (nativeModule.initialize as () => Promise<boolean>)(),
+
+    startCardRead: (amount: number) =>
+      (nativeModule.startCardRead as (a: number) => Promise<void>)(amount),
+
+    cancelCardRead: () =>
+      (nativeModule.cancelCardRead as () => Promise<void>)(),
+
+    addListener: (eventType: string, listener: SDKListener) => {
+      const sub = emitter.addListener(eventType, (data?: unknown) => {
+        listener(eventType as SDKEventType, data);
+      });
+
+      if (!subscriptions.has(eventType)) {
+        subscriptions.set(eventType, new Map());
+      }
+      subscriptions.get(eventType)!.set(listener, sub);
+    },
+
+    removeListener: (eventType: string, listener: SDKListener) => {
+      const eventSubs = subscriptions.get(eventType);
+      if (!eventSubs) return;
+      const sub = eventSubs.get(listener);
+      if (sub) {
+        sub.remove();
+        eventSubs.delete(listener);
+      }
+    },
+  };
+}
+
 export function isSDKAvailable(): boolean {
   if (Platform.OS !== "android") return false;
   try {
@@ -40,7 +81,7 @@ export function getNexGoModule(): NexGoNativeModule | null {
   if (nexgoModule) return nexgoModule;
   try {
     const NativeModules = require("react-native").NativeModules;
-    nexgoModule = NativeModules.NexGoSDK as NexGoNativeModule;
+    nexgoModule = createNexGoWrapper(NativeModules.NexGoSDK);
     return nexgoModule;
   } catch {
     return null;
@@ -72,6 +113,12 @@ export async function startCardRead(
       mod.removeListener("card_read_complete", handleComplete);
       mod.removeListener("reading_failed", handleFailed);
       mod.removeListener("timeout", handleTimeout);
+      mod.removeListener("card_inserted", onEvent);
+      mod.removeListener("card_swiped", onEvent);
+      mod.removeListener("card_tapped", onEvent);
+      mod.removeListener("reading_started", onEvent);
+      mod.removeListener("pin_requested", onEvent);
+      mod.removeListener("pin_entered", onEvent);
     };
 
     const handleComplete = (_: SDKEventType, data: unknown) => {
