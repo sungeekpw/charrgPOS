@@ -124,28 +124,46 @@ function patchBuildGradle(androidDir) {
   if (!fs.existsSync(gradlePath)) return;
 
   let gradle = fs.readFileSync(gradlePath, "utf-8");
-  let changed = false;
 
-  // Add signingConfigs block if absent
-  if (!gradle.includes("signingConfigs")) {
-    const block = `\n    signingConfigs {\n        release {\n            storeFile file(CHARRG_STORE_FILE)\n            storePassword CHARRG_STORE_PASSWORD\n            keyAlias CHARRG_KEY_ALIAS\n            keyPassword CHARRG_KEY_PASSWORD\n        }\n    }\n`;
-    gradle = gradle.replace(/android\s*\{/, `android {${block}`);
-    changed = true;
+  const releaseBlock = `
+        release {
+            storeFile file(CHARRG_STORE_FILE)
+            storePassword CHARRG_STORE_PASSWORD
+            keyAlias CHARRG_KEY_ALIAS
+            keyPassword CHARRG_KEY_PASSWORD
+        }`;
+
+  // If there's already a signingConfigs block but no release entry, inject one
+  if (gradle.includes("signingConfigs {") && !gradle.includes("signingConfigs.release")) {
+    gradle = gradle.replace(
+      /signingConfigs\s*\{/,
+      `signingConfigs {${releaseBlock}`
+    );
   }
 
-  // Point release buildType at the signingConfig
+  // If there's no signingConfigs block at all, add one before buildTypes
+  if (!gradle.includes("signingConfigs")) {
+    const fullBlock = `    signingConfigs {${releaseBlock}\n    }\n    `;
+    gradle = gradle.replace(/(\s*buildTypes\s*\{)/, `\n    ${fullBlock}$1`);
+  }
+
+  // In the release buildType: replace any reference to signingConfigs.debug
+  // with signingConfigs.release (Expo prebuild defaults to debug for release)
+  gradle = gradle.replace(
+    /(buildTypes[\s\S]*?release\s*\{[\s\S]*?)signingConfig\s+signingConfigs\.debug/,
+    "$1signingConfig signingConfigs.release"
+  );
+
+  // If there's still no signingConfig line in the release buildType, add one
   if (!gradle.includes("signingConfig signingConfigs.release")) {
     gradle = gradle.replace(
       /(buildTypes\s*\{[\s\S]*?release\s*\{)/,
       "$1\n            signingConfig signingConfigs.release"
     );
-    changed = true;
   }
 
-  if (changed) {
-    fs.writeFileSync(gradlePath, gradle);
-    console.log("✓ app/build.gradle patched with release signingConfig");
-  }
+  fs.writeFileSync(gradlePath, gradle);
+  console.log("✓ app/build.gradle patched with release signingConfig");
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────
