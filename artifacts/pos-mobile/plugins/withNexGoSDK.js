@@ -1,9 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const configPluginsPath = require.resolve("@expo/config-plugins", {
-  paths: [path.join(__dirname, "..")],
-});
-const { withDangerousMod, withMainApplication } = require(configPluginsPath);
+const { withDangerousMod, withMainApplication } = require("@expo/config-plugins");
 
 function withNexGoSDK(config) {
   config = withNexGoAAR(config);
