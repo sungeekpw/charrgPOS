@@ -28,8 +28,9 @@ android/
 android-signing/.keystore-env
 credentials.json
 
-# NexGo AAR (provided separately by NexGo vendor, not redistributable)
-attached_assets/*.aar
+# NexGo AAR — tracked in git so EAS Build can access it during cloud builds
+# (not redistributable — do not share this repository publicly)
+# attached_assets/*.aar  ← intentionally NOT ignored
 
 # Metro
 .metro-health-check*
