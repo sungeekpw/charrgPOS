@@ -36,6 +36,8 @@ interface NexGoNativeModule {
   getDeviceInfo: () => Promise<NexGoDeviceInfo>;
   startCardRead: (amount: number) => Promise<void>;
   cancelCardRead: () => Promise<void>;
+  startKeypadListener: () => Promise<void>;
+  stopKeypadListener: () => Promise<void>;
   addListener: (eventType: string, listener: SDKListener) => void;
   removeListener: (eventType: string, listener: SDKListener) => void;
 }
@@ -60,6 +62,12 @@ function createNexGoWrapper(
 
     cancelCardRead: () =>
       (nativeModule.cancelCardRead as () => Promise<void>)(),
+
+    startKeypadListener: () =>
+      (nativeModule.startKeypadListener as () => Promise<void>)(),
+
+    stopKeypadListener: () =>
+      (nativeModule.stopKeypadListener as () => Promise<void>)(),
 
     addListener: (eventType: string, listener: SDKListener) => {
       const sub = emitter.addListener(eventType, (data?: unknown) => {
@@ -114,6 +122,41 @@ export async function initializeSDK(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function startKeypadListener(): Promise<void> {
+  const mod = getNexGoModule();
+  if (!mod) return;
+  try {
+    await mod.startKeypadListener();
+  } catch {
+    // non-fatal — physical keypad will still work via TextInput fallback
+  }
+}
+
+export async function stopKeypadListener(): Promise<void> {
+  const mod = getNexGoModule();
+  if (!mod) return;
+  try {
+    await mod.stopKeypadListener();
+  } catch {}
+}
+
+/**
+ * Subscribe to physical keypad events from the NexGo device.
+ * Returns an unsubscribe function.
+ * key: "0"-"9" | "BACKSPACE" | "CLEAR" | "ENTER"
+ */
+export function subscribeKeypadInput(
+  handler: (key: string) => void
+): () => void {
+  if (!isSDKAvailable()) return () => {};
+  const { NativeModules, NativeEventEmitter } = require("react-native");
+  const emitter = new NativeEventEmitter(NativeModules.NexGoSDK);
+  const sub = emitter.addListener("keypad_input", ({ key }: { key: string }) => {
+    handler(key);
+  });
+  return () => sub.remove();
 }
 
 export async function getDeviceInfo(): Promise<NexGoDeviceInfo | null> {

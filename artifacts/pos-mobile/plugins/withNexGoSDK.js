@@ -47,14 +47,23 @@ function withNexGoGradle(config) {
       if (!fs.existsSync(gradlePath)) return config;
 
       let gradle = fs.readFileSync(gradlePath, "utf-8");
-      const dep = 'implementation fileTree(dir: "libs", include: ["*.aar"])';
-      if (!gradle.includes(dep)) {
+      // compileOnly: the NexGo SDK is a system library pre-installed on NexGo
+      // devices. We only need the AAR for compilation — bundling it (implementation)
+      // causes a class-loading conflict with the system library at runtime.
+      const dep = 'compileOnly fileTree(dir: "libs", include: ["*.aar"])';
+      // Remove any previous implementation entry for this AAR
+      const oldDep = 'implementation fileTree(dir: "libs", include: ["*.aar"])';
+      if (gradle.includes(oldDep)) {
+        gradle = gradle.replace(oldDep, dep);
+        fs.writeFileSync(gradlePath, gradle);
+        console.log("[withNexGoSDK] Replaced implementation → compileOnly for NexGo AAR");
+      } else if (!gradle.includes(dep)) {
         gradle = gradle.replace(
           /dependencies\s*\{/,
           `dependencies {\n    ${dep}`
         );
         fs.writeFileSync(gradlePath, gradle);
-        console.log("[withNexGoSDK] Added fileTree dep to build.gradle");
+        console.log("[withNexGoSDK] Added compileOnly fileTree dep to build.gradle");
       }
       return config;
     },

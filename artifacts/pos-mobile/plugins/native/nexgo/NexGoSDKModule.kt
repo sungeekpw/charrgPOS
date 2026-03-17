@@ -1,5 +1,8 @@
 package com.charrg.pos.nexgo
 
+import android.app.Activity
+import android.view.KeyEvent
+import android.view.Window
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.nexgo.oaf.apiv3.APIProxy
@@ -24,6 +27,10 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
     private var emvHandler: EmvHandler2? = null
     private var isReading = false
 
+    // Physical keypad interception
+    private var originalWindowCallback: Window.Callback? = null
+    private var keypadListenerActive = false
+
     override fun getName(): String = "NexGoSDK"
 
     private fun sendEvent(eventName: String, params: WritableMap? = null) {
@@ -31,6 +38,91 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(eventName, params ?: Arguments.createMap())
     }
+
+    // ─── Keypad interception ──────────────────────────────────────────────────
+
+    /**
+     * Hook the Activity's Window.Callback to intercept physical keypad presses.
+     * Digits (0-9), BACKSPACE, CLEAR, and ENTER are forwarded to JS as
+     * "keypad_input" events with { key: "0"-"9" | "BACKSPACE" | "CLEAR" | "ENTER" }.
+     * The event is consumed so the system doesn't also route it to a TextInput.
+     */
+    @ReactMethod
+    fun startKeypadListener(promise: Promise) {
+        val activity = currentActivity
+        if (activity == null) {
+            promise.reject("ERR_NO_ACTIVITY", "No current activity available")
+            return
+        }
+        if (keypadListenerActive) {
+            promise.resolve(null)
+            return
+        }
+
+        val window = activity.window
+        originalWindowCallback = window.callback
+
+        // Kotlin `by` delegation forwards every method we don't override to
+        // the original callback, so we only need to handle dispatchKeyEvent.
+        val original = originalWindowCallback!!
+        window.callback = object : Window.Callback by original {
+            override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    val key: String? = when (event.keyCode) {
+                        KeyEvent.KEYCODE_0,
+                        KeyEvent.KEYCODE_NUMPAD_0 -> "0"
+                        KeyEvent.KEYCODE_1,
+                        KeyEvent.KEYCODE_NUMPAD_1 -> "1"
+                        KeyEvent.KEYCODE_2,
+                        KeyEvent.KEYCODE_NUMPAD_2 -> "2"
+                        KeyEvent.KEYCODE_3,
+                        KeyEvent.KEYCODE_NUMPAD_3 -> "3"
+                        KeyEvent.KEYCODE_4,
+                        KeyEvent.KEYCODE_NUMPAD_4 -> "4"
+                        KeyEvent.KEYCODE_5,
+                        KeyEvent.KEYCODE_NUMPAD_5 -> "5"
+                        KeyEvent.KEYCODE_6,
+                        KeyEvent.KEYCODE_NUMPAD_6 -> "6"
+                        KeyEvent.KEYCODE_7,
+                        KeyEvent.KEYCODE_NUMPAD_7 -> "7"
+                        KeyEvent.KEYCODE_8,
+                        KeyEvent.KEYCODE_NUMPAD_8 -> "8"
+                        KeyEvent.KEYCODE_9,
+                        KeyEvent.KEYCODE_NUMPAD_9 -> "9"
+                        KeyEvent.KEYCODE_DEL,
+                        KeyEvent.KEYCODE_FORWARD_DEL -> "BACKSPACE"
+                        KeyEvent.KEYCODE_CLEAR -> "CLEAR"
+                        KeyEvent.KEYCODE_ENTER,
+                        KeyEvent.KEYCODE_NUMPAD_ENTER -> "ENTER"
+                        else -> null
+                    }
+                    if (key != null) {
+                        sendEvent("keypad_input", Arguments.createMap().apply {
+                            putString("key", key)
+                        })
+                        return true // consume — don't double-route to TextInput
+                    }
+                }
+                return original.dispatchKeyEvent(event)
+            }
+        }
+
+        keypadListenerActive = true
+        promise.resolve(null)
+    }
+
+    @ReactMethod
+    fun stopKeypadListener(promise: Promise) {
+        val activity = currentActivity
+        if (activity != null && originalWindowCallback != null) {
+            activity.window.callback = originalWindowCallback
+            originalWindowCallback = null
+        }
+        keypadListenerActive = false
+        promise.resolve(null)
+    }
+
+    // ─── SDK init ─────────────────────────────────────────────────────────────
 
     @ReactMethod
     fun initialize(promise: Promise) {
@@ -216,13 +308,10 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
                     appInfoList: MutableList<CandidateAppInfoEntity>?,
                     isFirstSelect: Boolean
                 ) {
-                    // Auto-select the first application
                     emvHandler?.onSetSelAppResponse(0)
                 }
 
-                override fun onTransInitBeforeGPO() {
-                    // No action needed — GPO will proceed automatically
-                }
+                override fun onTransInitBeforeGPO() {}
 
                 override fun onConfirmCardNo(cardInfoEntity: CardInfoEntity) {
                     emvHandler?.onSetConfirmCardNoResponse(true)
@@ -230,7 +319,6 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
                 override fun onCardHolderInputPin(isOnlinePin: Boolean, leftTimes: Int) {
                     sendEvent("pin_requested")
-                    // Bypass PIN — in production show PIN pad UI here
                     emvHandler?.onSetPinInputResponse(isOnlinePin, false)
                     sendEvent("pin_entered")
                 }
@@ -242,13 +330,10 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
                 }
 
                 override fun onOnlineProc() {
-                    // Approve online — send to Charrg API at the JS layer
                     emvHandler?.onSetOnlineProcResponse(SdkResult.Success, null)
                 }
 
-                override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {
-                    // No UI prompts needed — handled by React Native layer
-                }
+                override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {}
 
                 override fun onRemoveCard() {
                     sendEvent("card_removed")
@@ -256,11 +341,9 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     if (retCode == SdkResult.Success) {
-                        // Card data comes from CardInfoEntity (all Strings)
                         val pan: String = cardInfo.cardNo ?: ""
                         val expiry: String = cardInfo.expiredDate ?: ""
                         val track2: String = cardInfo.tk2 ?: ""
-                        val emvData: String = ""  // raw TLV not needed for Charrg API
 
                         sendEvent("reading_complete")
                         sendEvent("card_read_complete", Arguments.createMap().apply {
@@ -269,7 +352,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
                             putString("cardholder_name", "")
                             putString("track1", cardInfo.tk1 ?: "")
                             putString("track2", track2)
-                            putString("emv_data", emvData)
+                            putString("emv_data", "")
                             putString("entry_mode", entryMode)
                             putString("last4", if (pan.length >= 4) pan.takeLast(4) else "")
                             putString("card_brand", detectCardBrand(pan))

@@ -268,7 +268,7 @@ export default function RemoteScreen() {
             </Pressable>
           )}
           {infoError && (
-            <Text style={[styles.infoErrorText, { color: Colors.error ?? "#FF4444" }]}>
+            <Text style={[styles.infoErrorText, { color: Colors.danger }]}>
               {infoError}
             </Text>
           )}

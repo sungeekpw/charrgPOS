@@ -12,8 +12,17 @@ import {
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
 import Colors from "@/constants/colors";
+import {
+  isSDKAvailable,
+  startKeypadListener,
+  stopKeypadListener,
+  subscribeKeypadInput,
+} from "@/services/nexgo-sdk";
 
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -34,46 +43,77 @@ export function AmountInput({
 }: AmountInputProps) {
   const theme = Colors.dark;
   const inputRef = useRef<TextInput>(null);
+  const sdkActive = isSDKAvailable(); // true only on a real NexGo standalone build
 
   const [rawStr, setRawStr] = useState("");
   const [keypadVisible, setKeypadVisible] = useState(false);
 
-  // Auto-focus the hidden input so hardware keypad works immediately
-  useEffect(() => {
-    if (!disabled) {
-      const timer = setTimeout(() => inputRef.current?.focus(), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [disabled]);
-
-  // Sync rawStr if parent resets value to 0 (e.g. clear button)
+  // ── Sync rawStr when parent resets value to 0 ──────────────────────────────
   useEffect(() => {
     if (value === 0) setRawStr("");
   }, [value]);
 
-  const displayDollars = value > 0
-    ? `$${(value / 100).toFixed(2)}`
-    : "$0.00";
-
-  // Handle input from EITHER the hidden TextInput (hardware keypad)
-  // or the on-screen key buttons
+  // ── Apply digits (shared by all input paths) ───────────────────────────────
   const applyDigits = (digits: string) => {
     if (digits.length > 8) return;
     setRawStr(digits);
-    const cents = digits.length > 0 ? parseInt(digits, 10) : 0;
-    onChange(cents);
+    onChange(digits.length > 0 ? parseInt(digits, 10) : 0);
   };
 
-  // Called when hardware keypad types into the hidden TextInput
+  // ── Path A: NexGo hardware keypad (native SDK available) ───────────────────
+  // Hooks into the Activity's Window.Callback via the native module so that
+  // physical key presses are forwarded as JS events — no TextInput needed.
+  useEffect(() => {
+    if (!sdkActive || disabled) return;
+
+    let unsubscribe: () => void = () => {};
+    startKeypadListener().then(() => {
+      unsubscribe = subscribeKeypadInput((key) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setRawStr((prev) => {
+          if (key === "BACKSPACE") {
+            const next = prev.slice(0, -1);
+            onChange(next.length > 0 ? parseInt(next, 10) : 0);
+            return next;
+          }
+          if (key === "CLEAR") {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            onChange(0);
+            return "";
+          }
+          if (key === "ENTER") return prev; // handled by Pay Now button
+          // digit
+          if (prev.length >= 8) return prev;
+          const next = prev + key;
+          onChange(parseInt(next, 10));
+          return next;
+        });
+      });
+    });
+
+    return () => {
+      unsubscribe();
+      stopKeypadListener();
+    };
+  }, [sdkActive, disabled]);
+
+  // ── Path B: TextInput fallback (web / non-NexGo Android) ──────────────────
+  // Hidden, auto-focused TextInput that receives hardware keyboard events when
+  // the native SDK is not available (web preview or Expo Go).
+  useEffect(() => {
+    if (sdkActive || disabled) return; // SDK handles it instead
+    const timer = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => clearTimeout(timer);
+  }, [sdkActive, disabled]);
+
   const handleTextChange = (text: string) => {
-    if (disabled) return;
-    // Strip anything that isn't a digit
+    if (disabled || sdkActive) return;
     const digits = text.replace(/\D/g, "");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     applyDigits(digits);
   };
 
-  // On-screen keypad handlers
+  // ── On-screen keypad ────────────────────────────────────────────────────────
   const handleDigit = (digit: string) => {
     if (disabled) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -98,9 +138,13 @@ export function AmountInput({
     const next = !keypadVisible;
     setKeypadVisible(next);
     onKeypadToggle?.(next);
-    // Keep focus on hidden input so hardware keypad still works
-    setTimeout(() => inputRef.current?.focus(), 50);
+    if (!sdkActive) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   };
+
+  const displayDollars =
+    value > 0 ? `$${(value / 100).toFixed(2)}` : "$0.00";
 
   const keys: [string, string, string][] = [
     ["1", "2", "3"],
@@ -111,24 +155,31 @@ export function AmountInput({
 
   return (
     <View style={styles.container}>
-      {/* Hidden TextInput — receives hardware keypad input */}
-      <TextInput
-        ref={inputRef}
-        value={rawStr}
-        onChangeText={handleTextChange}
-        keyboardType="numeric"
-        showSoftInputOnFocus={false}
-        caretHidden
-        editable={!disabled}
-        style={styles.hiddenInput}
-        // Prevent web from showing a cursor box
-        {...(Platform.OS === "web" ? { tabIndex: -1 } as any : {})}
-      />
+      {/* TextInput fallback — only rendered when native SDK is not available */}
+      {!sdkActive && (
+        <TextInput
+          ref={inputRef}
+          value={rawStr}
+          onChangeText={handleTextChange}
+          keyboardType="numeric"
+          showSoftInputOnFocus={false}
+          caretHidden
+          editable={!disabled}
+          style={styles.hiddenInput}
+          {...(Platform.OS === "web" ? ({ tabIndex: -1 } as any) : {})}
+        />
+      )}
 
-      <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>
+        {label}
+      </Text>
 
-      {/* Tapping the amount re-focuses the hidden input */}
-      <Pressable onPress={() => inputRef.current?.focus()}>
+      {/* Tapping amount re-focuses hidden input (fallback path only) */}
+      <Pressable
+        onPress={() => {
+          if (!sdkActive) inputRef.current?.focus();
+        }}
+      >
         <Text
           style={[styles.amount, { color: theme.text }]}
           numberOfLines={1}
@@ -144,15 +195,12 @@ export function AmountInput({
             <View key={ri} style={styles.row}>
               {row.map((key) => {
                 const isBack = key === "DEL";
-                const isDot = key === ".";
                 return (
                   <Pressable
                     key={key}
                     onPress={() => {
                       if (isBack) handleBackspace();
-                      else if (isDot) {
-                        // decimal not needed for cents entry
-                      } else handleDigit(key);
+                      else if (key !== ".") handleDigit(key);
                     }}
                     onLongPress={isBack ? handleClear : undefined}
                     style={({ pressed }) => [
@@ -204,7 +252,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  // Invisible but focusable — receives hardware keyboard input
   hiddenInput: {
     position: "absolute",
     width: 1,
