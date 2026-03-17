@@ -66,7 +66,9 @@ export default function ChargeScreen() {
     }
   }, []);
 
-  const bottomPad = Platform.OS === "web" ? 0 : insets.bottom;
+  // On native the tab bar (~60px) sits on top of our scroll area.
+  // We need enough paddingBottom so the button can scroll above it.
+  const bottomPad = Platform.OS === "web" ? 0 : insets.bottom + 80;
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
