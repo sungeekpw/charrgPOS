@@ -31,6 +31,7 @@ timeoutMs = 20000
 KEYSTORE_PASS = "CharrgPOS2025Release!"
 KEY_ALIAS = "charrg"
 KEY_PASS = "CharrgPOS2025Release!"
+EXPO_PUBLIC_CHARRG_ENV = "dev"
 
 [nix]
 channel = "stable-25_05"

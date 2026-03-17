@@ -29,10 +29,31 @@ export interface ChargeResponse {
   timestamp: string;
 }
 
-const CHARRG_BASE_URL = "https://api.charrg.com";
+// Environment selection — set EXPO_PUBLIC_CHARRG_ENV to "dev", "test", or "prod"
+const ENV = process.env.EXPO_PUBLIC_CHARRG_ENV ?? "dev";
+
+const API_URLS: Record<string, string> = {
+  dev:  process.env.EXPO_PUBLIC_CHARRG_API_URL_DEV  ?? "",
+  test: process.env.EXPO_PUBLIC_CHARRG_API_URL_TEST ?? "",
+  prod: process.env.EXPO_PUBLIC_CHARRG_API_URL_PROD ?? "",
+};
+
+const API_TOKENS: Record<string, string> = {
+  dev:  process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_DEV  ?? "",
+  test: process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_TEST ?? "",
+  prod: process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_PROD ?? "",
+};
+
+export const CHARRG_ENV = ENV;
+export const CHARRG_BASE_URL = API_URLS[ENV] ?? API_URLS.dev;
+const CHARRG_TOKEN = API_TOKENS[ENV] ?? API_TOKENS.dev;
 
 export async function processPayment(req: ChargeRequest): Promise<ChargeResponse> {
   const total = req.amount + req.tip;
+
+  if (!CHARRG_BASE_URL) {
+    throw new Error(`Charrg API URL not configured for environment: ${ENV}`);
+  }
 
   const payload = {
     transaction_id: req.transactionId,
@@ -53,12 +74,18 @@ export async function processPayment(req: ChargeRequest): Promise<ChargeResponse
     timestamp: new Date().toISOString(),
   };
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  if (CHARRG_TOKEN) {
+    headers["Authorization"] = `Bearer ${CHARRG_TOKEN}`;
+  }
+
   const response = await fetch(`${CHARRG_BASE_URL}/v1/charge`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 
