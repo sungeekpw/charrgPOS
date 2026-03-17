@@ -36,7 +36,7 @@ export function AmountInput({
   const theme = isDark ? Colors.dark : Colors.dark;
 
   const [rawStr, setRawStr] = useState("");
-  const [keypadVisible, setKeypadVisible] = useState(true);
+  const [keypadVisible, setKeypadVisible] = useState(false);
 
   const displayDollars = value > 0
     ? `$${(value / 100).toFixed(2)}`
