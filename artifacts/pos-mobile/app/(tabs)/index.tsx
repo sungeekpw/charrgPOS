@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -24,7 +23,6 @@ import { generateTransactionId } from "@/services/transaction-storage";
 
 export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
   const { addTransaction } = usePOS();
   const theme = Colors.dark;
 
@@ -61,6 +59,7 @@ export default function ChargeScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
+      {/* Header */}
       <View
         style={[
           styles.header,
@@ -81,15 +80,13 @@ export default function ChargeScreen() {
         </Pressable>
       </View>
 
+      {/* Scrollable area — amount input, keypad toggle, tip selector */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <ScrollView
-          contentContainerStyle={[
-            styles.scroll,
-            { paddingBottom: Platform.OS === "web" ? 34 : tabBarHeight + 16 },
-          ]}
+          contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -105,45 +102,51 @@ export default function ChargeScreen() {
             baseAmountCents={amountCents}
             onTipChange={setTipCents}
           />
-
-          <View
-            style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}
-          >
-            <View>
-              <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>
-                Total
-              </Text>
-              <Text style={[styles.totalAmt, { color: Colors.primary }]}>
-                ${totalDollars}
-              </Text>
-            </View>
-            {tipCents > 0 && (
-              <View style={styles.breakdown}>
-                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                  Sale: ${(amountCents / 100).toFixed(2)}
-                </Text>
-                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                  Tip:  ${(tipCents / 100).toFixed(2)}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <PrimaryButton
-            label={`Charge $${totalDollars}`}
-            onPress={handleCharge}
-            disabled={amountCents <= 0}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Fixed footer — total + charge button, always above tab bar */}
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingBottom: insets.bottom + 12,
+            borderTopColor: theme.border,
+            backgroundColor: theme.background,
+          },
+        ]}
+      >
+        <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
+          <View>
+            <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
+            <Text style={[styles.totalAmt, { color: Colors.primary }]}>
+              ${totalDollars}
+            </Text>
+          </View>
+          {tipCents > 0 && (
+            <View style={styles.breakdown}>
+              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                Sale: ${(amountCents / 100).toFixed(2)}
+              </Text>
+              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                Tip:  ${(tipCents / 100).toFixed(2)}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <PrimaryButton
+          label={`Charge $${totalDollars}`}
+          onPress={handleCharge}
+          disabled={amountCents <= 0}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
+  root: { flex: 1 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -161,21 +164,24 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     marginTop: 2,
   },
-  clearBtn: {
-    padding: 8,
-  },
+  clearBtn: { padding: 8 },
   scroll: {
     paddingHorizontal: 20,
     paddingTop: 24,
+    paddingBottom: 16,
     gap: 24,
   },
-  divider: {
-    height: 1,
-    borderRadius: 1,
+  divider: { height: 1, borderRadius: 1 },
+  footer: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    gap: 12,
   },
   totalRow: {
     borderRadius: 16,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -187,10 +193,10 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   totalAmt: {
-    fontSize: 40,
+    fontSize: 36,
     fontFamily: "Inter_700Bold",
     letterSpacing: -1,
-    marginTop: 4,
+    marginTop: 2,
   },
   breakdown: {
     alignItems: "flex-end",
