@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -23,6 +24,7 @@ import { generateTransactionId } from "@/services/transaction-storage";
 
 export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
   const { addTransaction } = usePOS();
   const theme = Colors.dark;
 
@@ -86,7 +88,7 @@ export default function ChargeScreen() {
         <ScrollView
           contentContainerStyle={[
             styles.scroll,
-            { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 20) },
+            { paddingBottom: Platform.OS === "web" ? 34 : tabBarHeight + 16 },
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

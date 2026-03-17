@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import {
+  Animated,
+  LayoutAnimation,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
+  UIManager,
   useColorScheme,
   View,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Feather } from "@expo/vector-icons";
 import Colors from "@/constants/colors";
+
+// Enable LayoutAnimation on Android
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 interface AmountInputProps {
   label: string;
@@ -26,6 +36,7 @@ export function AmountInput({
   const theme = isDark ? Colors.dark : Colors.dark;
 
   const [rawStr, setRawStr] = useState("");
+  const [keypadVisible, setKeypadVisible] = useState(true);
 
   const displayDollars = value > 0
     ? `$${(value / 100).toFixed(2)}`
@@ -58,6 +69,12 @@ export function AmountInput({
     onChange(0);
   };
 
+  const toggleKeypad = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setKeypadVisible((v) => !v);
+  };
+
   const keys: [string, string, string][] = [
     ["1", "2", "3"],
     ["4", "5", "6"],
@@ -76,46 +93,63 @@ export function AmountInput({
         {displayDollars}
       </Text>
 
-      <View style={styles.keypad}>
-        {keys.map((row, ri) => (
-          <View key={ri} style={styles.row}>
-            {row.map((key) => {
-              const isBack = key === "DEL";
-              const isDot = key === ".";
-              return (
-                <Pressable
-                  key={key}
-                  onPress={() => {
-                    if (isBack) handleBackspace();
-                    else if (isDot) {
-                    } else handleDigit(key);
-                  }}
-                  onLongPress={isBack ? handleClear : undefined}
-                  style={({ pressed }) => [
-                    styles.key,
-                    {
-                      backgroundColor: pressed
-                        ? theme.border
-                        : theme.surfaceElevated,
-                      opacity: disabled ? 0.4 : 1,
-                    },
-                  ]}
-                  disabled={disabled}
-                >
-                  <Text
-                    style={[
-                      isBack ? styles.keyTextBack : styles.keyText,
-                      { color: isBack ? Colors.danger : theme.text },
+      {keypadVisible && (
+        <View style={styles.keypad}>
+          {keys.map((row, ri) => (
+            <View key={ri} style={styles.row}>
+              {row.map((key) => {
+                const isBack = key === "DEL";
+                const isDot = key === ".";
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => {
+                      if (isBack) handleBackspace();
+                      else if (isDot) {
+                      } else handleDigit(key);
+                    }}
+                    onLongPress={isBack ? handleClear : undefined}
+                    style={({ pressed }) => [
+                      styles.key,
+                      {
+                        backgroundColor: pressed
+                          ? theme.border
+                          : theme.surfaceElevated,
+                        opacity: disabled ? 0.4 : 1,
+                      },
                     ]}
+                    disabled={disabled}
                   >
-                    {isBack ? "⌫" : key}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
-      </View>
+                    <Text
+                      style={[
+                        isBack ? styles.keyTextBack : styles.keyText,
+                        { color: isBack ? Colors.danger : theme.text },
+                      ]}
+                    >
+                      {isBack ? "⌫" : key}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Toggle keypad visibility */}
+      <Pressable
+        onPress={toggleKeypad}
+        style={[styles.toggleBtn, { borderColor: theme.border }]}
+      >
+        <Feather
+          name={keypadVisible ? "chevron-up" : "grid"}
+          size={15}
+          color={theme.textSecondary}
+        />
+        <Text style={[styles.toggleLabel, { color: theme.textSecondary }]}>
+          {keypadVisible ? "Hide Keypad" : "Show Keypad"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -136,12 +170,13 @@ const styles = StyleSheet.create({
     fontSize: 56,
     fontFamily: "Inter_700Bold",
     letterSpacing: -2,
-    marginBottom: 32,
+    marginBottom: 24,
     paddingHorizontal: 16,
   },
   keypad: {
     width: "100%",
     gap: 10,
+    marginBottom: 12,
   },
   row: {
     flexDirection: "row",
@@ -163,5 +198,19 @@ const styles = StyleSheet.create({
   keyTextBack: {
     fontSize: 22,
     fontFamily: "Inter_600SemiBold",
+  },
+  toggleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  toggleLabel: {
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
   },
 });
