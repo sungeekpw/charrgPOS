@@ -57,6 +57,8 @@ export default function ChargeScreen() {
     setTipCents(0);
   }, []);
 
+  const bottomPad = Platform.OS === "web" ? 0 : insets.bottom;
+
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       {/* Header */}
@@ -80,13 +82,16 @@ export default function ChargeScreen() {
         </Pressable>
       </View>
 
-      {/* Scrollable area — amount input, keypad toggle, tip selector */}
+      {/* Scrollable content + button */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={[
+            styles.scroll,
+            { paddingBottom: bottomPad + 24 },
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -103,6 +108,7 @@ export default function ChargeScreen() {
             onTipChange={setTipCents}
           />
 
+          {/* Total row */}
           <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
             <View>
               <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
@@ -121,26 +127,15 @@ export default function ChargeScreen() {
               </View>
             )}
           </View>
+
+          {/* Pay Now button — last item in scroll */}
+          <PrimaryButton
+            label={amountCents > 0 ? `Pay Now · $${totalDollars}` : "Pay Now"}
+            onPress={handleCharge}
+            disabled={amountCents <= 0}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* Fixed footer — Charge button only, always visible above tab bar */}
-      <View
-        style={[
-          styles.footer,
-          {
-            paddingBottom: (Platform.OS === "web" ? 0 : insets.bottom) + 12,
-            borderTopColor: theme.border,
-            backgroundColor: theme.background,
-          },
-        ]}
-      >
-        <PrimaryButton
-          label={`Charge $${totalDollars}`}
-          onPress={handleCharge}
-          disabled={amountCents <= 0}
-        />
-      </View>
     </View>
   );
 }
@@ -168,15 +163,9 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 16,
     gap: 24,
   },
   divider: { height: 1, borderRadius: 1 },
-  footer: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
   totalRow: {
     borderRadius: 16,
     paddingHorizontal: 20,

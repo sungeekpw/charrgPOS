@@ -1,10 +1,10 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -41,7 +41,7 @@ export function PrimaryButton({
           styles.secondary,
           {
             backgroundColor: pressed ? theme.border : theme.surfaceElevated,
-            opacity: isDisabled ? 0.5 : 1,
+            opacity: isDisabled ? 0.6 : 1,
           },
         ]}
       >
@@ -52,7 +52,20 @@ export function PrimaryButton({
   }
 
   const gradStart = danger ? Colors.danger : Colors.primary;
-  const gradEnd = danger ? "#C0392B" : Colors.primaryDark;
+  const gradEnd   = danger ? "#C0392B" : Colors.primaryDark;
+
+  const innerContent = (
+    <>
+      {loading ? (
+        <ActivityIndicator color="#fff" size="small" />
+      ) : (
+        <>
+          {icon && <View style={styles.iconWrap}>{icon}</View>}
+          <Text style={styles.primaryText}>{label}</Text>
+        </>
+      )}
+    </>
+  );
 
   return (
     <Pressable
@@ -60,24 +73,23 @@ export function PrimaryButton({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.wrapper,
-        { opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1 },
+        { opacity: isDisabled ? 0.6 : pressed ? 0.85 : 1 },
       ]}
     >
-      <LinearGradient
-        colors={[gradStart, gradEnd]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" size="small" />
-        ) : (
-          <>
-            {icon && <View style={styles.iconWrap}>{icon}</View>}
-            <Text style={styles.primaryText}>{label}</Text>
-          </>
-        )}
-      </LinearGradient>
+      {Platform.OS === "web" ? (
+        <View style={[styles.gradient, { backgroundColor: gradStart }]}>
+          {innerContent}
+        </View>
+      ) : (
+        <LinearGradient
+          colors={[gradStart, gradEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {innerContent}
+        </LinearGradient>
+      )}
     </Pressable>
   );
 }
@@ -86,8 +98,11 @@ const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 16,
     overflow: "hidden",
+    minHeight: 56,
   },
   gradient: {
+    flex: 1,
+    minHeight: 56,
     paddingVertical: 18,
     paddingHorizontal: 24,
     alignItems: "center",
