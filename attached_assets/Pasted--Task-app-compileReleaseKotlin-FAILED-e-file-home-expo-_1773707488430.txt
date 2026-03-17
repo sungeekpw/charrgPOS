@@ -1,0 +1,38 @@
+> Task :app:compileReleaseKotlin FAILED
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:8:37 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:9:37 Unresolved reference 'EmvProcessFlowEnum'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:10:37 Unresolved reference 'EmvTransConfigurationV2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:11:37 Unresolved reference 'OnEmvProcessListener2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:12:40 Unresolved reference 'OnSwipeCardListener'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:13:33 Unresolved reference 'rf'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:24:29 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:38:41 Unresolved reference 'getDeviceEngine'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:184:34 Unresolved reference 'EmvTransConfigurationV2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:184:60 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:184:66 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:185:17 Unresolved reference 'transAmount'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:186:17 Unresolved reference 'countryCode'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:187:17 Unresolved reference 'transCurrCode'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:188:17 Unresolved reference 'transType'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:191:25 Unresolved reference 'emvProcess'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:191:61 Unresolved reference 'OnEmvProcessListener2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:192:17 'onSelApp' overrides nothing.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:194:75 Unresolved reference 'CandidateAppInfoEntity'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:197:21 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:197:33 Unresolved reference 'onSetSelAppResponse'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:200:17 'onConfirmCardNo' overrides nothing.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:201:21 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:201:33 Unresolved reference 'onSetConfirmCardNoResponse'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:204:17 'onCardHolderInputPin' overrides nothing.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:206:21 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:206:33 Unresolved reference 'onSetCardHolderInputPinResponse'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:210:17 'onOnlineProc' overrides nothing.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:211:21 Unresolved reference 'EmvHandler2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:211:33 Unresolved reference 'onSetOnlineProcResponse'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:218:17 'onFinish' overrides nothing.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:218:106 Unresolved reference 'EmvProcessResultEntity'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:220:58 Unresolved reference 'cardNo'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:221:61 Unresolved reference 'expDate'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:222:69 Unresolved reference 'cardHolderName'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:223:61 Unresolved reference 'track2'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:224:62 Unresolved reference 'emvTlvData'.
