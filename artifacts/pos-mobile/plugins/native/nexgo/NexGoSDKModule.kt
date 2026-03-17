@@ -49,7 +49,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
      */
     @ReactMethod
     fun startKeypadListener(promise: Promise) {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
         if (activity == null) {
             promise.reject("ERR_NO_ACTIVITY", "No current activity available")
             return
@@ -113,7 +113,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun stopKeypadListener(promise: Promise) {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
         if (activity != null && originalWindowCallback != null) {
             activity.window.callback = originalWindowCallback
             originalWindowCallback = null
