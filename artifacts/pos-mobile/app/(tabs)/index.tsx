@@ -162,7 +162,7 @@ export default function ChargeScreen() {
           style={[
             styles.footer,
             {
-              bottom: insets.bottom,
+              paddingBottom: insets.bottom + 12,
               borderTopColor: theme.border,
               backgroundColor: theme.background,
             },
@@ -205,10 +205,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
+    bottom: 0,
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 12,
     borderTopWidth: 1,
+    elevation: 10,
+    zIndex: 10,
   },
   totalRow: {
     borderRadius: 16,
