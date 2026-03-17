@@ -12,6 +12,7 @@ import com.nexgo.oaf.apiv3.device.reader.OnCardInfoListener
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
+import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
 import com.nexgo.oaf.apiv3.emv.OnEmvProcessListener2
 
@@ -191,14 +192,14 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
                     // No action needed — GPO will proceed automatically
                 }
 
-                override fun onConfirmCardNo(cardNo: String?) {
+                override fun onConfirmCardNo(cardInfoEntity: CardInfoEntity) {
                     emvHandler?.onSetConfirmCardNoResponse(true)
                 }
 
                 override fun onCardHolderInputPin(isOnlinePin: Boolean, leftTimes: Int) {
                     sendEvent("pin_requested")
-                    // Bypass PIN for now — in production, show PIN pad UI here
-                    emvHandler?.onSetPinInputResponse(isOnlinePin, "")
+                    // Bypass PIN — in production show PIN pad UI here
+                    emvHandler?.onSetPinInputResponse(isOnlinePin, false)
                     sendEvent("pin_entered")
                 }
 
@@ -210,7 +211,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
                 override fun onOnlineProc() {
                     // Approve online — send to Charrg API at the JS layer
-                    emvHandler?.onSetOnlineProcResponse(SdkResult.Success, null, null)
+                    emvHandler?.onSetOnlineProcResponse(SdkResult.Success, null)
                 }
 
                 override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {
@@ -223,11 +224,13 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     if (retCode == SdkResult.Success) {
-                        // Card data is retrieved via TLV tags after EMV processing
-                        val pan = emvHandler?.getTlv("5A") ?: cardInfo.cardNo ?: ""
-                        val expiry = emvHandler?.getTlv("5F24") ?: cardInfo.expiredDate ?: ""
-                        val track2 = emvHandler?.getTlv("57") ?: cardInfo.tk2 ?: ""
-                        val emvData = emvHandler?.getTlv("9F26") ?: ""  // Application Cryptogram
+                        // Use cardInfo String fields for card data
+                        val pan: String = cardInfo.cardNo ?: ""
+                        val expiry: String = cardInfo.expiredDate ?: ""
+                        val track2: String = cardInfo.tk2 ?: ""
+                        // Application Cryptogram (9F26) is a ByteArray — convert to hex
+                        val emvData: String = emvHandler?.getTlv("9F26")
+                            ?.joinToString("") { "%02X".format(it) } ?: ""
 
                         sendEvent("reading_complete")
                         sendEvent("card_read_complete", Arguments.createMap().apply {

@@ -1,0 +1,22 @@
+> Task :app:compileReleaseKotlin FAILED
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:179:52 Class '<anonymous>' is not abstract and does not implement abstract member:
+fun onConfirmCardNo(p0: CardInfoEntity!): Unit
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:194:17 'onConfirmCardNo' overrides nothing. Potential signatures for overriding:
+fun onConfirmCardNo(p0: CardInfoEntity!): Unit
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:201:68 Argument type mismatch: actual type is 'String', but 'Boolean' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:213:82 Too many arguments for 'fun onSetOnlineProcResponse(p0: Int, p1: EmvOnlineResultEntity!): Unit'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:227:54 Argument type mismatch: actual type is 'String', but 'ByteArray!' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:227:54 No value passed for parameter 'p1'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:228:57 Argument type mismatch: actual type is 'String', but 'ByteArray!' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:228:57 No value passed for parameter 'p1'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:229:57 Argument type mismatch: actual type is 'String', but 'ByteArray!' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:229:57 No value passed for parameter 'p1'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:230:58 Argument type mismatch: actual type is 'String', but 'ByteArray!' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:230:58 No value passed for parameter 'p1'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:234:46 Argument type mismatch: actual type is 'Serializable', but 'String?' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:235:49 Argument type mismatch: actual type is 'Serializable', but 'String?' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:238:49 Argument type mismatch: actual type is 'Serializable', but 'String?' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:239:51 Argument type mismatch: actual type is 'Serializable', but 'String?' was expected.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:241:56 Unresolved reference 'length'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:241:73 Unresolved reference 'takeLast'.
+e: file:///home/expo/workingdir/build/artifacts/pos-mobile/android/app/src/main/java/com/charrg/pos/nexgo/NexGoSDKModule.kt:242:69 Argument type mismatch: actual type is 'Serializable', but 'String' was expected.
