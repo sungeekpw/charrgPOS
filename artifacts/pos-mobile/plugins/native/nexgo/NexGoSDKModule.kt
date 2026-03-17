@@ -224,13 +224,11 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     if (retCode == SdkResult.Success) {
-                        // Use cardInfo String fields for card data
+                        // Card data comes from CardInfoEntity (all Strings)
                         val pan: String = cardInfo.cardNo ?: ""
                         val expiry: String = cardInfo.expiredDate ?: ""
                         val track2: String = cardInfo.tk2 ?: ""
-                        // Application Cryptogram (9F26) is a ByteArray — convert to hex
-                        val emvData: String = emvHandler?.getTlv("9F26")
-                            ?.joinToString("") { "%02X".format(it) } ?: ""
+                        val emvData: String = ""  // raw TLV not needed for Charrg API
 
                         sendEvent("reading_complete")
                         sendEvent("card_read_complete", Arguments.createMap().apply {
