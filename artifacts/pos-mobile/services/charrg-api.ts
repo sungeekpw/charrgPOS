@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+
 export interface ChargeRequest {
   amount: number;
   tip: number;
@@ -29,19 +31,21 @@ export interface ChargeResponse {
   timestamp: string;
 }
 
-// Active environment — set EXPO_PUBLIC_CHARRG_ENV to "dev", "test", or "prod"
-const ENV = process.env.EXPO_PUBLIC_CHARRG_ENV ?? "dev";
+const extra = Constants.expoConfig?.extra ?? {};
+
+// Active environment: "dev" | "test" | "prod"
+const ENV: string = extra.charrgEnv ?? "dev";
 
 const API_URLS: Record<string, string> = {
-  dev:  process.env.EXPO_PUBLIC_CHARRG_DEV_URL  ?? "",
-  test: process.env.EXPO_PUBLIC_CHARRG_TEST_URL ?? "",
-  prod: process.env.EXPO_PUBLIC_CHARRG_PROD_URL ?? "",
+  dev:  extra.charrgDevUrl  ?? "",
+  test: extra.charrgTestUrl ?? "",
+  prod: extra.charrgProdUrl ?? "",
 };
 
 const API_TOKENS: Record<string, string> = {
-  dev:  process.env.EXPO_PUBLIC_CHARRG_DEV_TOKEN  ?? "",
-  test: process.env.EXPO_PUBLIC_CHARRG_TEST_TOKEN ?? "",
-  prod: process.env.EXPO_PUBLIC_CHARRG_PROD_TOKEN ?? "",
+  dev:  extra.charrgDevToken  ?? "",
+  test: extra.charrgTestToken ?? "",
+  prod: extra.charrgProdToken ?? "",
 };
 
 export const CHARRG_ENV      = ENV;
@@ -52,7 +56,10 @@ export async function processPayment(req: ChargeRequest): Promise<ChargeResponse
   const total = req.amount + req.tip;
 
   if (!CHARRG_BASE_URL) {
-    throw new Error(`Charrg API URL not configured for environment "${ENV}". Set EXPO_PUBLIC_CHARRG_${ENV.toUpperCase()}_URL.`);
+    throw new Error(
+      `Charrg API URL not configured for environment "${ENV}". ` +
+      `Set CHARRG_${ENV.toUpperCase()}_URL in Secrets.`
+    );
   }
 
   const payload = {
