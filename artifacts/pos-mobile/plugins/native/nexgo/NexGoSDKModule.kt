@@ -49,6 +49,38 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun getDeviceInfo(promise: Promise) {
+        try {
+            val engine = deviceEngine ?: APIProxy.getDeviceEngine(reactApplicationContext)
+            if (engine == null) {
+                promise.reject("ERR_NOT_INITIALIZED", "DeviceEngine unavailable")
+                return
+            }
+            val info = engine.deviceInfo
+            if (info == null) {
+                promise.reject("ERR_DEVICE_INFO", "DeviceInfo unavailable")
+                return
+            }
+            val map = Arguments.createMap().apply {
+                putString("sn",               info.sn              ?: "")
+                putString("ksn",              info.ksn             ?: "")
+                putString("model",            info.model           ?: "")
+                putString("vendor",           info.vendor          ?: "")
+                putString("osVer",            info.osVer           ?: "")
+                putString("sdkVer",           info.sdkVer          ?: "")
+                putString("firmwareVer",      info.firmWareVer     ?: "")
+                putString("firmwareFullVer",  info.firmWareFullVersion ?: "")
+                putString("kernelVer",        info.kernelVer       ?: "")
+                putString("spCoreVersion",    info.spCoreVersion   ?: "")
+                putString("spBootVersion",    info.spBootVersion   ?: "")
+            }
+            promise.resolve(map)
+        } catch (e: Exception) {
+            promise.reject("ERR_DEVICE_INFO", e.message ?: "Unknown error")
+        }
+    }
+
+    @ReactMethod
     fun startCardRead(amount: Double, promise: Promise) {
         if (deviceEngine == null || cardReader == null) {
             promise.reject("ERR_NOT_INITIALIZED", "SDK not initialized")

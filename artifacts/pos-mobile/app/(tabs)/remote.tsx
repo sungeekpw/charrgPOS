@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Switch,
@@ -15,6 +17,8 @@ import { router } from "expo-router";
 import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { generateTransactionId } from "@/services/transaction-storage";
+import { getDeviceInfo, isSDKAvailable } from "@/services/nexgo-sdk";
+import type { NexGoDeviceInfo } from "@/services/nexgo-sdk";
 
 function StatusDot({ active }: { active: boolean }) {
   return (
@@ -39,6 +43,23 @@ export default function RemoteScreen() {
     stopListening,
     clearPendingRequest,
   } = usePOS();
+
+  const [deviceInfo, setDeviceInfo] = useState<NexGoDeviceInfo | null>(null);
+  const [loadingInfo, setLoadingInfo] = useState(false);
+  const [infoError, setInfoError] = useState<string | null>(null);
+
+  const handleFetchDeviceInfo = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setLoadingInfo(true);
+    setInfoError(null);
+    const info = await getDeviceInfo();
+    if (info) {
+      setDeviceInfo(info);
+    } else {
+      setInfoError(isSDKAvailable() ? "Failed to read device info" : "NexGo SDK not available on this device");
+    }
+    setLoadingInfo(false);
+  };
 
   const isListening = tcpStatus === "listening";
   const isStarting = tcpStatus === "starting";
@@ -180,15 +201,61 @@ export default function RemoteScreen() {
           </View>
         ))}
 
-        <View style={[styles.card, { backgroundColor: theme.surfaceElevated }]}>
-          <Text style={[styles.cardTitle, { color: theme.text }]}>NexGo SDK</Text>
-          <Text style={[styles.cardSub, { color: theme.textSecondary }]}>
-            Place the NexGo AAR file in the{" "}
-            <Text style={{ color: Colors.primary, fontFamily: "Inter_500Medium" }}>
-              android/libs/
-            </Text>{" "}
-            directory and rebuild the app to enable hardware card reading.
+        {/* Device Info */}
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+            Device Info
           </Text>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: theme.surfaceElevated, gap: 12 }]}>
+          {deviceInfo ? (
+            <>
+              {[
+                { label: "Serial Number (SN)", value: deviceInfo.sn || "—" },
+                { label: "KSN", value: deviceInfo.ksn || "—" },
+                { label: "Model", value: deviceInfo.model || "—" },
+                { label: "Vendor", value: deviceInfo.vendor || "—" },
+                { label: "Firmware", value: deviceInfo.firmwareFullVer || deviceInfo.firmwareVer || "—" },
+                { label: "OS Version", value: deviceInfo.osVer || "—" },
+                { label: "SDK Version", value: deviceInfo.sdkVer || "—" },
+                { label: "Kernel", value: deviceInfo.kernelVer || "—" },
+              ].map(({ label, value }) => (
+                <View key={label} style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: theme.textSecondary }]}>{label}</Text>
+                  <Text
+                    style={[styles.infoValue, { color: theme.text }]}
+                    selectable
+                  >
+                    {value}
+                  </Text>
+                </View>
+              ))}
+              <Pressable
+                onPress={handleFetchDeviceInfo}
+                style={[styles.refreshBtn, { borderColor: Colors.primary + "50" }]}
+              >
+                <Text style={[styles.refreshBtnText, { color: Colors.primary }]}>Refresh</Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              onPress={handleFetchDeviceInfo}
+              style={[styles.fetchBtn, { backgroundColor: Colors.primary }]}
+              disabled={loadingInfo}
+            >
+              {loadingInfo ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.fetchBtnText}>Read Device Info</Text>
+              )}
+            </Pressable>
+          )}
+          {infoError && (
+            <Text style={[styles.infoErrorText, { color: Colors.error ?? "#FF4444" }]}>
+              {infoError}
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -306,5 +373,44 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }),
     lineHeight: 17,
+  },
+  infoRow: {
+    gap: 2,
+  },
+  infoLabel: {
+    fontSize: 11,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  infoValue: {
+    fontSize: 14,
+    fontFamily: Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }),
+  },
+  fetchBtn: {
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  fetchBtnText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
+  },
+  refreshBtn: {
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  refreshBtnText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+  },
+  infoErrorText: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
   },
 });

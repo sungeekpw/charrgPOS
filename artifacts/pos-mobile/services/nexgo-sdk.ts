@@ -15,10 +15,25 @@ export type SDKEventType =
 
 export type SDKListener = (event: SDKEventType, data?: unknown) => void;
 
+export interface NexGoDeviceInfo {
+  sn: string;
+  ksn: string;
+  model: string;
+  vendor: string;
+  osVer: string;
+  sdkVer: string;
+  firmwareVer: string;
+  firmwareFullVer: string;
+  kernelVer: string;
+  spCoreVersion: string;
+  spBootVersion: string;
+}
+
 let nexgoModule: NexGoNativeModule | null = null;
 
 interface NexGoNativeModule {
   initialize: () => Promise<boolean>;
+  getDeviceInfo: () => Promise<NexGoDeviceInfo>;
   startCardRead: (amount: number) => Promise<void>;
   cancelCardRead: () => Promise<void>;
   addListener: (eventType: string, listener: SDKListener) => void;
@@ -36,6 +51,9 @@ function createNexGoWrapper(
   return {
     initialize: () =>
       (nativeModule.initialize as () => Promise<boolean>)(),
+
+    getDeviceInfo: () =>
+      (nativeModule.getDeviceInfo as () => Promise<NexGoDeviceInfo>)(),
 
     startCardRead: (amount: number) =>
       (nativeModule.startCardRead as (a: number) => Promise<void>)(amount),
@@ -95,6 +113,17 @@ export async function initializeSDK(): Promise<boolean> {
     return await mod.initialize();
   } catch {
     return false;
+  }
+}
+
+export async function getDeviceInfo(): Promise<NexGoDeviceInfo | null> {
+  const mod = getNexGoModule();
+  if (!mod) return null;
+  try {
+    return await mod.getDeviceInfo();
+  } catch (e) {
+    console.error("getDeviceInfo error:", e);
+    return null;
   }
 }
 
