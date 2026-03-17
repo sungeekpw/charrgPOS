@@ -102,39 +102,39 @@ export default function ChargeScreen() {
             baseAmountCents={amountCents}
             onTipChange={setTipCents}
           />
+
+          <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
+            <View>
+              <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
+              <Text style={[styles.totalAmt, { color: Colors.primary }]}>
+                ${totalDollars}
+              </Text>
+            </View>
+            {tipCents > 0 && (
+              <View style={styles.breakdown}>
+                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                  Sale: ${(amountCents / 100).toFixed(2)}
+                </Text>
+                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                  Tip:  ${(tipCents / 100).toFixed(2)}
+                </Text>
+              </View>
+            )}
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Fixed footer — total + charge button, always above tab bar */}
+      {/* Fixed footer — Charge button only, always visible above tab bar */}
       <View
         style={[
           styles.footer,
           {
-            paddingBottom: insets.bottom + 12,
+            paddingBottom: (Platform.OS === "web" ? 0 : insets.bottom) + 12,
             borderTopColor: theme.border,
             backgroundColor: theme.background,
           },
         ]}
       >
-        <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
-          <View>
-            <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
-            <Text style={[styles.totalAmt, { color: Colors.primary }]}>
-              ${totalDollars}
-            </Text>
-          </View>
-          {tipCents > 0 && (
-            <View style={styles.breakdown}>
-              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                Sale: ${(amountCents / 100).toFixed(2)}
-              </Text>
-              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                Tip:  ${(tipCents / 100).toFixed(2)}
-              </Text>
-            </View>
-          )}
-        </View>
-
         <PrimaryButton
           label={`Charge $${totalDollars}`}
           onPress={handleCharge}
@@ -174,9 +174,8 @@ const styles = StyleSheet.create({
   divider: { height: 1, borderRadius: 1 },
   footer: {
     paddingHorizontal: 20,
-    paddingTop: 14,
+    paddingTop: 12,
     borderTopWidth: 1,
-    gap: 12,
   },
   totalRow: {
     borderRadius: 16,
