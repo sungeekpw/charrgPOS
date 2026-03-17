@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   LayoutAnimation,
   Platform,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   UIManager,
   View,
 } from "react-native";
@@ -32,39 +33,63 @@ export function AmountInput({
   onKeypadToggle,
 }: AmountInputProps) {
   const theme = Colors.dark;
+  const inputRef = useRef<TextInput>(null);
 
   const [rawStr, setRawStr] = useState("");
   const [keypadVisible, setKeypadVisible] = useState(false);
+
+  // Auto-focus the hidden input so hardware keypad works immediately
+  useEffect(() => {
+    if (!disabled) {
+      const timer = setTimeout(() => inputRef.current?.focus(), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [disabled]);
+
+  // Sync rawStr if parent resets value to 0 (e.g. clear button)
+  useEffect(() => {
+    if (value === 0) setRawStr("");
+  }, [value]);
 
   const displayDollars = value > 0
     ? `$${(value / 100).toFixed(2)}`
     : "$0.00";
 
+  // Handle input from EITHER the hidden TextInput (hardware keypad)
+  // or the on-screen key buttons
+  const applyDigits = (digits: string) => {
+    if (digits.length > 8) return;
+    setRawStr(digits);
+    const cents = digits.length > 0 ? parseInt(digits, 10) : 0;
+    onChange(cents);
+  };
+
+  // Called when hardware keypad types into the hidden TextInput
+  const handleTextChange = (text: string) => {
+    if (disabled) return;
+    // Strip anything that isn't a digit
+    const digits = text.replace(/\D/g, "");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    applyDigits(digits);
+  };
+
+  // On-screen keypad handlers
   const handleDigit = (digit: string) => {
     if (disabled) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const next = rawStr + digit;
-    if (next.length > 8) return;
-    const cents = parseInt(next, 10);
-    setRawStr(next);
-    onChange(cents);
+    applyDigits(rawStr + digit);
   };
 
   const handleBackspace = () => {
     if (disabled) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (rawStr.length === 0) return;
-    const next = rawStr.slice(0, -1);
-    setRawStr(next);
-    const cents = next.length > 0 ? parseInt(next, 10) : 0;
-    onChange(cents);
+    applyDigits(rawStr.slice(0, -1));
   };
 
   const handleClear = () => {
     if (disabled) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    setRawStr("");
-    onChange(0);
+    applyDigits("");
   };
 
   const toggleKeypad = () => {
@@ -73,6 +98,8 @@ export function AmountInput({
     const next = !keypadVisible;
     setKeypadVisible(next);
     onKeypadToggle?.(next);
+    // Keep focus on hidden input so hardware keypad still works
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const keys: [string, string, string][] = [
@@ -84,14 +111,32 @@ export function AmountInput({
 
   return (
     <View style={styles.container}>
+      {/* Hidden TextInput — receives hardware keypad input */}
+      <TextInput
+        ref={inputRef}
+        value={rawStr}
+        onChangeText={handleTextChange}
+        keyboardType="numeric"
+        showSoftInputOnFocus={false}
+        caretHidden
+        editable={!disabled}
+        style={styles.hiddenInput}
+        // Prevent web from showing a cursor box
+        {...(Platform.OS === "web" ? { tabIndex: -1 } as any : {})}
+      />
+
       <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>
-      <Text
-        style={[styles.amount, { color: theme.text }]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-      >
-        {displayDollars}
-      </Text>
+
+      {/* Tapping the amount re-focuses the hidden input */}
+      <Pressable onPress={() => inputRef.current?.focus()}>
+        <Text
+          style={[styles.amount, { color: theme.text }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {displayDollars}
+        </Text>
+      </Pressable>
 
       {keypadVisible && (
         <View style={styles.keypad}>
@@ -106,6 +151,7 @@ export function AmountInput({
                     onPress={() => {
                       if (isBack) handleBackspace();
                       else if (isDot) {
+                        // decimal not needed for cents entry
                       } else handleDigit(key);
                     }}
                     onLongPress={isBack ? handleClear : undefined}
@@ -157,6 +203,15 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     width: "100%",
+  },
+  // Invisible but focusable — receives hardware keyboard input
+  hiddenInput: {
+    position: "absolute",
+    width: 1,
+    height: 1,
+    opacity: 0,
+    top: 0,
+    left: 0,
   },
   label: {
     fontSize: 13,
