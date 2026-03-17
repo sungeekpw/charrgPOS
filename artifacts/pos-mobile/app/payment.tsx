@@ -183,6 +183,11 @@ export default function PaymentScreen() {
     resultOpacity.value = 0;
   }, []);
 
+  // Auto-start the card reader as soon as the screen appears — no extra tap needed.
+  useEffect(() => {
+    handleStartRead();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isActive = phase === "reading" || phase === "processing";
   const isDone = phase === "success" || phase === "error";
 
@@ -277,10 +282,6 @@ export default function PaymentScreen() {
           </Animated.View>
         )}
 
-        {phase === "ready" && (
-          <PrimaryButton label="Start Card Read" onPress={handleStartRead} />
-        )}
-
         {phase === "success" && (
           <PrimaryButton label="New Charge" onPress={handleNewCharge} />
         )}
@@ -292,9 +293,10 @@ export default function PaymentScreen() {
           </View>
         )}
 
-        {isActive && (
+        {/* Cancel is always available while a read is in progress or pending */}
+        {(phase === "ready" || isActive) && (
           <PrimaryButton
-            label="Cancel Transaction"
+            label="Cancel"
             onPress={handleCancel}
             secondary
             danger={false}
