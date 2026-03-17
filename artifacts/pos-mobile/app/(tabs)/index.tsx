@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -25,6 +25,7 @@ export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
   const { addTransaction } = usePOS();
   const theme = Colors.dark;
+  const scrollRef = useRef<ScrollView>(null);
 
   const [amountCents, setAmountCents] = useState(0);
   const [tipCents, setTipCents] = useState(0);
@@ -57,6 +58,14 @@ export default function ChargeScreen() {
     setTipCents(0);
   }, []);
 
+  const handleKeypadToggle = useCallback((visible: boolean) => {
+    if (visible) {
+      setTimeout(() => {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }, 350);
+    }
+  }, []);
+
   const bottomPad = Platform.OS === "web" ? 0 : insets.bottom;
 
   return (
@@ -82,12 +91,13 @@ export default function ChargeScreen() {
         </Pressable>
       </View>
 
-      {/* Scrollable content + button */}
+      {/* Scrollable content */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
         <ScrollView
+          ref={scrollRef}
           contentContainerStyle={[
             styles.scroll,
             { paddingBottom: bottomPad + 24 },
@@ -99,6 +109,7 @@ export default function ChargeScreen() {
             label="Charge Amount"
             value={amountCents}
             onChange={setAmountCents}
+            onKeypadToggle={handleKeypadToggle}
           />
 
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -128,7 +139,7 @@ export default function ChargeScreen() {
             )}
           </View>
 
-          {/* Pay Now button — last item in scroll */}
+          {/* Pay Now — always last in scroll, scrolled into view when keypad opens */}
           <PrimaryButton
             label={amountCents > 0 ? `Pay Now · $${totalDollars}` : "Pay Now"}
             onPress={handleCharge}

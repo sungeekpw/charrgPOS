@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import {
-  Animated,
   LayoutAnimation,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   UIManager,
-  useColorScheme,
   View,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
 import Colors from "@/constants/colors";
 
-// Enable LayoutAnimation on Android
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -24,6 +21,7 @@ interface AmountInputProps {
   value: number;
   onChange: (cents: number) => void;
   disabled?: boolean;
+  onKeypadToggle?: (visible: boolean) => void;
 }
 
 export function AmountInput({
@@ -31,9 +29,9 @@ export function AmountInput({
   value,
   onChange,
   disabled = false,
+  onKeypadToggle,
 }: AmountInputProps) {
-  const isDark = useColorScheme() === "dark";
-  const theme = isDark ? Colors.dark : Colors.dark;
+  const theme = Colors.dark;
 
   const [rawStr, setRawStr] = useState("");
   const [keypadVisible, setKeypadVisible] = useState(false);
@@ -72,7 +70,9 @@ export function AmountInput({
   const toggleKeypad = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setKeypadVisible((v) => !v);
+    const next = !keypadVisible;
+    setKeypadVisible(next);
+    onKeypadToggle?.(next);
   };
 
   const keys: [string, string, string][] = [
@@ -136,7 +136,6 @@ export function AmountInput({
         </View>
       )}
 
-      {/* Toggle keypad visibility */}
       <Pressable
         onPress={toggleKeypad}
         style={[styles.toggleBtn, { borderColor: theme.border }]}
