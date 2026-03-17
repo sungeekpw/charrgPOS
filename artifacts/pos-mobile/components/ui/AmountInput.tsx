@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   LayoutAnimation,
   Platform,
@@ -16,6 +16,7 @@ import {
   isSDKAvailable,
   startKeypadListener,
   stopKeypadListener,
+  subscribeKeypadDebug,
   subscribeKeypadInput,
 } from "@/services/nexgo-sdk";
 
@@ -43,7 +44,8 @@ export function AmountInput({
 }: AmountInputProps) {
   const theme = Colors.dark;
   const inputRef = useRef<TextInput>(null);
-  const sdkActive = isSDKAvailable(); // true only on a real NexGo standalone build
+  // Only true in a real NexGo standalone build where the native module loaded
+  const sdkActive = isSDKAvailable();
 
   const [rawStr, setRawStr] = useState("");
   const [keypadVisible, setKeypadVisible] = useState(false);
@@ -54,19 +56,28 @@ export function AmountInput({
   }, [value]);
 
   // ── Apply digits (shared by all input paths) ───────────────────────────────
-  const applyDigits = (digits: string) => {
-    if (digits.length > 8) return;
-    setRawStr(digits);
-    onChange(digits.length > 0 ? parseInt(digits, 10) : 0);
-  };
+  const applyDigits = useCallback(
+    (digits: string) => {
+      if (digits.length > 8) return;
+      setRawStr(digits);
+      onChange(digits.length > 0 ? parseInt(digits, 10) : 0);
+    },
+    [onChange]
+  );
 
-  // ── Path A: NexGo hardware keypad (native SDK available) ───────────────────
-  // Hooks into the Activity's Window.Callback via the native module so that
-  // physical key presses are forwarded as JS events — no TextInput needed.
+  // ── Path A: NexGo hardware keypad via Window.Callback ─────────────────────
+  // When the native module is present, we hook the Activity's Window.Callback
+  // so physical key presses are forwarded as "keypad_input" JS events.
+  // Key events consumed here never reach the TextInput below.
   useEffect(() => {
     if (!sdkActive || disabled) return;
 
     let unsubscribe: () => void = () => {};
+    // Log any key codes the native side doesn't recognise — helpful for
+    // figuring out what KEYCODE values this specific NexGo model sends.
+    const unsubDebug = subscribeKeypadDebug((keyCode, keyCodeName) => {
+      console.warn(`[NexGo keypad] Unhandled key: code=${keyCode} name=${keyCodeName}`);
+    });
     startKeypadListener().then(() => {
       unsubscribe = subscribeKeypadInput((key) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -93,21 +104,36 @@ export function AmountInput({
 
     return () => {
       unsubscribe();
+      unsubDebug();
       stopKeypadListener();
     };
-  }, [sdkActive, disabled]);
+  }, [sdkActive, disabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Path B: TextInput fallback (web / non-NexGo Android) ──────────────────
-  // Hidden, auto-focused TextInput that receives hardware keyboard events when
-  // the native SDK is not available (web preview or Expo Go).
+  // ── Path B: Hidden TextInput — always active as fallback ──────────────────
+  // On NexGo with a working Window.Callback, key events are consumed before
+  // reaching this TextInput, so onChangeText never fires. On all other
+  // platforms (web, Expo Go, or NexGo when Window.Callback is not hooked),
+  // the focused TextInput receives hardware key events directly.
+  //
+  // We always render and focus it — the two paths are naturally exclusive.
   useEffect(() => {
-    if (sdkActive || disabled) return; // SDK handles it instead
+    if (disabled) return;
     const timer = setTimeout(() => inputRef.current?.focus(), 300);
     return () => clearTimeout(timer);
-  }, [sdkActive, disabled]);
+  }, [disabled]);
+
+  // Re-focus if focus is stolen (e.g. by a modal or scroll)
+  const handleBlur = useCallback(() => {
+    if (disabled) return;
+    const timer = setTimeout(() => inputRef.current?.focus(), 150);
+    return () => clearTimeout(timer);
+  }, [disabled]);
 
   const handleTextChange = (text: string) => {
-    if (disabled || sdkActive) return;
+    // When Window.Callback is active and consuming keys, this never fires for
+    // digit/backspace keys because they were already consumed upstream.
+    // This only runs when events flow through to the TextInput (fallback path).
+    if (disabled) return;
     const digits = text.replace(/\D/g, "");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     applyDigits(digits);
@@ -138,9 +164,7 @@ export function AmountInput({
     const next = !keypadVisible;
     setKeypadVisible(next);
     onKeypadToggle?.(next);
-    if (!sdkActive) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const displayDollars =
@@ -155,31 +179,30 @@ export function AmountInput({
 
   return (
     <View style={styles.container}>
-      {/* TextInput fallback — only rendered when native SDK is not available */}
-      {!sdkActive && (
-        <TextInput
-          ref={inputRef}
-          value={rawStr}
-          onChangeText={handleTextChange}
-          keyboardType="numeric"
-          showSoftInputOnFocus={false}
-          caretHidden
-          editable={!disabled}
-          style={styles.hiddenInput}
-          {...(Platform.OS === "web" ? ({ tabIndex: -1 } as any) : {})}
-        />
-      )}
+      {/*
+        Always rendered — invisible 1×1 input that keeps hardware key events
+        flowing. On NexGo with Window.Callback hooked, keys are consumed
+        before reaching here; on all other paths this is the primary receiver.
+      */}
+      <TextInput
+        ref={inputRef}
+        value={rawStr}
+        onChangeText={handleTextChange}
+        onBlur={handleBlur}
+        keyboardType="numeric"
+        showSoftInputOnFocus={false}
+        caretHidden
+        editable={!disabled}
+        style={styles.hiddenInput}
+        {...(Platform.OS === "web" ? ({ tabIndex: -1 } as any) : {})}
+      />
 
       <Text style={[styles.label, { color: theme.textSecondary }]}>
         {label}
       </Text>
 
-      {/* Tapping amount re-focuses hidden input (fallback path only) */}
-      <Pressable
-        onPress={() => {
-          if (!sdkActive) inputRef.current?.focus();
-        }}
-      >
+      {/* Tapping amount re-focuses hidden input */}
+      <Pressable onPress={() => inputRef.current?.focus()}>
         <Text
           style={[styles.amount, { color: theme.text }]}
           numberOfLines={1}

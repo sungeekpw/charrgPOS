@@ -159,6 +159,26 @@ export function subscribeKeypadInput(
   return () => sub.remove();
 }
 
+/**
+ * Subscribe to debug events for key codes the native module doesn't recognise.
+ * Useful for identifying what KEYCODE values the NexGo hardware actually sends.
+ * Returns an unsubscribe function.
+ */
+export function subscribeKeypadDebug(
+  handler: (keyCode: number, keyCodeName: string) => void
+): () => void {
+  if (!isSDKAvailable()) return () => {};
+  const { NativeModules, NativeEventEmitter } = require("react-native");
+  const emitter = new NativeEventEmitter(NativeModules.NexGoSDK);
+  const sub = emitter.addListener(
+    "keypad_debug",
+    ({ keyCode, keyCodeName }: { keyCode: number; keyCodeName: string }) => {
+      handler(keyCode, keyCodeName);
+    }
+  );
+  return () => sub.remove();
+}
+
 export async function getDeviceInfo(): Promise<NexGoDeviceInfo | null> {
   const mod = getNexGoModule();
   if (!mod) return null;

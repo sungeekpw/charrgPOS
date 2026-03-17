@@ -59,64 +59,79 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
 
-        val window = activity.window
-        originalWindowCallback = window.callback
+        // Window operations MUST run on the UI thread.
+        activity.runOnUiThread {
+            try {
+                val window = activity.window
+                originalWindowCallback = window.callback
+                val original = originalWindowCallback!!
 
-        // Kotlin `by` delegation forwards every method we don't override to
-        // the original callback, so we only need to handle dispatchKeyEvent.
-        val original = originalWindowCallback!!
-        window.callback = object : Window.Callback by original {
-            override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    val key: String? = when (event.keyCode) {
-                        KeyEvent.KEYCODE_0,
-                        KeyEvent.KEYCODE_NUMPAD_0 -> "0"
-                        KeyEvent.KEYCODE_1,
-                        KeyEvent.KEYCODE_NUMPAD_1 -> "1"
-                        KeyEvent.KEYCODE_2,
-                        KeyEvent.KEYCODE_NUMPAD_2 -> "2"
-                        KeyEvent.KEYCODE_3,
-                        KeyEvent.KEYCODE_NUMPAD_3 -> "3"
-                        KeyEvent.KEYCODE_4,
-                        KeyEvent.KEYCODE_NUMPAD_4 -> "4"
-                        KeyEvent.KEYCODE_5,
-                        KeyEvent.KEYCODE_NUMPAD_5 -> "5"
-                        KeyEvent.KEYCODE_6,
-                        KeyEvent.KEYCODE_NUMPAD_6 -> "6"
-                        KeyEvent.KEYCODE_7,
-                        KeyEvent.KEYCODE_NUMPAD_7 -> "7"
-                        KeyEvent.KEYCODE_8,
-                        KeyEvent.KEYCODE_NUMPAD_8 -> "8"
-                        KeyEvent.KEYCODE_9,
-                        KeyEvent.KEYCODE_NUMPAD_9 -> "9"
-                        KeyEvent.KEYCODE_DEL,
-                        KeyEvent.KEYCODE_FORWARD_DEL -> "BACKSPACE"
-                        KeyEvent.KEYCODE_CLEAR -> "CLEAR"
-                        KeyEvent.KEYCODE_ENTER,
-                        KeyEvent.KEYCODE_NUMPAD_ENTER -> "ENTER"
-                        else -> null
-                    }
-                    if (key != null) {
-                        sendEvent("keypad_input", Arguments.createMap().apply {
-                            putString("key", key)
-                        })
-                        return true // consume — don't double-route to TextInput
+                // Kotlin `by` delegation forwards every method we don't override
+                // to the original callback — we only intercept dispatchKeyEvent.
+                window.callback = object : Window.Callback by original {
+                    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                        if (event.action == KeyEvent.ACTION_DOWN) {
+                            val key: String? = when (event.keyCode) {
+                                KeyEvent.KEYCODE_0,
+                                KeyEvent.KEYCODE_NUMPAD_0 -> "0"
+                                KeyEvent.KEYCODE_1,
+                                KeyEvent.KEYCODE_NUMPAD_1 -> "1"
+                                KeyEvent.KEYCODE_2,
+                                KeyEvent.KEYCODE_NUMPAD_2 -> "2"
+                                KeyEvent.KEYCODE_3,
+                                KeyEvent.KEYCODE_NUMPAD_3 -> "3"
+                                KeyEvent.KEYCODE_4,
+                                KeyEvent.KEYCODE_NUMPAD_4 -> "4"
+                                KeyEvent.KEYCODE_5,
+                                KeyEvent.KEYCODE_NUMPAD_5 -> "5"
+                                KeyEvent.KEYCODE_6,
+                                KeyEvent.KEYCODE_NUMPAD_6 -> "6"
+                                KeyEvent.KEYCODE_7,
+                                KeyEvent.KEYCODE_NUMPAD_7 -> "7"
+                                KeyEvent.KEYCODE_8,
+                                KeyEvent.KEYCODE_NUMPAD_8 -> "8"
+                                KeyEvent.KEYCODE_9,
+                                KeyEvent.KEYCODE_NUMPAD_9 -> "9"
+                                KeyEvent.KEYCODE_DEL,
+                                KeyEvent.KEYCODE_FORWARD_DEL -> "BACKSPACE"
+                                KeyEvent.KEYCODE_CLEAR -> "CLEAR"
+                                KeyEvent.KEYCODE_ENTER,
+                                KeyEvent.KEYCODE_NUMPAD_ENTER -> "ENTER"
+                                else -> null
+                            }
+                            if (key != null) {
+                                sendEvent("keypad_input", Arguments.createMap().apply {
+                                    putString("key", key)
+                                })
+                                return true // consume — don't double-route to TextInput
+                            }
+                            // Emit unknown key codes as a debug event so the JS
+                            // side can log what the device is actually sending.
+                            sendEvent("keypad_debug", Arguments.createMap().apply {
+                                putInt("keyCode", event.keyCode)
+                                putString("keyCodeName", KeyEvent.keyCodeToString(event.keyCode))
+                            })
+                        }
+                        return original.dispatchKeyEvent(event)
                     }
                 }
-                return original.dispatchKeyEvent(event)
+
+                keypadListenerActive = true
+                promise.resolve(null)
+            } catch (e: Exception) {
+                promise.reject("ERR_WINDOW_CALLBACK", e.message ?: "Failed to hook window callback")
             }
         }
-
-        keypadListenerActive = true
-        promise.resolve(null)
     }
 
     @ReactMethod
     fun stopKeypadListener(promise: Promise) {
         val activity = reactCtx.currentActivity
         if (activity != null && originalWindowCallback != null) {
-            activity.window.callback = originalWindowCallback
-            originalWindowCallback = null
+            activity.runOnUiThread {
+                activity.window.callback = originalWindowCallback
+                originalWindowCallback = null
+            }
         }
         keypadListenerActive = false
         promise.resolve(null)
