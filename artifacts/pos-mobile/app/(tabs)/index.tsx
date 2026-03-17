@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
@@ -21,8 +20,10 @@ import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { generateTransactionId } from "@/services/transaction-storage";
 
-// Height of the fixed footer on native (button + padding)
-const FOOTER_HEIGHT = 88;
+// Approximate footer height: paddingTop(12) + button(56) + paddingBottom(12) = 80
+const FOOTER_PX = 80;
+// Extra space for web tab bar (rendered below our iframe area)
+const WEB_TAB_BAR_PX = 80;
 
 export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
@@ -63,17 +64,11 @@ export default function ChargeScreen() {
 
   const handleKeypadToggle = useCallback((visible: boolean) => {
     if (visible) {
-      setTimeout(() => {
-        scrollRef.current?.scrollToEnd({ animated: true });
-      }, 400);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 400);
     }
   }, []);
 
   const isWeb = Platform.OS === "web";
-
-  // On native: scroll content must clear the fixed footer + safe area
-  // On web: button is inline in scroll, no fixed footer
-  const scrollBottomPad = isWeb ? 24 : FOOTER_HEIGHT + insets.bottom + 16;
 
   const payButton = (
     <PrimaryButton
@@ -82,6 +77,30 @@ export default function ChargeScreen() {
       disabled={amountCents <= 0}
     />
   );
+
+  // Footer style: fixed on web (anchors to iframe bottom), absolute on native
+  const footerStyle = isWeb
+    ? {
+        // @ts-ignore — react-native-web supports 'fixed'
+        position: "fixed" as any,
+        bottom: WEB_TAB_BAR_PX,
+        left: 0,
+        right: 0,
+        paddingBottom: 12,
+        borderTopColor: theme.border,
+        backgroundColor: theme.background,
+      }
+    : {
+        position: "absolute" as const,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingBottom: insets.bottom + 12,
+        borderTopColor: theme.border,
+        backgroundColor: theme.background,
+        elevation: 10,
+        zIndex: 10,
+      };
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -107,76 +126,61 @@ export default function ChargeScreen() {
       </View>
 
       {/* Scrollable content */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: FOOTER_PX + (isWeb ? WEB_TAB_BAR_PX : insets.bottom) + 16 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          ref={scrollRef}
-          contentContainerStyle={[styles.scroll, { paddingBottom: scrollBottomPad }]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <AmountInput
-            label="Charge Amount"
-            value={amountCents}
-            onChange={setAmountCents}
-            onKeypadToggle={handleKeypadToggle}
-          />
+        <AmountInput
+          label="Charge Amount"
+          value={amountCents}
+          onChange={setAmountCents}
+          onKeypadToggle={handleKeypadToggle}
+        />
 
-          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+        <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
-          <TipSelector
-            baseAmountCents={amountCents}
-            onTipChange={setTipCents}
-          />
+        <TipSelector
+          baseAmountCents={amountCents}
+          onTipChange={setTipCents}
+        />
 
-          {/* Total row */}
-          <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
-            <View>
-              <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
-              <Text style={[styles.totalAmt, { color: Colors.primary }]}>
-                ${totalDollars}
+        <View style={[styles.totalRow, { backgroundColor: theme.surfaceElevated }]}>
+          <View>
+            <Text style={[styles.totalLabel, { color: theme.textSecondary }]}>Total</Text>
+            <Text style={[styles.totalAmt, { color: Colors.primary }]}>
+              ${totalDollars}
+            </Text>
+          </View>
+          {tipCents > 0 && (
+            <View style={styles.breakdown}>
+              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                Sale: ${(amountCents / 100).toFixed(2)}
+              </Text>
+              <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
+                Tip:  ${(tipCents / 100).toFixed(2)}
               </Text>
             </View>
-            {tipCents > 0 && (
-              <View style={styles.breakdown}>
-                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                  Sale: ${(amountCents / 100).toFixed(2)}
-                </Text>
-                <Text style={[styles.breakdownLine, { color: theme.textMuted }]}>
-                  Tip:  ${(tipCents / 100).toFixed(2)}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* Web only: button inline in scroll */}
-          {isWeb && payButton}
-        </ScrollView>
-      </KeyboardAvoidingView>
-
-      {/* Native only: fixed footer always visible above tab bar */}
-      {!isWeb && (
-        <View
-          style={[
-            styles.footer,
-            {
-              paddingBottom: insets.bottom + 12,
-              borderTopColor: theme.border,
-              backgroundColor: theme.background,
-            },
-          ]}
-        >
-          {payButton}
+          )}
         </View>
-      )}
+      </ScrollView>
+
+      {/* Pay Now — fixed/absolute footer above tab bar */}
+      <View style={[styles.footerBase, footerStyle]}>
+        {payButton}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: {
+    flex: 1,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -195,22 +199,16 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   clearBtn: { padding: 8 },
-  scroll: {
+  scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 24,
     gap: 24,
   },
   divider: { height: 1, borderRadius: 1 },
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
+  footerBase: {
     paddingHorizontal: 20,
     paddingTop: 12,
     borderTopWidth: 1,
-    elevation: 10,
-    zIndex: 10,
   },
   totalRow: {
     borderRadius: 16,
