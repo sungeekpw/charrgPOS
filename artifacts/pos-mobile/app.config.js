@@ -9,7 +9,7 @@ module.exports = {
     userInterfaceStyle: "dark",
     newArchEnabled: true,
     splash: {
-      image: "./assets/images/splash-icon.png",
+      image: "./assets/images/charrg-icon.png",
       resizeMode: "contain",
       backgroundColor: "#0D0D14",
     },

@@ -8,12 +8,13 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AppSplashScreen } from "@/components/SplashScreen";
 import { POSProvider } from "@/context/pos-context";
 
 SplashScreen.preventAutoHideAsync();
@@ -45,13 +46,24 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
+  const [showCustomSplash, setShowCustomSplash] = useState(true);
+  const [appReady, setAppReady] = useState(false);
+
+  // As soon as fonts are ready, hide the native OS splash and let our
+  // animated splash take over.
   useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
+      setAppReady(true);
     }
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) return null;
+  const handleSplashDone = useCallback(() => {
+    setShowCustomSplash(false);
+  }, []);
+
+  // Don't render anything until fonts are loaded
+  if (!appReady) return null;
 
   return (
     <SafeAreaProvider>
@@ -61,6 +73,9 @@ export default function RootLayout() {
             <KeyboardProvider>
               <POSProvider>
                 <RootLayoutNav />
+                {showCustomSplash && (
+                  <AppSplashScreen onDone={handleSplashDone} />
+                )}
               </POSProvider>
             </KeyboardProvider>
           </GestureHandlerRootView>
