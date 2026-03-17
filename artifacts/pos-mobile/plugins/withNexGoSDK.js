@@ -1,6 +1,9 @@
 const path = require("path");
 const fs = require("fs");
-const { withDangerousMod } = require("@expo/config-plugins");
+const {
+  withDangerousMod,
+  withMainApplication,
+} = require("@expo/config-plugins");
 
 function withNexGoSDK(config) {
   config = withNexGoAAR(config);
@@ -10,7 +13,7 @@ function withNexGoSDK(config) {
   return config;
 }
 
-// ─── 1. Copy the NexGo AAR into android/app/libs ─────────────────────────────
+// ─── 1. Copy NexGo AAR into android/app/libs ─────────────────────────────────
 function withNexGoAAR(config) {
   return withDangerousMod(config, [
     "android",
@@ -32,7 +35,7 @@ function withNexGoAAR(config) {
   ]);
 }
 
-// ─── 2. Add fileTree dependency to android/app/build.gradle ──────────────────
+// ─── 2. Add fileTree dep to android/app/build.gradle ─────────────────────────
 function withNexGoGradle(config) {
   return withDangerousMod(config, [
     "android",
@@ -46,7 +49,10 @@ function withNexGoGradle(config) {
       let gradle = fs.readFileSync(gradlePath, "utf-8");
       const dep = 'implementation fileTree(dir: "libs", include: ["*.aar"])';
       if (!gradle.includes(dep)) {
-        gradle = gradle.replace(/dependencies\s*\{/, `dependencies {\n    ${dep}`);
+        gradle = gradle.replace(
+          /dependencies\s*\{/,
+          `dependencies {\n    ${dep}`
+        );
         fs.writeFileSync(gradlePath, gradle);
         console.log("[withNexGoSDK] Added fileTree dep to build.gradle");
       }
@@ -55,58 +61,45 @@ function withNexGoGradle(config) {
   ]);
 }
 
-// ─── 3. Register NexGoSDKPackage in MainApplication.kt ───────────────────────
+// ─── 3. Register NexGoSDKPackage via the official withMainApplication mod ─────
+//
+// withMainApplication hands us the already-generated MainApplication.kt content
+// in config.modResults.contents — no file path guessing needed.
 function withNexGoMainApplication(config) {
-  return withDangerousMod(config, [
-    "android",
-    async (config) => {
-      const projectRoot = config.modRequest.projectRoot;
-      const mainAppPath = path.join(
-        projectRoot,
-        "android", "app", "src", "main", "java", "com", "charrg", "pos",
-        "MainApplication.kt"
+  return withMainApplication(config, (config) => {
+    let src = config.modResults.contents;
+
+    // 3a. Add import after the package declaration
+    const importLine = "import com.charrg.pos.nexgo.NexGoSDKPackage";
+    if (!src.includes(importLine)) {
+      // Insert after "package com.charrg.pos" (the very first line)
+      src = src.replace(
+        /^(package\s+\S+)/m,
+        `$1\n${importLine}`
       );
-      if (!fs.existsSync(mainAppPath)) {
-        console.warn("[withNexGoSDK] MainApplication.kt not found — skipping package registration.");
-        return config;
-      }
+      console.log("[withNexGoSDK] Added NexGoSDKPackage import");
+    }
 
-      let contents = fs.readFileSync(mainAppPath, "utf-8");
+    // 3b. Add the package into getPackages().
+    //     Expo generates: val packages = PackageList(this).packages
+    //     We insert our package right after that assignment.
+    const anchor = "val packages = PackageList(this).packages";
+    const addLine = "        packages.add(NexGoSDKPackage())";
 
-      // 3a. Add import after the package declaration line
-      const importLine = "import com.charrg.pos.nexgo.NexGoSDKPackage";
-      if (!contents.includes(importLine)) {
-        contents = contents.replace(
-          /^(package com\.charrg\.pos)\s*\n/m,
-          `$1\n\n${importLine}\n`
-        );
-        console.log("[withNexGoSDK] Added NexGoSDKPackage import");
-      }
+    if (src.includes(anchor) && !src.includes(addLine)) {
+      src = src.replace(anchor, `${anchor}\n${addLine}`);
+      console.log("[withNexGoSDK] Registered NexGoSDKPackage in getPackages()");
+    } else if (!src.includes(anchor)) {
+      console.warn(
+        "[withNexGoSDK] Could not find PackageList anchor in MainApplication.kt — " +
+        "NexGoSDKPackage was NOT registered. Full contents logged below:\n" +
+        src.slice(0, 600)
+      );
+    }
 
-      // 3b. Insert package after PackageList(this).packages — reliable anchor
-      const anchor = "val packages = PackageList(this).packages";
-      const addLine = "        packages.add(NexGoSDKPackage())";
-      if (contents.includes(anchor) && !contents.includes(addLine)) {
-        contents = contents.replace(anchor, `${anchor}\n${addLine}`);
-        console.log("[withNexGoSDK] Registered NexGoSDKPackage");
-      } else if (!contents.includes(anchor)) {
-        // Fallback: try the mutable list pattern used in some Expo versions
-        const altAnchor = "PackageList(this).packages";
-        if (contents.includes(altAnchor) && !contents.includes(addLine)) {
-          contents = contents.replace(
-            altAnchor,
-            `${altAnchor}.also { it.add(NexGoSDKPackage()) }`
-          );
-          console.log("[withNexGoSDK] Registered NexGoSDKPackage (alt pattern)");
-        } else {
-          console.warn("[withNexGoSDK] Could not find getPackages anchor in MainApplication.kt");
-        }
-      }
-
-      fs.writeFileSync(mainAppPath, contents);
-      return config;
-    },
-  ]);
+    config.modResults.contents = src;
+    return config;
+  });
 }
 
 // ─── 4. Copy NexGoSDKModule.kt + NexGoSDKPackage.kt into the android source ──
@@ -133,8 +126,10 @@ function withNexGoKotlinSource(config) {
       }
 
       for (const file of files) {
-        fs.copyFileSync(path.join(sourceDir, file), path.join(destDir, file));
-        console.log(`[withNexGoSDK] Copied ${file}`);
+        const src = path.join(sourceDir, file);
+        const dst = path.join(destDir, file);
+        fs.copyFileSync(src, dst);
+        console.log(`[withNexGoSDK] Copied ${file} → nexgo/`);
       }
       return config;
     },
@@ -143,7 +138,6 @@ function withNexGoKotlinSource(config) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function findAAR(projectRoot) {
-  // Search attached_assets at repo root (walk up from project)
   let dir = projectRoot;
   while (dir !== path.dirname(dir)) {
     const candidate = path.join(dir, "attached_assets");
@@ -153,6 +147,9 @@ function findAAR(projectRoot) {
       );
       if (aar) return path.join(candidate, aar);
     }
+    // Also check directly inside the project
+    const local = path.join(dir, "nexgo-sdk.aar");
+    if (fs.existsSync(local)) return local;
     dir = path.dirname(dir);
   }
   return null;

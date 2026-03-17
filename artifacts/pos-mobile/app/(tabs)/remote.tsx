@@ -48,15 +48,31 @@ export default function RemoteScreen() {
   const [loadingInfo, setLoadingInfo] = useState(false);
   const [infoError, setInfoError] = useState<string | null>(null);
 
+  function sdkUnavailableReason(): string {
+    if (Platform.OS === "web") {
+      return "Running in web preview — NexGo SDK requires an EAS-built APK on the physical device.";
+    }
+    if (Platform.OS !== "android") {
+      return "NexGo SDK is Android-only.";
+    }
+    // Android but module not found in the native bridge
+    return "NexGoSDK native module not found. This usually means the app was opened in Expo Go instead of a standalone EAS build. Rebuild with: eas build --platform android";
+  }
+
   const handleFetchDeviceInfo = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setLoadingInfo(true);
     setInfoError(null);
+    if (!isSDKAvailable()) {
+      setInfoError(sdkUnavailableReason());
+      setLoadingInfo(false);
+      return;
+    }
     const info = await getDeviceInfo();
     if (info) {
       setDeviceInfo(info);
     } else {
-      setInfoError(isSDKAvailable() ? "Failed to read device info" : "NexGo SDK not available on this device");
+      setInfoError("Device info unavailable — SDK initialized but hardware query failed.");
     }
     setLoadingInfo(false);
   };
