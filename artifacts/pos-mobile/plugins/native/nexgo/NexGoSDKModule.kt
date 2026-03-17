@@ -19,8 +19,8 @@ import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
 import com.nexgo.oaf.apiv3.emv.OnEmvProcessListener2
 
-class NexGoSDKModule(reactContext: ReactApplicationContext) :
-    ReactContextBaseJavaModule(reactContext) {
+class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
+    ReactContextBaseJavaModule(reactCtx) {
 
     private var deviceEngine: DeviceEngine? = null
     private var cardReader: CardReader? = null
@@ -34,7 +34,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
     override fun getName(): String = "NexGoSDK"
 
     private fun sendEvent(eventName: String, params: WritableMap? = null) {
-        reactApplicationContext
+        reactCtx
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(eventName, params ?: Arguments.createMap())
     }
@@ -49,7 +49,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
      */
     @ReactMethod
     fun startKeypadListener(promise: Promise) {
-        val activity = reactApplicationContext.currentActivity
+        val activity = reactCtx.currentActivity
         if (activity == null) {
             promise.reject("ERR_NO_ACTIVITY", "No current activity available")
             return
@@ -113,7 +113,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun stopKeypadListener(promise: Promise) {
-        val activity = reactApplicationContext.currentActivity
+        val activity = reactCtx.currentActivity
         if (activity != null && originalWindowCallback != null) {
             activity.window.callback = originalWindowCallback
             originalWindowCallback = null
@@ -127,7 +127,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun initialize(promise: Promise) {
         try {
-            deviceEngine = APIProxy.getDeviceEngine(reactApplicationContext)
+            deviceEngine = APIProxy.getDeviceEngine(reactCtx)
             if (deviceEngine == null) {
                 promise.resolve(false)
                 return
@@ -143,7 +143,7 @@ class NexGoSDKModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun getDeviceInfo(promise: Promise) {
         try {
-            val engine = deviceEngine ?: APIProxy.getDeviceEngine(reactApplicationContext)
+            val engine = deviceEngine ?: APIProxy.getDeviceEngine(reactCtx)
             if (engine == null) {
                 promise.reject("ERR_NOT_INITIALIZED", "DeviceEngine unavailable")
                 return
