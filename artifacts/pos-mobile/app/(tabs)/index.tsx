@@ -21,6 +21,9 @@ import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { generateTransactionId } from "@/services/transaction-storage";
 
+// Height of the fixed footer on native (button + padding)
+const FOOTER_HEIGHT = 88;
+
 export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
   const { addTransaction } = usePOS();
@@ -62,13 +65,23 @@ export default function ChargeScreen() {
     if (visible) {
       setTimeout(() => {
         scrollRef.current?.scrollToEnd({ animated: true });
-      }, 350);
+      }, 400);
     }
   }, []);
 
-  // On native the tab bar (~60px) sits on top of our scroll area.
-  // We need enough paddingBottom so the button can scroll above it.
-  const bottomPad = Platform.OS === "web" ? 0 : insets.bottom + 80;
+  const isWeb = Platform.OS === "web";
+
+  // On native: scroll content must clear the fixed footer + safe area
+  // On web: button is inline in scroll, no fixed footer
+  const scrollBottomPad = isWeb ? 24 : FOOTER_HEIGHT + insets.bottom + 16;
+
+  const payButton = (
+    <PrimaryButton
+      label={amountCents > 0 ? `Pay Now · $${totalDollars}` : "Pay Now"}
+      onPress={handleCharge}
+      disabled={amountCents <= 0}
+    />
+  );
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -77,7 +90,7 @@ export default function ChargeScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + (Platform.OS === "web" ? 67 : 12),
+            paddingTop: insets.top + (isWeb ? 67 : 12),
             borderBottomColor: theme.border,
           },
         ]}
@@ -100,10 +113,7 @@ export default function ChargeScreen() {
       >
         <ScrollView
           ref={scrollRef}
-          contentContainerStyle={[
-            styles.scroll,
-            { paddingBottom: bottomPad + 24 },
-          ]}
+          contentContainerStyle={[styles.scroll, { paddingBottom: scrollBottomPad }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -141,14 +151,26 @@ export default function ChargeScreen() {
             )}
           </View>
 
-          {/* Pay Now — always last in scroll, scrolled into view when keypad opens */}
-          <PrimaryButton
-            label={amountCents > 0 ? `Pay Now · $${totalDollars}` : "Pay Now"}
-            onPress={handleCharge}
-            disabled={amountCents <= 0}
-          />
+          {/* Web only: button inline in scroll */}
+          {isWeb && payButton}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Native only: fixed footer always visible above tab bar */}
+      {!isWeb && (
+        <View
+          style={[
+            styles.footer,
+            {
+              bottom: insets.bottom,
+              borderTopColor: theme.border,
+              backgroundColor: theme.background,
+            },
+          ]}
+        >
+          {payButton}
+        </View>
+      )}
     </View>
   );
 }
@@ -179,6 +201,15 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   divider: { height: 1, borderRadius: 1 },
+  footer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+  },
   totalRow: {
     borderRadius: 16,
     paddingHorizontal: 20,
