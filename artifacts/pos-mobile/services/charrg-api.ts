@@ -29,30 +29,30 @@ export interface ChargeResponse {
   timestamp: string;
 }
 
-// Environment selection — set EXPO_PUBLIC_CHARRG_ENV to "dev", "test", or "prod"
+// Active environment — set EXPO_PUBLIC_CHARRG_ENV to "dev", "test", or "prod"
 const ENV = process.env.EXPO_PUBLIC_CHARRG_ENV ?? "dev";
 
 const API_URLS: Record<string, string> = {
-  dev:  process.env.EXPO_PUBLIC_CHARRG_API_URL_DEV  ?? "",
-  test: process.env.EXPO_PUBLIC_CHARRG_API_URL_TEST ?? "",
-  prod: process.env.EXPO_PUBLIC_CHARRG_API_URL_PROD ?? "",
+  dev:  process.env.EXPO_PUBLIC_CHARRG_DEV_URL  ?? "",
+  test: process.env.EXPO_PUBLIC_CHARRG_TEST_URL ?? "",
+  prod: process.env.EXPO_PUBLIC_CHARRG_PROD_URL ?? "",
 };
 
 const API_TOKENS: Record<string, string> = {
-  dev:  process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_DEV  ?? "",
-  test: process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_TEST ?? "",
-  prod: process.env.EXPO_PUBLIC_CHARRG_API_TOKEN_PROD ?? "",
+  dev:  process.env.EXPO_PUBLIC_CHARRG_DEV_TOKEN  ?? "",
+  test: process.env.EXPO_PUBLIC_CHARRG_TEST_TOKEN ?? "",
+  prod: process.env.EXPO_PUBLIC_CHARRG_PROD_TOKEN ?? "",
 };
 
-export const CHARRG_ENV = ENV;
-export const CHARRG_BASE_URL = API_URLS[ENV] ?? API_URLS.dev;
-const CHARRG_TOKEN = API_TOKENS[ENV] ?? API_TOKENS.dev;
+export const CHARRG_ENV      = ENV;
+export const CHARRG_BASE_URL = API_URLS[ENV] ?? "";
+const        CHARRG_TOKEN    = API_TOKENS[ENV] ?? "";
 
 export async function processPayment(req: ChargeRequest): Promise<ChargeResponse> {
   const total = req.amount + req.tip;
 
   if (!CHARRG_BASE_URL) {
-    throw new Error(`Charrg API URL not configured for environment: ${ENV}`);
+    throw new Error(`Charrg API URL not configured for environment "${ENV}". Set EXPO_PUBLIC_CHARRG_${ENV.toUpperCase()}_URL.`);
   }
 
   const payload = {
