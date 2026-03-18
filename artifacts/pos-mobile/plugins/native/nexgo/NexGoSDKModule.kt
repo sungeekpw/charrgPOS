@@ -139,10 +139,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
     // ─── SDK init ─────────────────────────────────────────────────────────────
 
+    /**
+     * The NexGo SDK requires an Activity context for APIProxy.getDeviceEngine().
+     * ReactApplicationContext wraps the Application context, which the SDK rejects.
+     * Prefer the current Activity; fall back to reactCtx only if unavailable.
+     */
+    private fun sdkContext(): android.content.Context =
+        reactCtx.currentActivity ?: reactCtx
+
     @ReactMethod
     fun initialize(promise: Promise) {
         try {
-            deviceEngine = APIProxy.getDeviceEngine(reactCtx)
+            deviceEngine = APIProxy.getDeviceEngine(sdkContext())
             if (deviceEngine == null) {
                 promise.resolve(false)
                 return
@@ -151,16 +159,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             promise.resolve(true)
         } catch (e: Exception) {
-            promise.resolve(false)
+            promise.reject("ERR_INITIALIZE", e.message ?: "APIProxy.getDeviceEngine failed")
         }
     }
 
     @ReactMethod
     fun getDeviceInfo(promise: Promise) {
         try {
-            val engine = deviceEngine ?: APIProxy.getDeviceEngine(reactCtx)
+            val engine = deviceEngine ?: APIProxy.getDeviceEngine(sdkContext())
             if (engine == null) {
-                promise.reject("ERR_NOT_INITIALIZED", "DeviceEngine unavailable")
+                promise.reject("ERR_NOT_INITIALIZED", "DeviceEngine unavailable — ensure this is a NexGo device and the app was built as a standalone APK")
                 return
             }
             val info = engine.deviceInfo
