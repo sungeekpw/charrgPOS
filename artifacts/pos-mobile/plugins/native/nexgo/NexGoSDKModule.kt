@@ -12,6 +12,8 @@ import com.nexgo.oaf.apiv3.device.reader.CardInfoEntity
 import com.nexgo.oaf.apiv3.device.reader.CardReader
 import com.nexgo.oaf.apiv3.device.reader.CardSlotTypeEnum
 import com.nexgo.oaf.apiv3.device.reader.OnCardInfoListener
+import com.nexgo.oaf.apiv3.emv.AidEntity
+import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
@@ -157,10 +159,123 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             }
             cardReader = deviceEngine!!.cardReader
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
+            setupEmvAids()
             promise.resolve(true)
         } catch (e: Exception) {
             promise.reject("ERR_INITIALIZE", e.message ?: "APIProxy.getDeviceEngine failed")
         }
+    }
+
+    /**
+     * Configure AIDs (Application Identifiers) for the EMV kernel.
+     *
+     * Without AIDs the kernel's candidate list is empty and every EMV process
+     * call fails immediately (error 8014 / Emv_Candidatelist_Empty).
+     *
+     * Values follow standard US terminal parameters:
+     *   • Floor limit 0 = always go online (no offline approval)
+     *   • Contactless trans limit $250 / CVM limit $25
+     *   • AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS = accept both interfaces
+     */
+    private fun setupEmvAids() {
+        val handler = emvHandler ?: return
+        // Don't overwrite if the device already has AIDs loaded (e.g. from a
+        // processor-managed terminal initialization download).
+        if (handler.aidListNum > 0) return
+
+        val aids = mutableListOf<AidEntity>()
+
+        // ── Visa Credit / Debit ──────────────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A0000000031010")
+            setAsi(0)                        // partial match
+            setAppVerNum("0096")
+            setTacDefault("DC4000A800")
+            setTacOnline("DC4004F800")
+            setTacDenial("0010000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L) // $250.00
+            setContactlessCvmLimit(2500L)    // $25.00 — above this, PIN required
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── Visa Electron ────────────────────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A0000000032010")
+            setAsi(0)
+            setAppVerNum("0096")
+            setTacDefault("DC4000A800")
+            setTacOnline("DC4004F800")
+            setTacDenial("0010000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── Mastercard Credit ────────────────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A0000000041010")
+            setAsi(0)
+            setAppVerNum("0002")
+            setTacDefault("FC50BCF800")
+            setTacOnline("FC50BCF800")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── Maestro (Mastercard Debit) ───────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A0000000043060")
+            setAsi(0)
+            setAppVerNum("0002")
+            setTacDefault("FC50BCF800")
+            setTacOnline("FC50BCF800")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── American Express ─────────────────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A000000025010104")
+            setAsi(1)                        // exact match for Amex
+            setAppVerNum("0001")
+            setTacDefault("FC78BCF800")
+            setTacOnline("F878BC7800")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── Discover / Diners Club ───────────────────────────────────────────
+        aids.add(AidEntity().apply {
+            setAid("A0000001523010")
+            setAsi(1)
+            setAppVerNum("0001")
+            setTacDefault("F800F0A000")
+            setTacOnline("F800F0A000")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        handler.setAidParaList(aids)
     }
 
     @ReactMethod
@@ -317,11 +432,27 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
     private fun processEmvCard(amount: Double, cardInfo: CardInfoEntity, entryMode: String) {
         try {
+            val now = java.util.Calendar.getInstance()
             val emvTransConfig = EmvTransConfigurationEntity().apply {
-                transAmount = (amount * 100).toLong().toString()
-                countryCode = "0840"
-                currencyCode = "0840"
-                emvTransType = 0x00
+                transAmount  = (amount * 100).toLong().toString()
+                countryCode  = "0840"        // ISO 3166-1: USA
+                currencyCode = "0840"        // ISO 4217:   USD
+                emvTransType = 0x00          // 00 = Goods & Services
+                // Date/time required by EMV kernel
+                transDate = String.format("%02d%02d%02d",
+                    now.get(java.util.Calendar.YEAR) % 100,
+                    now.get(java.util.Calendar.MONTH) + 1,
+                    now.get(java.util.Calendar.DAY_OF_MONTH))
+                transTime = String.format("%02d%02d%02d",
+                    now.get(java.util.Calendar.HOUR_OF_DAY),
+                    now.get(java.util.Calendar.MINUTE),
+                    now.get(java.util.Calendar.SECOND))
+                termId   = "CHARRG01"
+                merId    = "CHARRG"
+                merName  = "Charrg POS"
+                // Allow the kernel to show a card application selection UI if
+                // multiple apps are present on a contactless card
+                isContactlessSupportSelectApp = (entryMode == "contactless")
             }
 
             emvHandler?.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
