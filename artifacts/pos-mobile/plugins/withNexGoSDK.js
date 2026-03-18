@@ -90,20 +90,40 @@ function withNexGoMainApplication(config) {
     }
 
     // 3b. Add the package into getPackages().
-    //     Expo generates: val packages = PackageList(this).packages
-    //     We insert our package right after that assignment.
-    const anchor = "val packages = PackageList(this).packages";
-    const addLine = "        packages.add(NexGoSDKPackage())";
+    //
+    //     React Native ≤ 0.72 generates:
+    //       val packages = PackageList(this).packages
+    //       packages.add(...)
+    //
+    //     React Native ≥ 0.73 generates:
+    //       PackageList(this).packages.apply {
+    //         add(...)
+    //       }
+    //
+    //     Handle both forms.
+    const alreadyRegistered = src.includes("NexGoSDKPackage()");
 
-    if (src.includes(anchor) && !src.includes(addLine)) {
-      src = src.replace(anchor, `${anchor}\n${addLine}`);
-      console.log("[withNexGoSDK] Registered NexGoSDKPackage in getPackages()");
-    } else if (!src.includes(anchor)) {
-      console.warn(
-        "[withNexGoSDK] Could not find PackageList anchor in MainApplication.kt — " +
-        "NexGoSDKPackage was NOT registered. Full contents logged below:\n" +
-        src.slice(0, 600)
-      );
+    if (!alreadyRegistered) {
+      // Pattern A — legacy style
+      const anchorA = "val packages = PackageList(this).packages";
+      // Pattern B — modern apply {} style
+      const anchorB = "PackageList(this).packages.apply {";
+
+      if (src.includes(anchorA)) {
+        src = src.replace(anchorA, `${anchorA}\n        packages.add(NexGoSDKPackage())`);
+        console.log("[withNexGoSDK] Registered NexGoSDKPackage in getPackages() (legacy val-packages style)");
+      } else if (src.includes(anchorB)) {
+        src = src.replace(anchorB, `${anchorB}\n              add(NexGoSDKPackage())`);
+        console.log("[withNexGoSDK] Registered NexGoSDKPackage in getPackages() (apply{} style)");
+      } else {
+        console.warn(
+          "[withNexGoSDK] Could not find PackageList anchor in MainApplication.kt — " +
+          "NexGoSDKPackage was NOT registered. Full contents:\n" +
+          src.slice(0, 800)
+        );
+      }
+    } else {
+      console.log("[withNexGoSDK] NexGoSDKPackage already present in getPackages() — skipping.");
     }
 
     config.modResults.contents = src;
