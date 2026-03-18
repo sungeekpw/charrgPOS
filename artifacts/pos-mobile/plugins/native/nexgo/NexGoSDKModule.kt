@@ -449,7 +449,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     now.get(java.util.Calendar.SECOND))
                 termId   = "CHARRG01"
                 merId    = "CHARRG"
-                merName  = "Charrg POS"
+                // NexGo SDK stores merchant name as a raw byte array (ASCII bytes)
+                merName  = "Charrg POS".toByteArray(Charsets.US_ASCII)
                 // Allow the kernel to show a card application selection UI if
                 // multiple apps are present on a contactless card
                 isContactlessSupportSelectApp = (entryMode == "contactless")
