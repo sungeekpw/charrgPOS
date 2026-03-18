@@ -35,7 +35,13 @@ function withNexGoAAR(config) {
   ]);
 }
 
-// ─── 2. Add fileTree dep to android/app/build.gradle ─────────────────────────
+// ─── 2. Ensure implementation fileTree dep in android/app/build.gradle ───────
+//
+// The NexGo SDK AAR must be bundled into the APK via `implementation`, not
+// `compileOnly`. Using `compileOnly` omits the SDK classes from the APK's DEX,
+// causing a NoClassDefFoundError at runtime and silently preventing the native
+// module from loading. The NexGo SDK README explicitly uses `compile`
+// (the deprecated alias for `implementation`).
 function withNexGoGradle(config) {
   return withDangerousMod(config, [
     "android",
@@ -47,23 +53,22 @@ function withNexGoGradle(config) {
       if (!fs.existsSync(gradlePath)) return config;
 
       let gradle = fs.readFileSync(gradlePath, "utf-8");
-      // compileOnly: the NexGo SDK is a system library pre-installed on NexGo
-      // devices. We only need the AAR for compilation — bundling it (implementation)
-      // causes a class-loading conflict with the system library at runtime.
-      const dep = 'compileOnly fileTree(dir: "libs", include: ["*.aar"])';
-      // Remove any previous implementation entry for this AAR
-      const oldDep = 'implementation fileTree(dir: "libs", include: ["*.aar"])';
-      if (gradle.includes(oldDep)) {
-        gradle = gradle.replace(oldDep, dep);
+      const dep = 'implementation fileTree(dir: "libs", include: ["*.aar"])';
+      // Remove any stale compileOnly entry if a previous build left one
+      const stale = 'compileOnly fileTree(dir: "libs", include: ["*.aar"])';
+      if (gradle.includes(stale)) {
+        gradle = gradle.replace(stale, dep);
         fs.writeFileSync(gradlePath, gradle);
-        console.log("[withNexGoSDK] Replaced implementation → compileOnly for NexGo AAR");
+        console.log("[withNexGoSDK] Replaced compileOnly → implementation for NexGo AAR");
       } else if (!gradle.includes(dep)) {
         gradle = gradle.replace(
           /dependencies\s*\{/,
           `dependencies {\n    ${dep}`
         );
         fs.writeFileSync(gradlePath, gradle);
-        console.log("[withNexGoSDK] Added compileOnly fileTree dep to build.gradle");
+        console.log("[withNexGoSDK] Added implementation fileTree dep to build.gradle");
+      } else {
+        console.log("[withNexGoSDK] implementation fileTree dep already present — no change needed");
       }
       return config;
     },
