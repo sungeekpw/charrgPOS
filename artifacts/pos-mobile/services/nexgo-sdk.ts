@@ -179,15 +179,10 @@ export function subscribeKeypadDebug(
   return () => sub.remove();
 }
 
-export async function getDeviceInfo(): Promise<NexGoDeviceInfo | null> {
+export async function getDeviceInfo(): Promise<NexGoDeviceInfo> {
   const mod = getNexGoModule();
-  if (!mod) return null;
-  try {
-    return await mod.getDeviceInfo();
-  } catch (e) {
-    console.error("getDeviceInfo error:", e);
-    return null;
-  }
+  if (!mod) throw new Error("NexGoSDK native module not available");
+  return await mod.getDeviceInfo();
 }
 
 export async function startCardRead(

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Platform,
   Pressable,
   ScrollView,
@@ -23,11 +22,17 @@ import { CardReaderStatus } from "@/components/ui/CardReaderStatus";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
-import { processPayment } from "@/services/charrg-api";
+import { CHARRG_BASE_URL, processPayment } from "@/services/charrg-api";
+import type { CardData } from "@/services/charrg-api";
 import { startCardRead, cancelCardRead } from "@/services/nexgo-sdk";
 import type { SDKEventType } from "@/services/nexgo-sdk";
 import type { Transaction } from "@/services/transaction-storage";
 import { generateTransactionId } from "@/services/transaction-storage";
+
+// ─── Bypass flag ─────────────────────────────────────────────────────────────
+// When the Charrg API URL is not configured we skip the network call entirely
+// and display the raw card-read result so hardware can be tested independently.
+const CHARRG_CONFIGURED = !!CHARRG_BASE_URL;
 
 type PaymentPhase =
   | "ready"
@@ -60,6 +65,7 @@ export default function PaymentScreen() {
   const [sdkEvent, setSdkEvent] = useState<SDKEventType | null>(null);
   const [authCode, setAuthCode] = useState<string | undefined>();
   const [errorMsg, setErrorMsg] = useState<string | undefined>();
+  const [lastCardData, setLastCardData] = useState<CardData | null>(null);
 
   const isCancelled = useRef(false);
 
@@ -69,7 +75,12 @@ export default function PaymentScreen() {
   const animateResult = useCallback(() => {
     resultScale.value = withSpring(1, { damping: 12, stiffness: 200 });
     resultOpacity.value = withTiming(1, { duration: 300 });
-  }, []);
+  }, [resultScale, resultOpacity]);
+
+  const resetAnimation = useCallback(() => {
+    resultScale.value = 0.7;
+    resultOpacity.value = 0;
+  }, [resultScale, resultOpacity]);
 
   const resultStyle = useAnimatedStyle(() => ({
     transform: [{ scale: resultScale.value }],
@@ -80,6 +91,7 @@ export default function PaymentScreen() {
     isCancelled.current = false;
     setPhase("reading");
     setSdkEvent(null);
+    setLastCardData(null);
 
     try {
       const cardData = await startCardRead(totalCents, (ev) => {
@@ -87,7 +99,31 @@ export default function PaymentScreen() {
       });
 
       if (isCancelled.current) return;
+      setLastCardData(cardData);
 
+      if (!CHARRG_CONFIGURED) {
+        // ── Test mode: API not configured — display the raw card read ──────
+        setPhase("success");
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        animateResult();
+
+        await addTransaction({
+          id: txId,
+          amount: amountCents,
+          tip: tipCents,
+          total: totalCents,
+          status: "approved",
+          last4: cardData.last4,
+          cardBrand: cardData.cardBrand,
+          entryMode: cardData.entryMode,
+          timestamp: new Date().toISOString(),
+          source,
+          reference,
+        });
+        return;
+      }
+
+      // ── Live mode: send to Charrg API ──────────────────────────────────
       setPhase("processing");
       setSdkEvent(null);
 
@@ -100,7 +136,7 @@ export default function PaymentScreen() {
 
       if (isCancelled.current) return;
 
-      const tx: Transaction = {
+      await addTransaction({
         id: txId,
         amount: amountCents,
         tip: tipCents,
@@ -114,9 +150,7 @@ export default function PaymentScreen() {
         timestamp: new Date().toISOString(),
         source,
         reference,
-      };
-
-      await addTransaction(tx);
+      });
 
       if (resp.success) {
         setAuthCode(resp.authCode);
@@ -176,14 +210,16 @@ export default function PaymentScreen() {
   }, []);
 
   const handleRetry = useCallback(() => {
+    resetAnimation();
     setPhase("ready");
     setSdkEvent(null);
     setErrorMsg(undefined);
-    resultScale.value = 0.7;
-    resultOpacity.value = 0;
-  }, []);
+    setLastCardData(null);
+    // Restart immediately — same as on first mount
+    handleStartRead();
+  }, [resetAnimation, handleStartRead]);
 
-  // Auto-start the card reader as soon as the screen appears — no extra tap needed.
+  // Auto-start card reader as soon as the screen appears
   useEffect(() => {
     handleStartRead();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -222,6 +258,7 @@ export default function PaymentScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        {/* Amount summary */}
         <View style={[styles.amountCard, { backgroundColor: theme.surfaceElevated }]}>
           <Text style={[styles.amtLabel, { color: theme.textSecondary }]}>Total</Text>
           <Text style={[styles.amtValue, { color: Colors.primary }]}>
@@ -235,6 +272,17 @@ export default function PaymentScreen() {
           <Text style={[styles.txIdText, { color: theme.textMuted }]}>{txId}</Text>
         </View>
 
+        {/* API bypass banner */}
+        {!CHARRG_CONFIGURED && (
+          <View style={[styles.testBanner, { backgroundColor: Colors.warning + "20", borderColor: Colors.warning + "50" }]}>
+            <MaterialCommunityIcons name="test-tube" size={16} color={Colors.warning} />
+            <Text style={[styles.testBannerText, { color: Colors.warning }]}>
+              Test mode — Charrg API not configured. Card read data will be displayed only.
+            </Text>
+          </View>
+        )}
+
+        {/* Card reader status */}
         {(phase === "ready" || phase === "reading" || phase === "processing") && (
           <CardReaderStatus
             event={phase === "processing" ? "reading_complete" : sdkEvent}
@@ -251,6 +299,7 @@ export default function PaymentScreen() {
           </View>
         )}
 
+        {/* Result */}
         {isDone && (
           <Animated.View style={[styles.resultBlock, resultStyle]}>
             {phase === "success" ? (
@@ -258,12 +307,21 @@ export default function PaymentScreen() {
                 <View style={[styles.resultIcon, { backgroundColor: Colors.success + "20" }]}>
                   <MaterialCommunityIcons name="check-circle" size={64} color={Colors.success} />
                 </View>
-                <Text style={[styles.resultTitle, { color: Colors.success }]}>Approved</Text>
-                {authCode && (
-                  <View style={[styles.authChip, { backgroundColor: theme.surfaceElevated }]}>
-                    <Text style={[styles.authLabel, { color: theme.textSecondary }]}>Auth Code</Text>
-                    <Text style={[styles.authValue, { color: theme.text }]}>{authCode}</Text>
+                <Text style={[styles.resultTitle, { color: Colors.success }]}>
+                  {CHARRG_CONFIGURED ? "Approved" : "Card Read OK"}
+                </Text>
+
+                {/* In live mode: show auth code */}
+                {CHARRG_CONFIGURED && authCode && (
+                  <View style={[styles.chip, { backgroundColor: theme.surfaceElevated }]}>
+                    <Text style={[styles.chipLabel, { color: theme.textSecondary }]}>Auth Code</Text>
+                    <Text style={[styles.chipValue, { color: theme.text }]}>{authCode}</Text>
                   </View>
+                )}
+
+                {/* In test mode: show full card read details */}
+                {!CHARRG_CONFIGURED && lastCardData && (
+                  <CardReadDebugView cardData={lastCardData} theme={theme} />
                 )}
               </View>
             ) : (
@@ -271,9 +329,7 @@ export default function PaymentScreen() {
                 <View style={[styles.resultIcon, { backgroundColor: Colors.danger + "20" }]}>
                   <MaterialCommunityIcons name="close-circle" size={64} color={Colors.danger} />
                 </View>
-                <Text style={[styles.resultTitle, { color: Colors.danger }]}>
-                  {phase === "error" ? "Error" : "Declined"}
-                </Text>
+                <Text style={[styles.resultTitle, { color: Colors.danger }]}>Error</Text>
                 {errorMsg && (
                   <Text style={[styles.errDetail, { color: theme.textSecondary }]}>{errorMsg}</Text>
                 )}
@@ -293,19 +349,102 @@ export default function PaymentScreen() {
           </View>
         )}
 
-        {/* Cancel is always available while a read is in progress or pending */}
         {(phase === "ready" || isActive) && (
           <PrimaryButton
             label="Cancel"
             onPress={handleCancel}
             secondary
-            danger={false}
           />
         )}
       </ScrollView>
     </View>
   );
 }
+
+// ─── Card Read Debug View ─────────────────────────────────────────────────────
+function CardReadDebugView({
+  cardData,
+  theme,
+}: {
+  cardData: CardData;
+  theme: typeof Colors.dark;
+}) {
+  const rows: { label: string; value: string }[] = [
+    { label: "Card Brand",  value: cardData.cardBrand  ?? "—" },
+    { label: "Last 4",      value: cardData.last4       ?? "—" },
+    { label: "Entry Mode",  value: cardData.entryMode   ?? "—" },
+    { label: "Expiry",      value: cardData.expiryDate  ?? "—" },
+    { label: "Cardholder",  value: cardData.cardholderName || "—" },
+    ...(cardData.track2
+      ? [{ label: "Track 2", value: maskTrack(cardData.track2) }]
+      : []),
+    ...(cardData.emvData
+      ? [{ label: "EMV Data", value: truncate(cardData.emvData, 32) }]
+      : []),
+  ];
+
+  return (
+    <View style={dbgStyles.container}>
+      <Text style={[dbgStyles.heading, { color: theme.textSecondary }]}>
+        Card Read Data
+      </Text>
+      {rows.map(({ label, value }) => (
+        <View key={label} style={dbgStyles.row}>
+          <Text style={[dbgStyles.label, { color: theme.textSecondary }]}>{label}</Text>
+          <Text style={[dbgStyles.value, { color: theme.text }]} selectable>
+            {value}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function maskTrack(track2: string): string {
+  // Show first 6 and last 4 of the PAN, mask the rest
+  const pan = track2.split("=")[0] ?? "";
+  if (pan.length < 10) return "****";
+  return pan.slice(0, 6) + "******" + pan.slice(-4);
+}
+
+function truncate(s: string, maxLen: number): string {
+  return s.length > maxLen ? s.slice(0, maxLen) + "…" : s;
+}
+
+const dbgStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    borderRadius: 14,
+    overflow: "hidden",
+    marginTop: 8,
+  },
+  heading: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingVertical: 5,
+    gap: 12,
+  },
+  label: {
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
+    flexShrink: 0,
+  },
+  value: {
+    fontSize: 12,
+    fontFamily: Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }),
+    flexShrink: 1,
+    textAlign: "right",
+  },
+});
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
@@ -359,6 +498,21 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 4,
   },
+  testBanner: {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  testBannerText: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
+  },
   processingRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -369,17 +523,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter_400Regular",
   },
-  resultBlock: {
-    alignItems: "center",
-  },
-  successContent: {
-    alignItems: "center",
-    gap: 16,
-  },
-  errorContent: {
-    alignItems: "center",
-    gap: 16,
-  },
+  resultBlock: { alignItems: "center" },
+  successContent: { alignItems: "center", gap: 16, width: "100%" },
+  errorContent: { alignItems: "center", gap: 16 },
   resultIcon: {
     width: 120,
     height: 120,
@@ -391,20 +537,20 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: "Inter_700Bold",
   },
-  authChip: {
+  chip: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
     gap: 4,
   },
-  authLabel: {
+  chipLabel: {
     fontSize: 11,
     fontFamily: "Inter_500Medium",
     letterSpacing: 0.8,
     textTransform: "uppercase",
   },
-  authValue: {
+  chipValue: {
     fontSize: 22,
     fontFamily: "Inter_700Bold",
     letterSpacing: 2,
@@ -415,7 +561,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 20,
   },
-  btnCol: {
-    gap: 12,
-  },
+  btnCol: { gap: 12 },
 });

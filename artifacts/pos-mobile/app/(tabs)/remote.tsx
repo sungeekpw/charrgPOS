@@ -17,7 +17,7 @@ import { router } from "expo-router";
 import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { generateTransactionId } from "@/services/transaction-storage";
-import { getDeviceInfo, isSDKAvailable } from "@/services/nexgo-sdk";
+import { getDeviceInfo, initializeSDK, isSDKAvailable } from "@/services/nexgo-sdk";
 import type { NexGoDeviceInfo } from "@/services/nexgo-sdk";
 
 function StatusDot({ active }: { active: boolean }) {
@@ -63,18 +63,29 @@ export default function RemoteScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setLoadingInfo(true);
     setInfoError(null);
+
     if (!isSDKAvailable()) {
       setInfoError(sdkUnavailableReason());
       setLoadingInfo(false);
       return;
     }
-    const info = await getDeviceInfo();
-    if (info) {
+
+    try {
+      // Ensure the NexGo DeviceEngine is initialised before querying hardware
+      const ok = await initializeSDK();
+      if (!ok) {
+        setInfoError("SDK initialization failed — APIProxy.getDeviceEngine() returned null. Check that this is a NexGo device running a standalone build.");
+        setLoadingInfo(false);
+        return;
+      }
+      const info = await getDeviceInfo();
       setDeviceInfo(info);
-    } else {
-      setInfoError("Device info unavailable — SDK initialized but hardware query failed.");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setInfoError(`Device info error: ${msg}`);
+    } finally {
+      setLoadingInfo(false);
     }
-    setLoadingInfo(false);
   };
 
   const isListening = tcpStatus === "listening";
