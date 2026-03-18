@@ -24,7 +24,12 @@ import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { CHARRG_BASE_URL, processPayment } from "@/services/charrg-api";
 import type { CardData } from "@/services/charrg-api";
-import { startCardRead, cancelCardRead } from "@/services/nexgo-sdk";
+import {
+  startCardRead,
+  cancelCardRead,
+  initializeSDK,
+  isSDKAvailable,
+} from "@/services/nexgo-sdk";
 import type { SDKEventType } from "@/services/nexgo-sdk";
 import type { Transaction } from "@/services/transaction-storage";
 import { generateTransactionId } from "@/services/transaction-storage";
@@ -66,6 +71,8 @@ export default function PaymentScreen() {
   const [authCode, setAuthCode] = useState<string | undefined>();
   const [errorMsg, setErrorMsg] = useState<string | undefined>();
   const [lastCardData, setLastCardData] = useState<CardData | null>(null);
+  // True when the card read came from the simulator (SDK not available on device)
+  const [isSimulated, setIsSimulated] = useState(false);
 
   const isCancelled = useRef(false);
 
@@ -92,11 +99,24 @@ export default function PaymentScreen() {
     setPhase("reading");
     setSdkEvent(null);
     setLastCardData(null);
+    setIsSimulated(false);
+
+    // Detect whether we'll be doing a real or simulated read upfront.
+    // On Android without the native module registered, startCardRead falls
+    // through to a simulator — we want to make that visible in the UI.
+    const sdkReady = isSDKAvailable();
+    if (sdkReady) {
+      // Pre-initialize DeviceEngine so startCardRead doesn't have to
+      await initializeSDK().catch(() => {}); // non-fatal, SDK may still work
+    }
 
     try {
       const cardData = await startCardRead(totalCents, (ev) => {
         setSdkEvent(ev);
       });
+
+      // Mark simulated if SDK wasn't available (startCardRead used the stub)
+      if (!sdkReady) setIsSimulated(true);
 
       if (isCancelled.current) return;
       setLastCardData(cardData);
@@ -215,6 +235,7 @@ export default function PaymentScreen() {
     setSdkEvent(null);
     setErrorMsg(undefined);
     setLastCardData(null);
+    setIsSimulated(false);
     // Restart immediately — same as on first mount
     handleStartRead();
   }, [resetAnimation, handleStartRead]);
@@ -282,6 +303,17 @@ export default function PaymentScreen() {
           </View>
         )}
 
+        {/* Simulation warning — shown any time the native module is absent */}
+        {!isSDKAvailable() && (
+          <View style={[styles.simBanner, { backgroundColor: Colors.danger + "20", borderColor: Colors.danger + "50" }]}>
+            <MaterialCommunityIcons name="alert-circle" size={16} color={Colors.danger} />
+            <Text style={[styles.simBannerText, { color: Colors.danger }]}>
+              NexGo SDK module not detected — card reader is SIMULATED.{"\n"}
+              A standalone EAS build is required for real hardware reads.
+            </Text>
+          </View>
+        )}
+
         {/* Card reader status */}
         {(phase === "ready" || phase === "reading" || phase === "processing") && (
           <CardReaderStatus
@@ -307,9 +339,14 @@ export default function PaymentScreen() {
                 <View style={[styles.resultIcon, { backgroundColor: Colors.success + "20" }]}>
                   <MaterialCommunityIcons name="check-circle" size={64} color={Colors.success} />
                 </View>
-                <Text style={[styles.resultTitle, { color: Colors.success }]}>
-                  {CHARRG_CONFIGURED ? "Approved" : "Card Read OK"}
+                <Text style={[styles.resultTitle, { color: isSimulated ? Colors.warning : Colors.success }]}>
+                  {isSimulated ? "SIMULATED READ" : CHARRG_CONFIGURED ? "Approved" : "Card Read OK"}
                 </Text>
+                {isSimulated && (
+                  <Text style={[styles.simNote, { color: Colors.warning }]}>
+                    No real card was read — SDK not loaded
+                  </Text>
+                )}
 
                 {/* In live mode: show auth code */}
                 {CHARRG_CONFIGURED && authCode && (
@@ -512,6 +549,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Inter_400Regular",
     lineHeight: 17,
+  },
+  simBanner: {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  simBannerText: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
+  },
+  simNote: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    textAlign: "center",
   },
   processingRow: {
     flexDirection: "row",
