@@ -230,8 +230,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             setupEmvAids()
-            setupContactlessAids()
-            emvHandler?.emvDebugLog(true)  // enable SDK-level debug logging to logcat
+            // NOTE: Do NOT call setupContactlessAids() here.
+            // setAidParaList() with AID_ENTRY_CONTACT_CONTACTLESS already registers
+            // each AID in both the contact AND contactless kernels. Calling
+            // contactlessAppendAidIntoKernelFirst(true) would CLEAR what setAidParaList
+            // just set up for the contactless kernel, leaving it empty (→ -8012).
             log("INIT", "initialize() complete — contact AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
@@ -718,11 +721,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                 override fun onTransInitBeforeGPO() {
                     try {
-                        log("EMV", "onTransInitBeforeGPO — responding to continue")
-                        // The SDK fires this before sending GPO to the card.
-                        // We must call onSetTransInitBeforeGPOResponse to allow the flow
-                        // to proceed; not calling it leaves the kernel waiting.
-                        handler.onSetTransInitBeforeGPOResponse(true)
+                        log("EMV", "onTransInitBeforeGPO")
+                        // Do NOT call onSetTransInitBeforeGPOResponse() from inside this
+                        // callback — doing so causes JNI re-entry into the native EMV
+                        // kernel from the same native thread, which triggers SIGSEGV.
+                        // The SDK proceeds automatically without a response here.
                     } catch (e: Exception) {
                         logError("EMV", "onTransInitBeforeGPO threw", e)
                     }
