@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Animated,
   Dimensions,
@@ -27,8 +27,21 @@ export function AppSplashScreen({ onDone }: Props) {
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.88)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
+  // Must be a stable ref — creating Animated.Value inline inside multiply
+  // breaks the native driver on Fabric / new architecture.
+  const innerGlowMultiplier = useRef(new Animated.Value(0.6)).current;
+  const calledRef = useRef(false);
+  const done = useCallback(() => {
+    if (!calledRef.current) {
+      calledRef.current = true;
+      onDone();
+    }
+  }, [onDone]);
 
   useEffect(() => {
+    // Safety net: always dismiss after 5 s regardless of animation state
+    const fallback = setTimeout(done, 5000);
+
     Animated.sequence([
       // 1. Glow ring blooms in
       Animated.parallel([
@@ -76,8 +89,13 @@ export function AppSplashScreen({ onDone }: Props) {
         easing: Easing.in(Easing.cubic),
         useNativeDriver: native,
       }),
-    ]).start(() => onDone());
-  }, []);
+    ]).start(() => {
+      clearTimeout(fallback);
+      done();
+    });
+
+    return () => clearTimeout(fallback);
+  }, [done]);
 
   return (
     <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
@@ -93,7 +111,7 @@ export function AppSplashScreen({ onDone }: Props) {
         style={[
           styles.glowInner,
           {
-            opacity: Animated.multiply(ringOpacity, new Animated.Value(0.6)),
+            opacity: Animated.multiply(ringOpacity, innerGlowMultiplier),
             transform: [{ scale: ringScale }],
           },
         ]}

@@ -8,7 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -48,21 +48,31 @@ export default function RootLayout() {
 
   const [showCustomSplash, setShowCustomSplash] = useState(true);
   const [appReady, setAppReady] = useState(false);
+  const splashHiddenRef = useRef(false);
 
-  // As soon as fonts are ready, hide the native OS splash and let our
-  // animated splash take over.
+  const hideSplash = useCallback(() => {
+    if (splashHiddenRef.current) return;
+    splashHiddenRef.current = true;
+    SplashScreen.hideAsync().catch(() => {});
+    setAppReady(true);
+  }, []);
+
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-      setAppReady(true);
+      hideSplash();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, hideSplash]);
+
+  // Fallback: force-proceed after 3 s even if fonts never resolve
+  useEffect(() => {
+    const timer = setTimeout(hideSplash, 3000);
+    return () => clearTimeout(timer);
+  }, [hideSplash]);
 
   const handleSplashDone = useCallback(() => {
     setShowCustomSplash(false);
   }, []);
 
-  // Don't render anything until fonts are loaded
   if (!appReady) return null;
 
   return (
