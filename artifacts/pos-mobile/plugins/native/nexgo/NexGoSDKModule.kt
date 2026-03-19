@@ -22,7 +22,6 @@ import com.nexgo.oaf.apiv3.emv.AidEntity
 import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
 import com.nexgo.oaf.apiv3.emv.EmvCardBrandEnum
-import com.nexgo.oaf.apiv3.emv.EmvEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
@@ -671,10 +670,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
 
-        // Re-apply AIDs before every emvProcess call — belt-and-suspenders in case
-        // the kernel flushed its tables between initialize() and this transaction.
-        setupEmvAids()
-        setupContactlessAids()
+        // AIDs are configured once in initialize(). Do NOT call setupEmvAids() or
+        // setupContactlessAids() here — delAllAid() / contactlessAppendAidIntoKernelFirst()
+        // while a card is physically inserted resets kernel state mid-session and causes
+        // Emv_Cancel immediately after app selection.
 
         try {
             val now = java.util.Calendar.getInstance()
@@ -696,14 +695,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // merName is a fixed-width byte field in the NexGo SDK.
                 // Padding to 20 bytes avoids native buffer overruns that crash the app.
                 merName = asciiPadded("Charrg POS", 20)
-                // Tell the SDK which physical interface was used — required for the
-                // correct kernel to be selected (contact vs contactless).
-                emvEntryModeEnum = if (entryMode == "contactless")
-                    EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
-                else
-                    EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
                 isContactlessSupportSelectApp = (entryMode == "contactless")
-                setContactForceOnline(true)    // always go online, never approve offline
             }
             log("EMV", "emvProcess() config — amount=${emvTransConfig.transAmount} " +
                 "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
@@ -726,7 +718,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                 override fun onTransInitBeforeGPO() {
                     try {
-                        log("EMV", "onTransInitBeforeGPO")
+                        log("EMV", "onTransInitBeforeGPO — responding to continue")
+                        // The SDK fires this before sending GPO to the card.
+                        // We must call onSetTransInitBeforeGPOResponse to allow the flow
+                        // to proceed; not calling it leaves the kernel waiting.
+                        handler.onSetTransInitBeforeGPOResponse(true)
                     } catch (e: Exception) {
                         logError("EMV", "onTransInitBeforeGPO threw", e)
                     }
