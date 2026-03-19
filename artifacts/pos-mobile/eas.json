@@ -12,6 +12,13 @@
         "gradleCommand": ":app:assembleDebug"
       }
     },
+    "fast": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug -PractNativeArchitectures=arm64-v8a"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "android": {
