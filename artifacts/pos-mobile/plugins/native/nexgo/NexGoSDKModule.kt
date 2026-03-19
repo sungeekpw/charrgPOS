@@ -1,10 +1,16 @@
 package com.charrg.pos.nexgo
 
 import android.app.Activity
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Window
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.SdkResult
@@ -28,6 +34,64 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var cardReader: CardReader? = null
     private var emvHandler: EmvHandler2? = null
     private var isReading = false
+
+    // ─── Debug file logger ────────────────────────────────────────────────────
+    //
+    // Log lines go to both Android Logcat (tag "NexGoSDK") and a plain-text
+    // file at <app-data>/files/nexgo-debug.log so the log can be read in-app
+    // without a USB cable. File is capped at 1 MB — older entries are dropped.
+
+    companion object {
+        private const val TAG = "NexGoSDK"
+        private const val LOG_FILE = "nexgo-debug.log"
+        private const val MAX_LOG_BYTES = 1_000_000L   // 1 MB
+        private val TS_FMT = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+    }
+
+    private val logFile: File get() = File(reactCtx.filesDir, LOG_FILE)
+
+    private fun log(section: String, msg: String) {
+        val line = "[${TS_FMT.format(Date())}] [$section] $msg\n"
+        Log.d(TAG, "[$section] $msg")
+        try {
+            // Trim file when it gets too large (keep the last half)
+            if (logFile.exists() && logFile.length() > MAX_LOG_BYTES) {
+                val content = logFile.readText()
+                logFile.writeText(content.substring(content.length / 2))
+            }
+            FileWriter(logFile, true).use { it.write(line) }
+        } catch (_: Exception) {}
+    }
+
+    private fun logError(section: String, msg: String, e: Throwable? = null) {
+        val full = if (e != null) "$msg — ${e.javaClass.simpleName}: ${e.message}" else msg
+        val line = "[${TS_FMT.format(Date())}] [ERROR/$section] $full\n"
+        Log.e(TAG, "[$section] $full", e)
+        try {
+            FileWriter(logFile, true).use { it.write(line) }
+        } catch (_: Exception) {}
+    }
+
+    @ReactMethod
+    fun getDebugLog(promise: Promise) {
+        try {
+            val content = if (logFile.exists()) logFile.readText() else "(log file is empty)"
+            promise.resolve(content)
+        } catch (e: Exception) {
+            promise.reject("ERR_LOG_READ", e.message ?: "Failed to read log file")
+        }
+    }
+
+    @ReactMethod
+    fun clearDebugLog(promise: Promise) {
+        try {
+            if (logFile.exists()) logFile.delete()
+            log("LOG", "Log cleared")
+            promise.resolve(null)
+        } catch (e: Exception) {
+            promise.reject("ERR_LOG_CLEAR", e.message ?: "Failed to clear log file")
+        }
+    }
 
     // Physical keypad interception
     private var originalWindowCallback: Window.Callback? = null
@@ -151,17 +215,24 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
     @ReactMethod
     fun initialize(promise: Promise) {
+        log("INIT", "initialize() called — context=${sdkContext().javaClass.simpleName}")
         try {
             deviceEngine = APIProxy.getDeviceEngine(sdkContext())
             if (deviceEngine == null) {
+                logError("INIT", "APIProxy.getDeviceEngine returned null")
                 promise.resolve(false)
                 return
             }
+            log("INIT", "DeviceEngine obtained OK")
             cardReader = deviceEngine!!.cardReader
+            log("INIT", "CardReader obtained: ${cardReader != null}")
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
+            log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             setupEmvAids()
+            log("INIT", "initialize() complete — AIDs configured: ${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
+            logError("INIT", "initialize() threw exception", e)
             promise.reject("ERR_INITIALIZE", e.message ?: "APIProxy.getDeviceEngine failed")
         }
     }
@@ -178,10 +249,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
      *   • AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS = accept both interfaces
      */
     private fun setupEmvAids() {
-        val handler = emvHandler ?: return
-        // Don't overwrite if the device already has AIDs loaded (e.g. from a
-        // processor-managed terminal initialization download).
-        if (handler.aidListNum > 0) return
+        val handler = emvHandler ?: run {
+            logError("EMVAID", "emvHandler is null — cannot configure AIDs")
+            return
+        }
+        val existing = handler.aidListNum
+        if (existing > 0) {
+            log("EMVAID", "Skipping — device already has $existing AID(s) configured")
+            return
+        }
+        log("EMVAID", "Configuring standard US payment AIDs")
 
         val aids = mutableListOf<AidEntity>()
 
@@ -275,7 +352,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
-        handler.setAidParaList(aids)
+        val result = handler.setAidParaList(aids)
+        log("EMVAID", "setAidParaList result=$result, total AIDs now=${handler.aidListNum}")
     }
 
     @ReactMethod
@@ -312,12 +390,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
     @ReactMethod
     fun startCardRead(amount: Double, promise: Promise) {
+        log("CARD", "startCardRead() amount=${amount}")
         if (deviceEngine == null || cardReader == null) {
+            logError("CARD", "startCardRead called before initialize()")
             promise.reject("ERR_NOT_INITIALIZED", "SDK not initialized")
             return
         }
 
         if (isReading) {
+            logError("CARD", "startCardRead called while already reading")
             promise.reject("ERR_ALREADY_READING", "Card read already in progress")
             return
         }
@@ -332,13 +413,17 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 CardSlotTypeEnum.SWIPE
             )
 
+            log("CARD", "searchCard() — waiting for card presentation (60 s timeout)")
+
             cardReader!!.searchCard(slotTypes, 60, object : OnCardInfoListener {
                 override fun onCardInfo(retCode: Int, cardInfo: CardInfoEntity?) {
                     if (retCode != SdkResult.Success || cardInfo == null) {
                         isReading = false
                         if (retCode == SdkResult.TimeOut) {
+                            log("CARD", "searchCard timed out (retCode=$retCode)")
                             sendEvent("timeout")
                         } else {
+                            logError("CARD", "searchCard failed retCode=$retCode cardInfo=${cardInfo}")
                             sendEvent("reading_failed", Arguments.createMap().apply {
                                 putString("message", "Card read failed with code: $retCode")
                             })
@@ -346,20 +431,27 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         return
                     }
 
-                    when (cardInfo.cardExistslot) {
+                    val slot = cardInfo.cardExistslot
+                    log("CARD", "onCardInfo OK — slot=$slot")
+
+                    when (slot) {
                         CardSlotTypeEnum.ICC1 -> {
+                            log("CARD", "Card inserted (chip/ICC)")
                             sendEvent("card_inserted")
                             processEmvCard(amount, cardInfo, "chip")
                         }
                         CardSlotTypeEnum.RF -> {
+                            log("CARD", "Card tapped (contactless/RF)")
                             sendEvent("card_tapped")
                             processEmvCard(amount, cardInfo, "contactless")
                         }
                         CardSlotTypeEnum.SWIPE -> {
+                            log("CARD", "Card swiped (magnetic stripe)")
                             sendEvent("card_swiped")
                             processSwipeCard(cardInfo)
                         }
                         else -> {
+                            logError("CARD", "Unknown cardExistslot=$slot")
                             isReading = false
                             sendEvent("reading_failed", Arguments.createMap().apply {
                                 putString("message", "Unknown card slot type")
@@ -369,12 +461,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 }
 
                 override fun onSwipeIncorrect() {
+                    logError("CARD", "onSwipeIncorrect — bad swipe")
                     sendEvent("reading_failed", Arguments.createMap().apply {
                         putString("message", "Swipe incorrect, please try again")
                     })
                 }
 
                 override fun onMultipleCards() {
+                    logError("CARD", "onMultipleCards — multiple cards detected")
                     sendEvent("reading_failed", Arguments.createMap().apply {
                         putString("message", "Multiple cards detected, please present one card")
                     })
@@ -384,11 +478,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             promise.resolve(null)
         } catch (e: Exception) {
             isReading = false
+            logError("CARD", "startCardRead threw exception", e)
             promise.reject("ERR_CARD_READ", e.message ?: "Card read failed")
         }
     }
 
     private fun processSwipeCard(cardInfo: CardInfoEntity) {
+        log("SWIPE", "processSwipeCard() — tk1=${(cardInfo.tk1 ?: "").take(6)}… tk2=${(cardInfo.tk2 ?: "").take(6)}…")
         try {
             val track1 = cardInfo.tk1 ?: ""
             val track2 = cardInfo.tk2 ?: ""
@@ -410,6 +506,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 if (t1Parts.size >= 2) cardholderName = t1Parts[1].trim()
             }
 
+            log("SWIPE", "Swipe parsed — pan=***${pan.takeLast(4)} expiry=$expiry brand=${detectCardBrand(pan)}")
             sendEvent("reading_complete")
             sendEvent("card_read_complete", Arguments.createMap().apply {
                 putString("pan", pan)
@@ -422,6 +519,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 putString("card_brand", detectCardBrand(pan))
             })
         } catch (e: Exception) {
+            logError("SWIPE", "processSwipeCard threw exception", e)
             sendEvent("reading_failed", Arguments.createMap().apply {
                 putString("message", e.message ?: "Failed to process swipe card")
             })
@@ -431,6 +529,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     private fun processEmvCard(amount: Double, cardInfo: CardInfoEntity, entryMode: String) {
+        log("EMV", "processEmvCard() entryMode=$entryMode amount=$amount")
         try {
             val now = java.util.Calendar.getInstance()
             val emvTransConfig = EmvTransConfigurationEntity().apply {
@@ -455,6 +554,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // multiple apps are present on a contactless card
                 isContactlessSupportSelectApp = (entryMode == "contactless")
             }
+            log("EMV", "emvProcess() starting — transDate=${emvTransConfig.transDate} transTime=${emvTransConfig.transTime}")
 
             emvHandler?.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
@@ -463,43 +563,55 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     appInfoList: MutableList<CandidateAppInfoEntity>?,
                     isFirstSelect: Boolean
                 ) {
+                    log("EMV", "onSelApp — apps=${appNameList?.joinToString() ?: "none"} isFirstSelect=$isFirstSelect — auto-selecting index 0")
                     emvHandler?.onSetSelAppResponse(0)
                 }
 
-                override fun onTransInitBeforeGPO() {}
+                override fun onTransInitBeforeGPO() {
+                    log("EMV", "onTransInitBeforeGPO")
+                }
 
                 override fun onConfirmCardNo(cardInfoEntity: CardInfoEntity) {
+                    log("EMV", "onConfirmCardNo — last4=${cardInfoEntity.cardNo?.takeLast(4) ?: "?"}")
                     emvHandler?.onSetConfirmCardNoResponse(true)
                 }
 
                 override fun onCardHolderInputPin(isOnlinePin: Boolean, leftTimes: Int) {
+                    log("EMV", "onCardHolderInputPin — isOnlinePin=$isOnlinePin leftTimes=$leftTimes — bypassing PIN")
                     sendEvent("pin_requested")
                     emvHandler?.onSetPinInputResponse(isOnlinePin, false)
                     sendEvent("pin_entered")
                 }
 
                 override fun onContactlessTapCardAgain() {
+                    log("EMV", "onContactlessTapCardAgain — asking user to re-tap")
                     sendEvent("reading_failed", Arguments.createMap().apply {
                         putString("message", "Please tap your card again")
                     })
                 }
 
                 override fun onOnlineProc() {
+                    log("EMV", "onOnlineProc — responding with Success")
                     emvHandler?.onSetOnlineProcResponse(SdkResult.Success, null)
                 }
 
-                override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {}
+                override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {
+                    log("EMV", "onPrompt — $promptEnum")
+                }
 
                 override fun onRemoveCard() {
+                    log("EMV", "onRemoveCard")
                     sendEvent("card_removed")
                 }
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
+                    log("EMV", "onFinish retCode=$retCode (Success=${SdkResult.Success}) result=${result?.javaClass?.simpleName ?: "null"}")
                     if (retCode == SdkResult.Success) {
                         val pan: String = cardInfo.cardNo ?: ""
                         val expiry: String = cardInfo.expiredDate ?: ""
                         val track2: String = cardInfo.tk2 ?: ""
 
+                        log("EMV", "onFinish SUCCESS — pan=***${pan.takeLast(4)} expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
                         sendEvent("reading_complete")
                         sendEvent("card_read_complete", Arguments.createMap().apply {
                             putString("pan", pan)
@@ -513,6 +625,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             putString("card_brand", detectCardBrand(pan))
                         })
                     } else {
+                        logError("EMV", "onFinish FAILED retCode=$retCode")
                         sendEvent("reading_failed", Arguments.createMap().apply {
                             putString("message", "EMV process failed with code: $retCode")
                         })
@@ -524,6 +637,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             })
         } catch (e: Exception) {
             isReading = false
+            logError("EMV", "processEmvCard threw exception", e)
             sendEvent("reading_failed", Arguments.createMap().apply {
                 putString("message", e.message ?: "Failed to process EMV card")
             })

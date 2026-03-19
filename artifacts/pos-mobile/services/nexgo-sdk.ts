@@ -38,6 +38,8 @@ interface NexGoNativeModule {
   cancelCardRead: () => Promise<void>;
   startKeypadListener: () => Promise<void>;
   stopKeypadListener: () => Promise<void>;
+  getDebugLog: () => Promise<string>;
+  clearDebugLog: () => Promise<void>;
   addListener: (eventType: string, listener: SDKListener) => void;
   removeListener: (eventType: string, listener: SDKListener) => void;
 }
@@ -68,6 +70,12 @@ function createNexGoWrapper(
 
     stopKeypadListener: () =>
       (nativeModule.stopKeypadListener as () => Promise<void>)(),
+
+    getDebugLog: () =>
+      (nativeModule.getDebugLog as () => Promise<string>)(),
+
+    clearDebugLog: () =>
+      (nativeModule.clearDebugLog as () => Promise<void>)(),
 
     addListener: (eventType: string, listener: SDKListener) => {
       const sub = emitter.addListener(eventType, (data?: unknown) => {
@@ -285,4 +293,22 @@ async function simulateCardRead(
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+export async function getSDKDebugLog(): Promise<string> {
+  const mod = getNexGoModule();
+  if (!mod) return "(NexGoSDK native module not available — log only exists on EAS-built APK)";
+  try {
+    return await mod.getDebugLog();
+  } catch (e: unknown) {
+    return `(Failed to read log: ${e instanceof Error ? e.message : String(e)})`;
+  }
+}
+
+export async function clearSDKDebugLog(): Promise<void> {
+  const mod = getNexGoModule();
+  if (!mod) return;
+  try {
+    await mod.clearDebugLog();
+  } catch {}
 }

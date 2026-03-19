@@ -284,6 +284,18 @@ export default function RemoteScreen() {
             </Text>
           )}
         </View>
+
+        {/* Debug log access */}
+        <Pressable
+          onPress={() => router.push("/debug-log")}
+          style={[styles.debugLogBtn, { borderColor: "rgba(255,255,255,0.10)" }]}
+        >
+          <MaterialCommunityIcons name="text-box-search-outline" size={18} color={theme.textMuted} />
+          <Text style={[styles.debugLogText, { color: theme.textMuted }]}>
+            View SDK Debug Log
+          </Text>
+          <MaterialCommunityIcons name="chevron-right" size={18} color={theme.textMuted} />
+        </Pressable>
       </ScrollView>
     </View>
   );
@@ -439,5 +451,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_400Regular",
     textAlign: "center",
+  },
+  debugLogBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  debugLogText: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
   },
 });
