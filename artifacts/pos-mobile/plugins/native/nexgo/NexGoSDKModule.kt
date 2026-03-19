@@ -21,6 +21,8 @@ import com.nexgo.oaf.apiv3.device.reader.OnCardInfoListener
 import com.nexgo.oaf.apiv3.emv.AidEntity
 import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
+import com.nexgo.oaf.apiv3.emv.EmvCardBrandEnum
+import com.nexgo.oaf.apiv3.emv.EmvEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
@@ -229,7 +231,9 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             setupEmvAids()
-            log("INIT", "initialize() complete — AIDs configured: ${emvHandler?.aidListNum ?: 0}")
+            setupContactlessAids()
+            emvHandler?.emvDebugLog(true)  // enable SDK-level debug logging to logcat
+            log("INIT", "initialize() complete — contact AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
             logError("INIT", "initialize() threw exception", e)
@@ -254,11 +258,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
 
-        // Always configure AIDs on every initialize() — never skip.
-        // Skipping when aidListNum > 0 caused 8014 because factory/stale AIDs
-        // from a previous app or build were being used instead of ours.
+        // Always clear then re-configure — ensures no stale factory AIDs remain.
         val before = handler.aidListNum
-        log("EMVAID", "Configuring US payment AIDs (aidListNum before=$before)")
+        handler.delAllAid()
+        log("EMVAID", "Configuring US payment AIDs (cleared $before stale AID(s))")
 
         val aids = mutableListOf<AidEntity>()
 
@@ -426,6 +429,47 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
         val result = handler.setAidParaList(aids)
         log("EMVAID", "setAidParaList result=$result — AIDs after=${handler.aidListNum} (expected ${aids.size})")
+    }
+
+    /**
+     * Register AIDs with the contactless (RF/NFC) kernel.
+     *
+     * The NexGo SDK maintains TWO separate AID tables:
+     *   1. setAidParaList()             → contact (chip) kernel
+     *   2. contactlessAppendAidIntoKernel() → contactless (tap) kernel
+     *
+     * Without calling this, contactless cards always get error 8014
+     * (Emv_Candidatelist_Empty) because the tap kernel has no AIDs registered
+     * even though the chip kernel is fully configured.
+     */
+    private fun setupContactlessAids() {
+        val handler = emvHandler ?: return
+        try {
+            // Reset the contactless AID list before re-populating.
+            handler.contactlessAppendAidIntoKernelFirst(true)
+            log("EMVAID-CL", "Contactless kernel AID list reset — registering AIDs per brand")
+
+            data class CLAid(val brand: EmvCardBrandEnum, val aidHex: String)
+
+            val clAids = listOf(
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_VISA,   "A0000000031010"), // Visa payWave
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_VISA,   "A0000000032010"), // Visa Electron
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000041010"), // Mastercard PayPass
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000042203"), // Mastercard Debit
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000043060"), // Maestro
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A0000000250101"), // Amex contact
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A000000025010402"), // Amex ExpressPay
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_JCB,    "A0000000651010"), // JCB J/Speedy
+            )
+
+            for ((brand, aidHex) in clAids) {
+                val r = handler.contactlessAppendAidIntoKernel(brand, 0x00.toByte(), hexToBytes(aidHex))
+                log("EMVAID-CL", "  $brand $aidHex → result=$r")
+            }
+            log("EMVAID-CL", "Contactless AIDs registered (${clAids.size} entries)")
+        } catch (e: Exception) {
+            logError("EMVAID-CL", "setupContactlessAids threw", e)
+        }
     }
 
     @ReactMethod
@@ -610,6 +654,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         return ByteArray(length) { i -> if (i < bytes.size) bytes[i] else 0x20 }
     }
 
+    /** Convert a hex string like "A0000000041010" to a ByteArray. */
+    private fun hexToBytes(hex: String): ByteArray =
+        ByteArray(hex.length / 2) { i -> hex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
+
     private fun processEmvCard(amount: Double, cardInfo: CardInfoEntity, entryMode: String) {
         log("EMV", "processEmvCard() entryMode=$entryMode amount=$amount")
 
@@ -623,11 +671,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
 
-        // Re-apply AIDs immediately before every emvProcess call.
-        // initialize() already does this, but doing it here too ensures AIDs are
-        // always present even if initialize() ran before a device restart or if
-        // the kernel flushed them internally between calls.
+        // Re-apply AIDs before every emvProcess call — belt-and-suspenders in case
+        // the kernel flushed its tables between initialize() and this transaction.
         setupEmvAids()
+        setupContactlessAids()
 
         try {
             val now = java.util.Calendar.getInstance()
@@ -649,7 +696,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // merName is a fixed-width byte field in the NexGo SDK.
                 // Padding to 20 bytes avoids native buffer overruns that crash the app.
                 merName = asciiPadded("Charrg POS", 20)
+                // Tell the SDK which physical interface was used — required for the
+                // correct kernel to be selected (contact vs contactless).
+                emvEntryModeEnum = if (entryMode == "contactless")
+                    EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
+                else
+                    EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
                 isContactlessSupportSelectApp = (entryMode == "contactless")
+                setContactForceOnline(true)    // always go online, never approve offline
             }
             log("EMV", "emvProcess() config — amount=${emvTransConfig.transAmount} " +
                 "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
@@ -742,9 +796,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     try {
                         log("EMV", "onFinish retCode=$retCode (SdkResult.Success=${SdkResult.Success})")
                         if (retCode == SdkResult.Success) {
-                            val pan: String    = cardInfo.cardNo     ?: ""
-                            val expiry: String = cardInfo.expiredDate ?: ""
-                            val track2: String = cardInfo.tk2         ?: ""
+                            // CRITICAL: For chip (EMV) transactions the PAN, expiry and track
+                            // data are NOT in the original cardInfo from searchCard — they are
+                            // only available after emvProcess via getEmvCardDataInfo().
+                            // Accessing cardInfo fields here causes a SIGSEGV native crash
+                            // because the SDK may have freed or mutated that native object.
+                            val emvCardData = handler.getEmvCardDataInfo()
+                            val pan: String    = emvCardData?.cardNo      ?: ""
+                            val expiry: String = emvCardData?.expiredDate  ?: ""
+                            val track2: String = emvCardData?.tk2          ?: ""
+                            val track1: String = emvCardData?.tk1          ?: ""
                             val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
                             log("EMV", "onFinish SUCCESS — pan=***$last4 expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
                             sendEvent("reading_complete")
@@ -752,7 +813,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 putString("pan", pan)
                                 putString("expiry", expiry)
                                 putString("cardholder_name", "")
-                                putString("track1", cardInfo.tk1 ?: "")
+                                putString("track1", track1)
                                 putString("track2", track2)
                                 putString("emv_data", "")
                                 putString("entry_mode", entryMode)
