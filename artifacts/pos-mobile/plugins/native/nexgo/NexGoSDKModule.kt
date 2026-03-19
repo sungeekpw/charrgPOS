@@ -342,11 +342,29 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
-        // ── American Express ─────────────────────────────────────────────────
-        // AID: A0000000250101  (7 bytes — standard Amex AID)
+        // ── American Express (contact chip) ──────────────────────────────────
+        // AID: A0000000250101  (7 bytes — standard contact Amex AID)
         aids.add(AidEntity().apply {
             setAid("A0000000250101")
             setAsi(1)                        // 1 = exact match required for Amex
+            setAppVerNum("0001")
+            setTacDefault("FC78BCF800")
+            setTacOnline("F878BC7800")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── American Express ExpressPay (contactless) ─────────────────────────
+        // AID: A000000025010402  — the contactless-specific Amex AID.
+        // Contactless Amex cards advertise this AID via PPSE, NOT A0000000250101.
+        // Without this entry, tap-to-pay Amex cards always get 8014.
+        aids.add(AidEntity().apply {
+            setAid("A000000025010402")
+            setAsi(1)
             setAppVerNum("0001")
             setTacDefault("FC78BCF800")
             setTacOnline("F878BC7800")
@@ -582,16 +600,42 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         }
     }
 
+    /**
+     * Pad a string to [length] bytes with ASCII spaces and return as ByteArray.
+     * NexGo's EMV kernel treats merName as a fixed-width field — passing fewer
+     * bytes than it expects can corrupt adjacent fields and crash the native code.
+     */
+    private fun asciiPadded(s: String, length: Int): ByteArray {
+        val bytes = s.toByteArray(Charsets.US_ASCII)
+        return ByteArray(length) { i -> if (i < bytes.size) bytes[i] else 0x20 }
+    }
+
     private fun processEmvCard(amount: Double, cardInfo: CardInfoEntity, entryMode: String) {
         log("EMV", "processEmvCard() entryMode=$entryMode amount=$amount")
+
+        val handler = emvHandler
+        if (handler == null) {
+            logError("EMV", "emvHandler is null in processEmvCard — was initialize() called?")
+            isReading = false
+            sendEvent("reading_failed", Arguments.createMap().apply {
+                putString("message", "EMV handler not initialized")
+            })
+            return
+        }
+
+        // Re-apply AIDs immediately before every emvProcess call.
+        // initialize() already does this, but doing it here too ensures AIDs are
+        // always present even if initialize() ran before a device restart or if
+        // the kernel flushed them internally between calls.
+        setupEmvAids()
+
         try {
             val now = java.util.Calendar.getInstance()
             val emvTransConfig = EmvTransConfigurationEntity().apply {
                 transAmount  = (amount * 100).toLong().toString()
-                countryCode  = "0840"        // ISO 3166-1: USA
-                currencyCode = "0840"        // ISO 4217:   USD
-                emvTransType = 0x00          // 00 = Goods & Services
-                // Date/time required by EMV kernel
+                countryCode  = "0840"          // ISO 3166-1 numeric: USA
+                currencyCode = "0840"          // ISO 4217 numeric:   USD
+                emvTransType = 0x00            // 00 = Goods & Services
                 transDate = String.format("%02d%02d%02d",
                     now.get(java.util.Calendar.YEAR) % 100,
                     now.get(java.util.Calendar.MONTH) + 1,
@@ -600,98 +644,141 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     now.get(java.util.Calendar.HOUR_OF_DAY),
                     now.get(java.util.Calendar.MINUTE),
                     now.get(java.util.Calendar.SECOND))
-                termId   = "CHARRG01"
-                merId    = "CHARRG"
-                // NexGo SDK stores merchant name as a raw byte array (ASCII bytes)
-                merName  = "Charrg POS".toByteArray(Charsets.US_ASCII)
-                // Allow the kernel to show a card application selection UI if
-                // multiple apps are present on a contactless card
+                termId  = "CHARRG01"           // 8 chars (standard terminal ID length)
+                merId   = "CHARRG         "    // 15 chars (standard merchant ID length)
+                // merName is a fixed-width byte field in the NexGo SDK.
+                // Padding to 20 bytes avoids native buffer overruns that crash the app.
+                merName = asciiPadded("Charrg POS", 20)
                 isContactlessSupportSelectApp = (entryMode == "contactless")
             }
-            log("EMV", "emvProcess() starting — transDate=${emvTransConfig.transDate} transTime=${emvTransConfig.transTime}")
+            log("EMV", "emvProcess() config — amount=${emvTransConfig.transAmount} " +
+                "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
+                "contactless=${emvTransConfig.isContactlessSupportSelectApp} AIDsNow=${handler.aidListNum}")
 
-            emvHandler?.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
+            handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
                 override fun onSelApp(
                     appNameList: MutableList<String>?,
                     appInfoList: MutableList<CandidateAppInfoEntity>?,
                     isFirstSelect: Boolean
                 ) {
-                    log("EMV", "onSelApp — apps=${appNameList?.joinToString() ?: "none"} isFirstSelect=$isFirstSelect — auto-selecting index 0")
-                    emvHandler?.onSetSelAppResponse(0)
+                    try {
+                        log("EMV", "onSelApp — apps=${appNameList?.joinToString() ?: "none"} isFirstSelect=$isFirstSelect — auto-selecting index 0")
+                        handler.onSetSelAppResponse(0)
+                    } catch (e: Exception) {
+                        logError("EMV", "onSelApp threw", e)
+                    }
                 }
 
                 override fun onTransInitBeforeGPO() {
-                    log("EMV", "onTransInitBeforeGPO")
+                    try {
+                        log("EMV", "onTransInitBeforeGPO")
+                    } catch (e: Exception) {
+                        logError("EMV", "onTransInitBeforeGPO threw", e)
+                    }
                 }
 
                 override fun onConfirmCardNo(cardInfoEntity: CardInfoEntity) {
-                    log("EMV", "onConfirmCardNo — last4=${cardInfoEntity.cardNo?.takeLast(4) ?: "?"}")
-                    emvHandler?.onSetConfirmCardNoResponse(true)
+                    try {
+                        val last4 = cardInfoEntity.cardNo?.let {
+                            if (it.length >= 4) it.takeLast(4) else it
+                        } ?: "?"
+                        log("EMV", "onConfirmCardNo — last4=$last4")
+                        handler.onSetConfirmCardNoResponse(true)
+                    } catch (e: Exception) {
+                        logError("EMV", "onConfirmCardNo threw", e)
+                    }
                 }
 
                 override fun onCardHolderInputPin(isOnlinePin: Boolean, leftTimes: Int) {
-                    log("EMV", "onCardHolderInputPin — isOnlinePin=$isOnlinePin leftTimes=$leftTimes — bypassing PIN")
-                    sendEvent("pin_requested")
-                    emvHandler?.onSetPinInputResponse(isOnlinePin, false)
-                    sendEvent("pin_entered")
+                    try {
+                        log("EMV", "onCardHolderInputPin — isOnlinePin=$isOnlinePin leftTimes=$leftTimes — bypassing PIN")
+                        sendEvent("pin_requested")
+                        handler.onSetPinInputResponse(isOnlinePin, false)
+                        sendEvent("pin_entered")
+                    } catch (e: Exception) {
+                        logError("EMV", "onCardHolderInputPin threw", e)
+                    }
                 }
 
                 override fun onContactlessTapCardAgain() {
-                    log("EMV", "onContactlessTapCardAgain — asking user to re-tap")
-                    sendEvent("reading_failed", Arguments.createMap().apply {
-                        putString("message", "Please tap your card again")
-                    })
+                    try {
+                        log("EMV", "onContactlessTapCardAgain — asking user to re-tap")
+                        sendEvent("reading_failed", Arguments.createMap().apply {
+                            putString("message", "Please tap your card again")
+                        })
+                    } catch (e: Exception) {
+                        logError("EMV", "onContactlessTapCardAgain threw", e)
+                    }
                 }
 
                 override fun onOnlineProc() {
-                    log("EMV", "onOnlineProc — responding with Success")
-                    emvHandler?.onSetOnlineProcResponse(SdkResult.Success, null)
+                    try {
+                        log("EMV", "onOnlineProc — responding with Success (online auth bypassed)")
+                        handler.onSetOnlineProcResponse(SdkResult.Success, null)
+                    } catch (e: Exception) {
+                        logError("EMV", "onOnlineProc threw", e)
+                    }
                 }
 
                 override fun onPrompt(promptEnum: com.nexgo.oaf.apiv3.emv.PromptEnum?) {
-                    log("EMV", "onPrompt — $promptEnum")
+                    try {
+                        log("EMV", "onPrompt — $promptEnum")
+                    } catch (e: Exception) {
+                        logError("EMV", "onPrompt threw", e)
+                    }
                 }
 
                 override fun onRemoveCard() {
-                    log("EMV", "onRemoveCard")
-                    sendEvent("card_removed")
+                    try {
+                        log("EMV", "onRemoveCard")
+                        sendEvent("card_removed")
+                    } catch (e: Exception) {
+                        logError("EMV", "onRemoveCard threw", e)
+                    }
                 }
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
-                    log("EMV", "onFinish retCode=$retCode (Success=${SdkResult.Success}) result=${result?.javaClass?.simpleName ?: "null"}")
-                    if (retCode == SdkResult.Success) {
-                        val pan: String = cardInfo.cardNo ?: ""
-                        val expiry: String = cardInfo.expiredDate ?: ""
-                        val track2: String = cardInfo.tk2 ?: ""
-
-                        log("EMV", "onFinish SUCCESS — pan=***${pan.takeLast(4)} expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
-                        sendEvent("reading_complete")
-                        sendEvent("card_read_complete", Arguments.createMap().apply {
-                            putString("pan", pan)
-                            putString("expiry", expiry)
-                            putString("cardholder_name", "")
-                            putString("track1", cardInfo.tk1 ?: "")
-                            putString("track2", track2)
-                            putString("emv_data", "")
-                            putString("entry_mode", entryMode)
-                            putString("last4", if (pan.length >= 4) pan.takeLast(4) else "")
-                            putString("card_brand", detectCardBrand(pan))
-                        })
-                    } else {
-                        logError("EMV", "onFinish FAILED retCode=$retCode")
+                    try {
+                        log("EMV", "onFinish retCode=$retCode (SdkResult.Success=${SdkResult.Success})")
+                        if (retCode == SdkResult.Success) {
+                            val pan: String    = cardInfo.cardNo     ?: ""
+                            val expiry: String = cardInfo.expiredDate ?: ""
+                            val track2: String = cardInfo.tk2         ?: ""
+                            val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
+                            log("EMV", "onFinish SUCCESS — pan=***$last4 expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
+                            sendEvent("reading_complete")
+                            sendEvent("card_read_complete", Arguments.createMap().apply {
+                                putString("pan", pan)
+                                putString("expiry", expiry)
+                                putString("cardholder_name", "")
+                                putString("track1", cardInfo.tk1 ?: "")
+                                putString("track2", track2)
+                                putString("emv_data", "")
+                                putString("entry_mode", entryMode)
+                                putString("last4", last4)
+                                putString("card_brand", detectCardBrand(pan))
+                            })
+                        } else {
+                            logError("EMV", "onFinish FAILED retCode=$retCode — check SdkResult constants for meaning")
+                            sendEvent("reading_failed", Arguments.createMap().apply {
+                                putString("message", "EMV process failed with code: $retCode")
+                            })
+                        }
+                    } catch (e: Exception) {
+                        logError("EMV", "onFinish threw", e)
                         sendEvent("reading_failed", Arguments.createMap().apply {
-                            putString("message", "EMV process failed with code: $retCode")
+                            putString("message", "EMV result handling error: ${e.message}")
                         })
+                    } finally {
+                        isReading = false
+                        cardReader?.stopSearch()
                     }
-
-                    isReading = false
-                    cardReader?.stopSearch()
                 }
             })
         } catch (e: Exception) {
             isReading = false
-            logError("EMV", "processEmvCard threw exception", e)
+            logError("EMV", "processEmvCard threw exception before emvProcess", e)
             sendEvent("reading_failed", Arguments.createMap().apply {
                 putString("message", e.message ?: "Failed to process EMV card")
             })
