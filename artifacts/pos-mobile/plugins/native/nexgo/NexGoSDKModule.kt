@@ -230,11 +230,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             setupEmvAids()
-            // NOTE: Do NOT call setupContactlessAids() here.
-            // setAidParaList() with AID_ENTRY_CONTACT_CONTACTLESS already registers
-            // each AID in both the contact AND contactless kernels. Calling
-            // contactlessAppendAidIntoKernelFirst(true) would CLEAR what setAidParaList
-            // just set up for the contactless kernel, leaving it empty (→ -8012).
+            // setAidParaList() only populates the CONTACT kernel.
+            // The contactless kernel is a separate subsystem — it needs its own
+            // AID list built via contactlessAppendAidIntoKernel().
+            // Skipping this call leaves the tap kernel empty → -8012/-8014 errors.
+            setupContactlessAids()
             log("INIT", "initialize() complete — contact AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
@@ -720,14 +720,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 }
 
                 override fun onTransInitBeforeGPO() {
-                    try {
-                        log("EMV", "onTransInitBeforeGPO")
-                        // Do NOT call onSetTransInitBeforeGPOResponse() from inside this
-                        // callback — doing so causes JNI re-entry into the native EMV
-                        // kernel from the same native thread, which triggers SIGSEGV.
-                        // The SDK proceeds automatically without a response here.
-                    } catch (e: Exception) {
-                        logError("EMV", "onTransInitBeforeGPO threw", e)
+                    log("EMV", "onTransInitBeforeGPO — posting response to main thread")
+                    // The SDK blocks waiting for onSetTransInitBeforeGPOResponse().
+                    // Calling it directly here (same JNI thread) causes SIGSEGV via
+                    // re-entry into the native EMV kernel. Posting to the main looper
+                    // delivers the response from a different thread, safe and non-blocking.
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        try {
+                            handler.onSetTransInitBeforeGPOResponse()
+                            log("EMV", "onSetTransInitBeforeGPOResponse sent OK")
+                        } catch (e: Exception) {
+                            logError("EMV", "onSetTransInitBeforeGPOResponse threw", e)
+                        }
                     }
                 }
 
