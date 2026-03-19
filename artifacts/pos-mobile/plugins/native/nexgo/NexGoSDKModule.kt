@@ -779,7 +779,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         //
                         // Field name confirmed via bytecode: setAuthCode(), not setArc().
                         val onlineResult = EmvOnlineResultEntity().apply {
-                            setAuthCode("00".toByteArray(Charsets.US_ASCII)) // ARC 00 = approved
+                            setAuthCode("00") // ARC 00 = approved (String, not ByteArray)
                         }
                         handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
                         log("EMV", "onOnlineProc — sent approved (ARC=00 via setAuthCode)")
