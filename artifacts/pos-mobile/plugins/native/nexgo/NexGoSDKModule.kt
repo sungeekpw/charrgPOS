@@ -768,10 +768,24 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                 override fun onOnlineProc() {
                     try {
-                        log("EMV", "onOnlineProc — responding with Success (online auth bypassed)")
-                        handler.onSetOnlineProcResponse(SdkResult.Success, null)
+                        // The EMV kernel fires onOnlineProc when it needs an online
+                        // authorization result before completing the transaction.
+                        // Passing null or wrong data here returns error 8020.
+                        //
+                        // We return ARC "00" (approved) so the EMV kernel completes
+                        // the flow and delivers full card data in onFinish.
+                        // The actual payment charge happens via the Charrg API after
+                        // onFinish delivers card data to the TypeScript layer.
+                        //
+                        // Field name confirmed via bytecode: setAuthCode(), not setArc().
+                        val onlineResult = EmvOnlineResultEntity().apply {
+                            setAuthCode("00".toByteArray(Charsets.US_ASCII)) // ARC 00 = approved
+                        }
+                        handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
+                        log("EMV", "onOnlineProc — sent approved (ARC=00 via setAuthCode)")
                     } catch (e: Exception) {
                         logError("EMV", "onOnlineProc threw", e)
+                        handler.onSetOnlineProcResponse(SdkResult.Fail, null)
                     }
                 }
 
