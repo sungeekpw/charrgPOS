@@ -253,31 +253,33 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             logError("EMVAID", "emvHandler is null — cannot configure AIDs")
             return
         }
-        val existing = handler.aidListNum
-        if (existing > 0) {
-            log("EMVAID", "Skipping — device already has $existing AID(s) configured")
-            return
-        }
-        log("EMVAID", "Configuring standard US payment AIDs")
+
+        // Always configure AIDs on every initialize() — never skip.
+        // Skipping when aidListNum > 0 caused 8014 because factory/stale AIDs
+        // from a previous app or build were being used instead of ours.
+        val before = handler.aidListNum
+        log("EMVAID", "Configuring US payment AIDs (aidListNum before=$before)")
 
         val aids = mutableListOf<AidEntity>()
 
         // ── Visa Credit / Debit ──────────────────────────────────────────────
+        // AID: A0000000031010  (Visa International)
         aids.add(AidEntity().apply {
             setAid("A0000000031010")
-            setAsi(0)                        // partial match
+            setAsi(0)                        // 0 = partial match allowed
             setAppVerNum("0096")
             setTacDefault("DC4000A800")
             setTacOnline("DC4004F800")
             setTacDenial("0010000000")
             setFloorLimit(0L)
-            setContactlessTransLimit(25000L) // $250.00
-            setContactlessCvmLimit(2500L)    // $25.00 — above this, PIN required
+            setContactlessTransLimit(25000L) // $250.00 in cents
+            setContactlessCvmLimit(2500L)    // $25.00 — PIN above this
             setContactlessFloorLimit(0L)
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
         // ── Visa Electron ────────────────────────────────────────────────────
+        // AID: A0000000032010
         aids.add(AidEntity().apply {
             setAid("A0000000032010")
             setAsi(0)
@@ -293,6 +295,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         })
 
         // ── Mastercard Credit ────────────────────────────────────────────────
+        // AID: A0000000041010
         aids.add(AidEntity().apply {
             setAid("A0000000041010")
             setAsi(0)
@@ -307,7 +310,24 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
-        // ── Maestro (Mastercard Debit) ───────────────────────────────────────
+        // ── Mastercard Debit (Debit Mastercard) ──────────────────────────────
+        // AID: A0000000042203
+        aids.add(AidEntity().apply {
+            setAid("A0000000042203")
+            setAsi(0)
+            setAppVerNum("0002")
+            setTacDefault("FC50BCF800")
+            setTacOnline("FC50BCF800")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── Maestro ──────────────────────────────────────────────────────────
+        // AID: A0000000043060
         aids.add(AidEntity().apply {
             setAid("A0000000043060")
             setAsi(0)
@@ -323,9 +343,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         })
 
         // ── American Express ─────────────────────────────────────────────────
+        // AID: A0000000250101  (7 bytes — standard Amex AID)
         aids.add(AidEntity().apply {
-            setAid("A000000025010104")
-            setAsi(1)                        // exact match for Amex
+            setAid("A0000000250101")
+            setAsi(1)                        // 1 = exact match required for Amex
             setAppVerNum("0001")
             setTacDefault("FC78BCF800")
             setTacOnline("F878BC7800")
@@ -337,10 +358,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
-        // ── Discover / Diners Club ───────────────────────────────────────────
+        // ── Discover ─────────────────────────────────────────────────────────
+        // AID: A0000001523010
         aids.add(AidEntity().apply {
             setAid("A0000001523010")
-            setAsi(1)
+            setAsi(0)
             setAppVerNum("0001")
             setTacDefault("F800F0A000")
             setTacOnline("F800F0A000")
@@ -352,8 +374,40 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
         })
 
+        // ── Diners Club / Discover (shared network) ──────────────────────────
+        // AID: A0000001524010
+        aids.add(AidEntity().apply {
+            setAid("A0000001524010")
+            setAsi(0)
+            setAppVerNum("0001")
+            setTacDefault("F800F0A000")
+            setTacOnline("F800F0A000")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
+        // ── JCB ──────────────────────────────────────────────────────────────
+        // AID: A0000000651010
+        aids.add(AidEntity().apply {
+            setAid("A0000000651010")
+            setAsi(0)
+            setAppVerNum("0002")
+            setTacDefault("F878248000")
+            setTacOnline("F878248000")
+            setTacDenial("0000000000")
+            setFloorLimit(0L)
+            setContactlessTransLimit(25000L)
+            setContactlessCvmLimit(2500L)
+            setContactlessFloorLimit(0L)
+            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        })
+
         val result = handler.setAidParaList(aids)
-        log("EMVAID", "setAidParaList result=$result, total AIDs now=${handler.aidListNum}")
+        log("EMVAID", "setAidParaList result=$result — AIDs after=${handler.aidListNum} (expected ${aids.size})")
     }
 
     @ReactMethod
