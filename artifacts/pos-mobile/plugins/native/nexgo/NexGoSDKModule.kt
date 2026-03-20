@@ -556,12 +556,19 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         CardSlotTypeEnum.ICC1 -> {
                             log("CARD", "Card inserted (chip/ICC)")
                             sendEvent("card_inserted")
-                            processEmvCard(amount, cardInfo, "chip")
+                            // Must NOT call emvProcess() directly from onCardInfo —
+                            // the SDK would re-enter its own internal thread and SIGSEGV.
+                            // Post to the main looper so EMV starts on a clean thread.
+                            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                processEmvCard(amount, cardInfo, "chip")
+                            }
                         }
                         CardSlotTypeEnum.RF -> {
                             log("CARD", "Card tapped (contactless/RF)")
                             sendEvent("card_tapped")
-                            processEmvCard(amount, cardInfo, "contactless")
+                            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                processEmvCard(amount, cardInfo, "contactless")
+                            }
                         }
                         CardSlotTypeEnum.SWIPE -> {
                             log("CARD", "Card swiped (magnetic stripe)")
