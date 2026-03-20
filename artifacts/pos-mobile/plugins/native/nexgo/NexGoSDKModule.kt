@@ -727,7 +727,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     // delivers the response from a different thread, safe and non-blocking.
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         try {
-                            handler.onSetTransInitBeforeGPOResponse()
+                            handler.onSetTransInitBeforeGPOResponse(true)
                             log("EMV", "onSetTransInitBeforeGPOResponse sent OK")
                         } catch (e: Exception) {
                             logError("EMV", "onSetTransInitBeforeGPOResponse threw", e)
