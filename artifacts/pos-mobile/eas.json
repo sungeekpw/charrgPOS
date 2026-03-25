@@ -16,7 +16,7 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:assembleDebug -PractNativeArchitectures=arm64-v8a"
+        "gradleCommand": ":app:assembleRelease -PractNativeArchitectures=arm64-v8a"
       }
     },
     "preview": {
