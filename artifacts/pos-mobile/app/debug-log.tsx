@@ -4,6 +4,7 @@ import {
   Alert,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   View,
@@ -39,6 +40,21 @@ export default function DebugLogScreen() {
   useEffect(() => {
     loadLog();
   }, [loadLog]);
+
+  const handleShare = useCallback(async () => {
+    if (!logText) {
+      Alert.alert("Nothing to share", "The log is empty.");
+      return;
+    }
+    try {
+      await Share.share({
+        message: logText,
+        title: "CharrgPOS SDK Debug Log",
+      });
+    } catch (e: unknown) {
+      Alert.alert("Share failed", e instanceof Error ? e.message : String(e));
+    }
+  }, [logText]);
 
   const handleClear = () => {
     Alert.alert(
@@ -84,6 +100,13 @@ export default function DebugLogScreen() {
             style={[styles.iconBtn, { opacity: loading ? 0.4 : 1 }]}
           >
             <MaterialCommunityIcons name="refresh" size={22} color={theme.text} />
+          </Pressable>
+          <Pressable
+            onPress={handleShare}
+            disabled={loading || !logText}
+            style={[styles.iconBtn, { opacity: loading || !logText ? 0.4 : 1 }]}
+          >
+            <MaterialCommunityIcons name="share-variant" size={22} color={Colors.primary} />
           </Pressable>
           <Pressable
             onPress={handleClear}
