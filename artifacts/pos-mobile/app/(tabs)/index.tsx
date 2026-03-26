@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -19,11 +20,16 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import Colors from "@/constants/colors";
 import { usePOS } from "@/context/pos-context";
 import { generateTransactionId } from "@/services/transaction-storage";
+import { consumeChargeReset } from "@/services/charge-reset";
 
 // Approximate footer height: paddingTop(12) + button(56) + paddingBottom(12) = 80
 const FOOTER_PX = 80;
 // Extra space for web tab bar (rendered below our iframe area)
 const WEB_TAB_BAR_PX = 80;
+// Standard Android Material bottom tab bar height (dp).
+// The tab bar uses position:"absolute" so it floats over screen content —
+// the pay button footer must be raised by this amount to stay visible above it.
+const ANDROID_TAB_BAR_HEIGHT = 56;
 
 export default function ChargeScreen() {
   const insets = useSafeAreaInsets();
@@ -33,6 +39,19 @@ export default function ChargeScreen() {
 
   const [amountCents, setAmountCents] = useState(0);
   const [tipCents, setTipCents] = useState(0);
+  // Incrementing this key forces TipSelector to remount and reset its internal
+  // state (selectedPct, customStr) when the user hits "New Read" after a payment.
+  const [formKey, setFormKey] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (consumeChargeReset()) {
+        setAmountCents(0);
+        setTipCents(0);
+        setFormKey((k) => k + 1);
+      }
+    }, [])
+  );
 
   const totalCents = amountCents + tipCents;
   const totalDollars = (totalCents / 100).toFixed(2);
@@ -92,10 +111,12 @@ export default function ChargeScreen() {
       }
     : {
         position: "absolute" as const,
-        bottom: 0,
+        // Raise the footer above the tab bar (position:"absolute", ~56dp on Android)
+        // so the Pay button is fully visible and not hidden behind it.
+        bottom: ANDROID_TAB_BAR_HEIGHT + insets.bottom,
         left: 0,
         right: 0,
-        paddingBottom: insets.bottom + 12,
+        paddingBottom: 12,
         borderTopColor: theme.border,
         backgroundColor: theme.background,
         elevation: 10,
@@ -130,7 +151,10 @@ export default function ChargeScreen() {
         ref={scrollRef}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: FOOTER_PX + (isWeb ? WEB_TAB_BAR_PX : insets.bottom) + 16 },
+          {
+            paddingBottom: FOOTER_PX +
+              (isWeb ? WEB_TAB_BAR_PX : ANDROID_TAB_BAR_HEIGHT + insets.bottom) + 16,
+          },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -145,6 +169,7 @@ export default function ChargeScreen() {
         <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
         <TipSelector
+          key={formKey}
           baseAmountCents={amountCents}
           onTipChange={setTipCents}
         />

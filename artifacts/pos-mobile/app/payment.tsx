@@ -34,6 +34,7 @@ import {
 import type { SDKEventType } from "@/services/nexgo-sdk";
 import type { Transaction } from "@/services/transaction-storage";
 import { generateTransactionId } from "@/services/transaction-storage";
+import { signalChargeReset } from "@/services/charge-reset";
 
 // ─── Bypass flag ─────────────────────────────────────────────────────────────
 // When the Charrg API URL is not configured we skip the network call entirely
@@ -238,6 +239,7 @@ export default function PaymentScreen() {
 
   const handleNewCharge = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    signalChargeReset();
     router.back();
   }, []);
 
