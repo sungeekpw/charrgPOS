@@ -256,190 +256,97 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Configure AIDs (Application Identifiers) for the EMV kernel.
+     * Build two AidEntity objects for a given AID — one for the contact (chip) kernel
+     * and one for the contactless (RF) kernel.
      *
-     * Without AIDs the kernel's candidate list is empty and every EMV process
-     * call fails immediately (error 8014 / Emv_Candidatelist_Empty).
-     *
-     * Values follow standard US terminal parameters:
-     *   • Floor limit 0 = always go online (no offline approval)
-     *   • Contactless trans limit $250 / CVM limit $25
-     *   • AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS = accept both interfaces
+     * Why two entries?
+     *   • AID_ENTRY_CONTACT_CONTACTLESS was supposed to cover both, but when
+     *     emvProcess() is called with EMV_ENTRY_MODE_CONTACT the SDK only searches
+     *     the contact AID table (AID_ENTRY_CONTACT entries) and returns -8012 if only
+     *     AID_ENTRY_CONTACT_CONTACTLESS entries are present.
+     *   • Similarly, EMV_ENTRY_MODE_CONTACTLESS only searches AID_ENTRY_CONTACTLESS entries.
+     *   • Registering both guarantees each kernel finds the AID regardless of which
+     *     entry mode is active.
      */
+    private fun aidEntities(
+        aidHex: String, asi: Int, appVer: String,
+        tacDefault: String, tacOnline: String, tacDenial: String,
+        floorLimit: Long = 0L,
+        clTransLimit: Long = 25000L,
+        clCvmLimit: Long = 2500L,
+        clFloorLimit: Long = 0L
+    ): List<AidEntity> {
+        fun make(mode: AidEntryModeEnum) = AidEntity().apply {
+            setAid(aidHex)
+            setAsi(asi)
+            setAppVerNum(appVer)
+            setTacDefault(tacDefault)
+            setTacOnline(tacOnline)
+            setTacDenial(tacDenial)
+            setFloorLimit(floorLimit)
+            setContactlessTransLimit(clTransLimit)
+            setContactlessCvmLimit(clCvmLimit)
+            setContactlessFloorLimit(clFloorLimit)
+            setAidEntryModeEnum(mode)
+        }
+        return listOf(
+            make(AidEntryModeEnum.AID_ENTRY_CONTACT),
+            make(AidEntryModeEnum.AID_ENTRY_CONTACTLESS)
+        )
+    }
+
     private fun setupEmvAids() {
         val handler = emvHandler ?: run {
             logError("EMVAID", "emvHandler is null — cannot configure AIDs")
             return
         }
 
-        // Always clear then re-configure — ensures no stale factory AIDs remain.
         val before = handler.aidListNum
         handler.delAllAid()
         log("EMVAID", "Configuring US payment AIDs (cleared $before stale AID(s))")
 
         val aids = mutableListOf<AidEntity>()
 
-        // ── Visa Credit / Debit ──────────────────────────────────────────────
-        // AID: A0000000031010  (Visa International)
-        aids.add(AidEntity().apply {
-            setAid("A0000000031010")
-            setAsi(0)                        // 0 = partial match allowed
-            setAppVerNum("0096")
-            setTacDefault("DC4000A800")
-            setTacOnline("DC4004F800")
-            setTacDenial("0010000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L) // $250.00 in cents
-            setContactlessCvmLimit(2500L)    // $25.00 — PIN above this
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Visa Credit / Debit ─────────── A0000000031010
+        aids.addAll(aidEntities("A0000000031010", 0, "0096",
+            "DC4000A800", "DC4004F800", "0010000000"))
 
-        // ── Visa Electron ────────────────────────────────────────────────────
-        // AID: A0000000032010
-        aids.add(AidEntity().apply {
-            setAid("A0000000032010")
-            setAsi(0)
-            setAppVerNum("0096")
-            setTacDefault("DC4000A800")
-            setTacOnline("DC4004F800")
-            setTacDenial("0010000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Visa Electron ───────────────── A0000000032010
+        aids.addAll(aidEntities("A0000000032010", 0, "0096",
+            "DC4000A800", "DC4004F800", "0010000000"))
 
-        // ── Mastercard Credit ────────────────────────────────────────────────
-        // AID: A0000000041010
-        aids.add(AidEntity().apply {
-            setAid("A0000000041010")
-            setAsi(0)
-            setAppVerNum("0002")
-            setTacDefault("FC50BCF800")
-            setTacOnline("FC50BCF800")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Mastercard Credit ───────────── A0000000041010
+        aids.addAll(aidEntities("A0000000041010", 0, "0002",
+            "FC50BCF800", "FC50BCF800", "0000000000"))
 
-        // ── Mastercard Debit (Debit Mastercard) ──────────────────────────────
-        // AID: A0000000042203
-        aids.add(AidEntity().apply {
-            setAid("A0000000042203")
-            setAsi(0)
-            setAppVerNum("0002")
-            setTacDefault("FC50BCF800")
-            setTacOnline("FC50BCF800")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Mastercard Debit ────────────── A0000000042203
+        aids.addAll(aidEntities("A0000000042203", 0, "0002",
+            "FC50BCF800", "FC50BCF800", "0000000000"))
 
-        // ── Maestro ──────────────────────────────────────────────────────────
-        // AID: A0000000043060
-        aids.add(AidEntity().apply {
-            setAid("A0000000043060")
-            setAsi(0)
-            setAppVerNum("0002")
-            setTacDefault("FC50BCF800")
-            setTacOnline("FC50BCF800")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Maestro ─────────────────────── A0000000043060
+        aids.addAll(aidEntities("A0000000043060", 0, "0002",
+            "FC50BCF800", "FC50BCF800", "0000000000"))
 
-        // ── American Express (contact chip) ──────────────────────────────────
-        // AID: A0000000250101  (7 bytes — standard contact Amex AID)
-        aids.add(AidEntity().apply {
-            setAid("A0000000250101")
-            setAsi(1)                        // 1 = exact match required for Amex
-            setAppVerNum("0001")
-            setTacDefault("FC78BCF800")
-            setTacOnline("F878BC7800")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── American Express (contact) ──── A0000000250101  (exact match)
+        aids.addAll(aidEntities("A0000000250101", 1, "0001",
+            "FC78BCF800", "F878BC7800", "0000000000"))
 
-        // ── American Express ExpressPay (contactless) ─────────────────────────
-        // AID: A000000025010402  — the contactless-specific Amex AID.
+        // ── Amex ExpressPay (tap) ────────── A000000025010402 (contactless-specific)
         // Contactless Amex cards advertise this AID via PPSE, NOT A0000000250101.
-        // Without this entry, tap-to-pay Amex cards always get 8014.
-        aids.add(AidEntity().apply {
-            setAid("A000000025010402")
-            setAsi(1)
-            setAppVerNum("0001")
-            setTacDefault("FC78BCF800")
-            setTacOnline("F878BC7800")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        aids.addAll(aidEntities("A000000025010402", 1, "0001",
+            "FC78BCF800", "F878BC7800", "0000000000"))
 
-        // ── Discover ─────────────────────────────────────────────────────────
-        // AID: A0000001523010
-        aids.add(AidEntity().apply {
-            setAid("A0000001523010")
-            setAsi(0)
-            setAppVerNum("0001")
-            setTacDefault("F800F0A000")
-            setTacOnline("F800F0A000")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Discover ────────────────────── A0000001523010
+        aids.addAll(aidEntities("A0000001523010", 0, "0001",
+            "F800F0A000", "F800F0A000", "0000000000"))
 
-        // ── Diners Club / Discover (shared network) ──────────────────────────
-        // AID: A0000001524010
-        aids.add(AidEntity().apply {
-            setAid("A0000001524010")
-            setAsi(0)
-            setAppVerNum("0001")
-            setTacDefault("F800F0A000")
-            setTacOnline("F800F0A000")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── Diners Club / Discover ──────── A0000001524010
+        aids.addAll(aidEntities("A0000001524010", 0, "0001",
+            "F800F0A000", "F800F0A000", "0000000000"))
 
-        // ── JCB ──────────────────────────────────────────────────────────────
-        // AID: A0000000651010
-        aids.add(AidEntity().apply {
-            setAid("A0000000651010")
-            setAsi(0)
-            setAppVerNum("0002")
-            setTacDefault("F878248000")
-            setTacOnline("F878248000")
-            setTacDenial("0000000000")
-            setFloorLimit(0L)
-            setContactlessTransLimit(25000L)
-            setContactlessCvmLimit(2500L)
-            setContactlessFloorLimit(0L)
-            setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
-        })
+        // ── JCB ─────────────────────────── A0000000651010
+        aids.addAll(aidEntities("A0000000651010", 0, "0002",
+            "F878248000", "F878248000", "0000000000"))
 
         val result = handler.setAidParaList(aids)
         log("EMVAID", "setAidParaList result=$result — AIDs after=${handler.aidListNum} (expected ${aids.size})")
@@ -719,14 +626,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // merName is a fixed-width byte field in the NexGo SDK.
                 // Padding to 20 bytes avoids native buffer overruns that crash the app.
                 merName = asciiPadded("Charrg POS", 20)
-                // Do NOT call setEmvEntryModeEnum() for chip — setting EMV_ENTRY_MODE_CONTACT
-                // routes the transaction through the external-reader AID table (empty) and
-                // returns -8012 (Emv_Candidatelist_Empty) even though our 10 AIDs are loaded.
-                // The SDK auto-detects the entry mode correctly from the slot when left unset.
-                // For contactless only, we hint CONTACTLESS so the RF kernel is used.
-                if (isContactless) {
-                    setEmvEntryModeEnum(EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS)
-                }
+                // setEmvEntryModeEnum MUST be set for both modes:
+                //   • Chip: EMV_ENTRY_MODE_CONTACT — without this the SDK defaults to
+                //     the RF kernel and causes a native SIGSEGV crash on card insert.
+                //   • Tap:  EMV_ENTRY_MODE_CONTACTLESS — routes to the RF kernel.
+                // The matching AID_ENTRY_CONTACT / AID_ENTRY_CONTACTLESS entries in
+                // setAidParaList ensure each kernel can build a non-empty candidate list.
+                setEmvEntryModeEnum(
+                    if (isContactless) EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
+                    else               EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
+                )
                 setEmvProcessFlowEnum(EmvProcessFlowEnum.EMV_PROCESS_FLOW_STANDARD)
                 isContactlessSupportSelectApp = isContactless
             }
