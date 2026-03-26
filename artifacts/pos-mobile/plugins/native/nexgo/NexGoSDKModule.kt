@@ -241,11 +241,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             setupEmvAids()
-            // setAidParaList() only populates the CONTACT kernel.
-            // The contactless kernel is a separate subsystem — it needs its own
-            // AID list built via contactlessAppendAidIntoKernel().
-            // Skipping this call leaves the tap kernel empty → -8012/-8014 errors.
-            setupContactlessAids()
+            // contactlessAppendAidIntoKernel() always returns -2 (Param_In_Invalid) on
+            // this device — that function is unusable here. Contactless AIDs are covered
+            // by setAidParaList() using AID_ENTRY_CONTACT_CONTACTLESS, which registers
+            // each AID for both the contact and contactless kernels simultaneously.
+            // Calling setupContactlessAids() was also invoking contactlessAppendAidIntoKernelFirst(true)
+            // which reset the contactless kernel entries that setAidParaList() had just populated.
             log("INIT", "initialize() complete — contact AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
@@ -718,14 +719,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // merName is a fixed-width byte field in the NexGo SDK.
                 // Padding to 20 bytes avoids native buffer overruns that crash the app.
                 merName = asciiPadded("Charrg POS", 20)
-                // CRITICAL: must explicitly set the entry mode — the SDK does NOT infer
-                // it from isContactlessSupportSelectApp. Without this, the SDK defaults
-                // to contactless mode and tries to use the RF hardware for a chip card,
-                // causing a native SIGSEGV before any callback fires.
-                setEmvEntryModeEnum(
-                    if (isContactless) EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
-                    else               EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
-                )
+                // Do NOT call setEmvEntryModeEnum() for chip — setting EMV_ENTRY_MODE_CONTACT
+                // routes the transaction through the external-reader AID table (empty) and
+                // returns -8012 (Emv_Candidatelist_Empty) even though our 10 AIDs are loaded.
+                // The SDK auto-detects the entry mode correctly from the slot when left unset.
+                // For contactless only, we hint CONTACTLESS so the RF kernel is used.
+                if (isContactless) {
+                    setEmvEntryModeEnum(EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS)
+                }
                 setEmvProcessFlowEnum(EmvProcessFlowEnum.EMV_PROCESS_FLOW_STANDARD)
                 isContactlessSupportSelectApp = isContactless
             }
