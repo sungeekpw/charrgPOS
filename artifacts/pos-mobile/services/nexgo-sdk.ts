@@ -9,9 +9,13 @@ export type SDKEventType =
   | "reading_started"
   | "reading_complete"
   | "reading_failed"
+  | "contactless_fallback"
   | "pin_requested"
   | "pin_entered"
   | "timeout";
+
+/** Sentinel thrown when the card requests EMV FallBack (tap → insert chip). */
+export const FALLBACK_TO_CHIP = "FALLBACK_TO_CHIP";
 
 export type SDKListener = (event: SDKEventType, data?: unknown) => void;
 
@@ -208,6 +212,7 @@ export async function startCardRead(
       mod.removeListener("card_read_complete", handleComplete);
       mod.removeListener("reading_failed", handleFailed);
       mod.removeListener("timeout", handleTimeout);
+      mod.removeListener("contactless_fallback", handleFallback);
       mod.removeListener("card_inserted", onEvent);
       mod.removeListener("card_swiped", onEvent);
       mod.removeListener("card_tapped", onEvent);
@@ -243,9 +248,17 @@ export async function startCardRead(
       reject(new Error("Card read timed out"));
     };
 
+    const handleFallback = () => {
+      cleanup();
+      // Card told the terminal to use chip instead of contactless (EMV FallBack).
+      // Reject with the sentinel so the payment screen can show the right prompt.
+      reject(new Error(FALLBACK_TO_CHIP));
+    };
+
     mod.addListener("card_read_complete", handleComplete);
     mod.addListener("reading_failed", handleFailed);
     mod.addListener("timeout", handleTimeout);
+    mod.addListener("contactless_fallback", handleFallback);
 
     mod.addListener("card_inserted", onEvent);
     mod.addListener("card_swiped", onEvent);

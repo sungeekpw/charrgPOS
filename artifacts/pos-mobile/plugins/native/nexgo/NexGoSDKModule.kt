@@ -22,7 +22,9 @@ import com.nexgo.oaf.apiv3.emv.AidEntity
 import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
 import com.nexgo.oaf.apiv3.emv.EmvCardBrandEnum
+import com.nexgo.oaf.apiv3.emv.EmvEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
+import com.nexgo.oaf.apiv3.emv.EmvProcessFlowEnum
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
@@ -697,6 +699,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
         try {
             val now = java.util.Calendar.getInstance()
+            val isContactless = (entryMode == "contactless")
             val emvTransConfig = EmvTransConfigurationEntity().apply {
                 transAmount  = (amount * 100).toLong().toString()
                 countryCode  = "0840"          // ISO 3166-1 numeric: USA
@@ -715,11 +718,21 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 // merName is a fixed-width byte field in the NexGo SDK.
                 // Padding to 20 bytes avoids native buffer overruns that crash the app.
                 merName = asciiPadded("Charrg POS", 20)
-                isContactlessSupportSelectApp = (entryMode == "contactless")
+                // CRITICAL: must explicitly set the entry mode — the SDK does NOT infer
+                // it from isContactlessSupportSelectApp. Without this, the SDK defaults
+                // to contactless mode and tries to use the RF hardware for a chip card,
+                // causing a native SIGSEGV before any callback fires.
+                setEmvEntryModeEnum(
+                    if (isContactless) EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
+                    else               EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
+                )
+                setEmvProcessFlowEnum(EmvProcessFlowEnum.EMV_PROCESS_FLOW_STANDARD)
+                isContactlessSupportSelectApp = isContactless
             }
+            val entryModeLabel = if (isContactless) "CONTACTLESS" else "CONTACT"
             log("EMV", "emvProcess() config — amount=${emvTransConfig.transAmount} " +
                 "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
-                "contactless=${emvTransConfig.isContactlessSupportSelectApp} AIDsNow=${handler.aidListNum}")
+                "entryMode=$entryModeLabel AIDsNow=${handler.aidListNum}")
 
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
@@ -852,6 +865,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 putString("last4", last4)
                                 putString("card_brand", detectCardBrand(pan))
                             })
+                        } else if (retCode == SdkResult.Emv_FallBack && isContactless) {
+                            // -8014: The card's contactless chip signalled EMV FallBack —
+                            // it wants the transaction to be completed via the contact chip
+                            // interface instead. This is normal for some cards/amounts.
+                            // Signal the JS layer to stop the current read and re-prompt
+                            // the user to insert their card into the chip slot.
+                            log("EMV", "onFinish Emv_FallBack — contactless card requesting chip fallback")
+                            sendEvent("contactless_fallback")
                         } else {
                             logError("EMV", "onFinish FAILED retCode=$retCode — check SdkResult constants for meaning")
                             sendEvent("reading_failed", Arguments.createMap().apply {

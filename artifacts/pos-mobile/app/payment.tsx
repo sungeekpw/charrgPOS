@@ -29,6 +29,7 @@ import {
   cancelCardRead,
   initializeSDK,
   isSDKAvailable,
+  FALLBACK_TO_CHIP,
 } from "@/services/nexgo-sdk";
 import type { SDKEventType } from "@/services/nexgo-sdk";
 import type { Transaction } from "@/services/transaction-storage";
@@ -186,6 +187,17 @@ export default function PaymentScreen() {
     } catch (err: unknown) {
       if (isCancelled.current) return;
       const msg = err instanceof Error ? err.message : "Unknown error";
+
+      if (msg === FALLBACK_TO_CHIP) {
+        // Card's contactless chip said "use contact chip instead" (EMV FallBack).
+        // Don't record a failed transaction — just re-prompt with chip instructions.
+        setErrorMsg("This card requires chip. Please insert it into the slot.");
+        setPhase("error");
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        animateResult();
+        return;
+      }
+
       setErrorMsg(msg);
       setPhase("error");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
