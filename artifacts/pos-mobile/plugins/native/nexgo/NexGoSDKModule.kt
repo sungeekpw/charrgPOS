@@ -18,6 +18,7 @@ import com.nexgo.oaf.apiv3.device.reader.CardInfoEntity
 import com.nexgo.oaf.apiv3.device.reader.CardReader
 import com.nexgo.oaf.apiv3.device.reader.CardSlotTypeEnum
 import com.nexgo.oaf.apiv3.device.reader.OnCardInfoListener
+import com.nexgo.oaf.apiv3.device.reader.ReaderTypeEnum
 import com.nexgo.oaf.apiv3.emv.AidEntity
 import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
@@ -240,14 +241,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             log("INIT", "CardReader obtained: ${cardReader != null}")
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
+            // Tell the native EMV core to use the built-in chip slot (INNER reader).
+            // Bytecode analysis of initReader() shows it calls EmvCore.setEmvExternalDevice(null)
+            // for INNER — without this call setEmvExternalDevice() is never invoked and the
+            // native emvProcessFlow1() falls back to the external reader path, which has no
+            // AID table, causing -8012 (Emv_Candidatelist_Empty) on every chip transaction.
+            emvHandler!!.initReader(ReaderTypeEnum.INNER, 0)
+            log("INIT", "initReader(INNER, 0) called — native EMV core routed to internal ICC slot")
             setupEmvAids()
-            // contactlessAppendAidIntoKernel() always returns -2 (Param_In_Invalid) on
-            // this device — that function is unusable here. Contactless AIDs are covered
-            // by setAidParaList() using AID_ENTRY_CONTACT_CONTACTLESS, which registers
-            // each AID for both the contact and contactless kernels simultaneously.
-            // Calling setupContactlessAids() was also invoking contactlessAppendAidIntoKernelFirst(true)
-            // which reset the contactless kernel entries that setAidParaList() had just populated.
-            log("INIT", "initialize() complete — contact AIDs=${emvHandler?.aidListNum ?: 0}")
+            log("INIT", "initialize() complete — AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
             logError("INIT", "initialize() threw exception", e)
@@ -259,14 +261,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
      * Build two AidEntity objects for a given AID — one for the contact (chip) kernel
      * and one for the contactless (RF) kernel.
      *
-     * Why two entries?
-     *   • AID_ENTRY_CONTACT_CONTACTLESS was supposed to cover both, but when
-     *     emvProcess() is called with EMV_ENTRY_MODE_CONTACT the SDK only searches
-     *     the contact AID table (AID_ENTRY_CONTACT entries) and returns -8012 if only
-     *     AID_ENTRY_CONTACT_CONTACTLESS entries are present.
-     *   • Similarly, EMV_ENTRY_MODE_CONTACTLESS only searches AID_ENTRY_CONTACTLESS entries.
-     *   • Registering both guarantees each kernel finds the AID regardless of which
-     *     entry mode is active.
+     * AID_ENTRY_CONTACT and AID_ENTRY_CONTACTLESS are used instead of
+     * AID_ENTRY_CONTACT_CONTACTLESS so that each kernel's AID search is
+     * unambiguous. The actual fix for -8012 on chip transactions is
+     * initReader(INNER, 0) — the dual-registration is belt-and-suspenders
+     * to ensure both kernels have explicit entries.
      */
     private fun aidEntities(
         aidHex: String, asi: Int, appVer: String,
@@ -643,6 +642,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             log("EMV", "emvProcess() config — amount=${emvTransConfig.transAmount} " +
                 "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
                 "entryMode=$entryModeLabel AIDsNow=${handler.aidListNum}")
+
+            // For chip (contact) transactions, ensure the native EMV core is pointed at
+            // the internal ICC slot before every call. initReader(INNER, 0) calls
+            // EmvCore.setEmvExternalDevice(null), which is required for the contact
+            // AID candidate list to be built from our setAidParaList() data.
+            // Not calling this is the root cause of -8012 (Emv_Candidatelist_Empty).
+            if (!isContactless) {
+                handler.initReader(ReaderTypeEnum.INNER, 0)
+                log("EMV", "initReader(INNER, 0) called before chip emvProcess")
+            }
 
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
