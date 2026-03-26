@@ -347,6 +347,30 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
         val result = handler.setAidParaList(aids)
         log("EMVAID", "setAidParaList result=$result — AIDs after=${handler.aidListNum} (expected ${aids.size})")
+        dumpAidTable("post-setup")
+        log("EMVCAPK", "CAPK count after setup=${handler.capkListNum}")
+    }
+
+    /**
+     * Dump every AID stored in the native layer so we can verify the kernel
+     * has exactly what we registered (aid hex + entry mode enum).
+     */
+    private fun dumpAidTable(label: String) {
+        val handler = emvHandler ?: return
+        try {
+            val list = handler.aidList
+            if (list.isNullOrEmpty()) {
+                log("EMVAID-DUMP[$label]", "EMPTY — native layer has no AIDs")
+                return
+            }
+            list.forEachIndexed { i, entry ->
+                val aidHex  = try { entry.aid  ?: "(null)" } catch (e: Exception) { "err:${e.message}" }
+                val mode    = try { entry.aidEntryModeEnum?.name ?: "(null)" } catch (e: Exception) { "err:${e.message}" }
+                log("EMVAID-DUMP[$label]", "[$i] aid=$aidHex mode=$mode")
+            }
+        } catch (e: Exception) {
+            logError("EMVAID-DUMP", "getAidList threw at label=$label", e)
+        }
     }
 
     /**
@@ -649,6 +673,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 log("EMV", "initReader(INNER, 0) asserted before chip emvProcess")
             }
 
+            // Dump native AID table right before emvProcess so we can confirm the kernel
+            // still has all AIDs at call time (state reset between init and use would show here).
+            dumpAidTable("pre-emvProcess")
+            log("EMVCAPK", "CAPK count pre-emvProcess=${handler.capkListNum}")
+
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
                 override fun onSelApp(
@@ -657,7 +686,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     isFirstSelect: Boolean
                 ) {
                     try {
-                        log("EMV", "onSelApp — apps=${appNameList?.joinToString() ?: "none"} isFirstSelect=$isFirstSelect — auto-selecting index 0")
+                        // onSelApp is only called when the candidate list is NON-EMPTY.
+                        // If we never see this log, the kernel found zero matching AIDs.
+                        val namesSummary = appNameList?.joinToString() ?: "none"
+                        val aidsSummary  = appInfoList?.joinToString {
+                            it.aid?.joinToString("") { b -> "%02X".format(b) } ?: "?"
+                        } ?: "none"
+                        log("EMV", "onSelApp REACHED — names=[$namesSummary] aids=[$aidsSummary] isFirstSelect=$isFirstSelect — auto-selecting index 0")
                         handler.onSetSelAppResponse(0)
                     } catch (e: Exception) {
                         logError("EMV", "onSelApp threw", e)
