@@ -36,6 +36,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var emvHandler: EmvHandler2? = null
     private var isReading = false
 
+    // Dedicated background thread for EMV processing.
+    // emvProcess() is a blocking call — running it on the main thread blocks the
+    // main looper, which then can't dispatch the onSetTransInitBeforeGPOResponse()
+    // post we send from the callback, causing a deadlock/crash before the first
+    // callback fires. Running on our own HandlerThread keeps the main thread free
+    // and lets the SDK's callback thread call response functions directly.
+    private val emvThread = android.os.HandlerThread("nexgo-emv").also { it.start() }
+    private val emvWorker = android.os.Handler(emvThread.looper)
+
     // ─── Debug file logger ────────────────────────────────────────────────────
     //
     // Log lines go to both Android Logcat (tag "NexGoSDK") and a plain-text
@@ -465,7 +474,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             )
 
             for ((brand, aidHex) in clAids) {
-                val r = handler.contactlessAppendAidIntoKernel(brand, 0x00.toByte(), hexToBytes(aidHex))
+                // 0x01 = partial-match selection; 0x00 returns Param_In_Invalid (-2)
+                val r = handler.contactlessAppendAidIntoKernel(brand, 0x01.toByte(), hexToBytes(aidHex))
                 log("EMVAID-CL", "  $brand $aidHex → result=$r")
             }
             log("EMVAID-CL", "Contactless AIDs registered (${clAids.size} entries)")
@@ -553,22 +563,22 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     log("CARD", "onCardInfo OK — slot=$slot")
 
                     when (slot) {
-                        CardSlotTypeEnum.ICC1 -> {
+                        CardSlotTypeEnum.ICC1, CardSlotTypeEnum.ICC2 -> {
                             log("CARD", "Card inserted (chip/ICC)")
                             sendEvent("card_inserted")
-                            // Must NOT call emvProcess() directly from onCardInfo —
-                            // the SDK would re-enter its own internal thread and SIGSEGV.
-                            // Post to the main looper so EMV starts on a clean thread.
-                            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                processEmvCard(amount, cardInfo, "chip")
-                            }
+                            // Post to our dedicated emvWorker thread, NOT the main looper.
+                            // emvProcess() blocks its calling thread; if that's the main thread
+                            // the main looper is frozen and can't dispatch the
+                            // onSetTransInitBeforeGPOResponse post — instant deadlock/crash.
+                            // emvWorker is a background HandlerThread that stays blocked in
+                            // emvProcess() while the SDK fires callbacks on its own internal
+                            // thread; those callbacks call response functions directly.
+                            emvWorker.post { processEmvCard(amount, cardInfo, "chip") }
                         }
                         CardSlotTypeEnum.RF -> {
                             log("CARD", "Card tapped (contactless/RF)")
                             sendEvent("card_tapped")
-                            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                processEmvCard(amount, cardInfo, "contactless")
-                            }
+                            emvWorker.post { processEmvCard(amount, cardInfo, "contactless") }
                         }
                         CardSlotTypeEnum.SWIPE -> {
                             log("CARD", "Card swiped (magnetic stripe)")
@@ -727,18 +737,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 }
 
                 override fun onTransInitBeforeGPO() {
-                    log("EMV", "onTransInitBeforeGPO — posting response to main thread")
-                    // The SDK blocks waiting for onSetTransInitBeforeGPOResponse().
-                    // Calling it directly here (same JNI thread) causes SIGSEGV via
-                    // re-entry into the native EMV kernel. Posting to the main looper
-                    // delivers the response from a different thread, safe and non-blocking.
-                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        try {
-                            handler.onSetTransInitBeforeGPOResponse(true)
-                            log("EMV", "onSetTransInitBeforeGPOResponse sent OK")
-                        } catch (e: Exception) {
-                            logError("EMV", "onSetTransInitBeforeGPOResponse threw", e)
-                        }
+                    // emvProcess() runs on emvWorker (background HandlerThread).
+                    // This callback fires on the SDK's own internal thread — a
+                    // different thread from emvWorker — so calling the response
+                    // directly is safe (no re-entry, no deadlock).
+                    try {
+                        log("EMV", "onTransInitBeforeGPO — responding directly on SDK callback thread")
+                        handler.onSetTransInitBeforeGPOResponse(true)
+                        log("EMV", "onSetTransInitBeforeGPOResponse sent OK")
+                    } catch (e: Exception) {
+                        logError("EMV", "onSetTransInitBeforeGPOResponse threw", e)
                     }
                 }
 

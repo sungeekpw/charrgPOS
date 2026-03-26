@@ -1,0 +1,90 @@
+[2026-03-25 17:37:53.635] [INIT] initialize() called — context=MainActivity
+[2026-03-25 17:37:54.211] [INIT] DeviceEngine obtained OK
+[2026-03-25 17:37:54.227] [INIT] CardReader obtained: true
+[2026-03-25 17:37:55.390] [INIT] EmvHandler2 obtained: true
+[2026-03-25 17:37:55.399] [EMVAID] Configuring US payment AIDs (cleared 0 stale AID(s))
+[2026-03-25 17:37:55.449] [EMVAID] setAidParaList result=0 — AIDs after=10 (expected 10)
+[2026-03-25 17:37:55.454] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-25 17:37:55.456] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 → result=-2
+[2026-03-25 17:37:55.458] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 → result=-2
+[2026-03-25 17:37:55.459] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 → result=-2
+[2026-03-25 17:37:55.460] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 → result=-2
+[2026-03-25 17:37:55.460] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 → result=-2
+[2026-03-25 17:37:55.461] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 → result=-2
+[2026-03-25 17:37:55.462] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 → result=-2
+[2026-03-25 17:37:55.463] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 → result=-2
+[2026-03-25 17:37:55.464] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-25 17:37:55.465] [INIT] initialize() complete — contact AIDs=10
+[2026-03-25 17:44:01.040] [INIT] initialize() called — context=MainActivity
+[2026-03-25 17:44:01.041] [INIT] DeviceEngine obtained OK
+[2026-03-25 17:44:01.042] [INIT] CardReader obtained: true
+[2026-03-25 17:44:01.043] [INIT] EmvHandler2 obtained: true
+[2026-03-25 17:44:01.044] [EMVAID] Configuring US payment AIDs (cleared 10 stale AID(s))
+[2026-03-25 17:44:01.108] [EMVAID] setAidParaList result=0 — AIDs after=10 (expected 10)
+[2026-03-25 17:44:01.109] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-25 17:44:01.111] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 → result=-2
+[2026-03-25 17:44:01.111] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 → result=-2
+[2026-03-25 17:44:01.112] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 → result=-2
+[2026-03-25 17:44:01.113] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 → result=-2
+[2026-03-25 17:44:01.114] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 → result=-2
+[2026-03-25 17:44:01.115] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 → result=-2
+[2026-03-25 17:44:01.116] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 → result=-2
+[2026-03-25 17:44:01.117] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 → result=-2
+[2026-03-25 17:44:01.118] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-25 17:44:01.119] [INIT] initialize() complete — contact AIDs=10
+[2026-03-25 17:44:01.122] [CARD] startCardRead() amount=1475.0
+[2026-03-25 17:44:01.124] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-03-25 17:44:02.469] [CARD] onCardInfo OK — slot=RF
+[2026-03-25 17:44:02.470] [CARD] Card tapped (contactless/RF)
+[2026-03-25 17:44:02.510] [EMV] processEmvCard() entryMode=contactless amount=1475.0
+[2026-03-25 17:44:02.513] [EMV] emvProcess() config — amount=147500 date=260325 time=174402 contactless=true AIDsNow=10
+[2026-03-25 17:44:02.775] [EMV] onFinish retCode=-8014 (SdkResult.Success=0)
+[2026-03-25 17:44:02.777] [ERROR/EMV] onFinish FAILED retCode=-8014 — check SdkResult constants for meaning
+[2026-03-25 17:44:07.716] [INIT] initialize() called — context=MainActivity
+[2026-03-25 17:44:07.717] [INIT] DeviceEngine obtained OK
+[2026-03-25 17:44:07.719] [INIT] CardReader obtained: true
+[2026-03-25 17:44:07.720] [INIT] EmvHandler2 obtained: true
+[2026-03-25 17:44:07.722] [EMVAID] Configuring US payment AIDs (cleared 10 stale AID(s))
+[2026-03-25 17:44:07.807] [EMVAID] setAidParaList result=0 — AIDs after=10 (expected 10)
+[2026-03-25 17:44:07.808] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-25 17:44:07.809] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 → result=-2
+[2026-03-25 17:44:07.810] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 → result=-2
+[2026-03-25 17:44:07.811] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 → result=-2
+[2026-03-25 17:44:07.812] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 → result=-2
+[2026-03-25 17:44:07.813] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 → result=-2
+[2026-03-25 17:44:07.814] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 → result=-2
+[2026-03-25 17:44:07.815] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 → result=-2
+[2026-03-25 17:44:07.816] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 → result=-2
+[2026-03-25 17:44:07.818] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-25 17:44:07.819] [INIT] initialize() complete — contact AIDs=10
+[2026-03-25 17:44:07.822] [CARD] startCardRead() amount=1475.0
+[2026-03-25 17:44:07.824] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-03-25 17:44:10.404] [CARD] onCardInfo OK — slot=RF
+[2026-03-25 17:44:10.405] [CARD] Card tapped (contactless/RF)
+[2026-03-25 17:44:10.412] [EMV] processEmvCard() entryMode=contactless amount=1475.0
+[2026-03-25 17:44:10.414] [EMV] emvProcess() config — amount=147500 date=260325 time=174410 contactless=true AIDsNow=10
+[2026-03-25 17:44:10.435] [EMV] onFinish retCode=-8014 (SdkResult.Success=0)
+[2026-03-25 17:44:10.436] [ERROR/EMV] onFinish FAILED retCode=-8014 — check SdkResult constants for meaning
+[2026-03-25 17:47:32.118] [INIT] initialize() called — context=MainActivity
+[2026-03-25 17:47:32.530] [INIT] DeviceEngine obtained OK
+[2026-03-25 17:47:32.548] [INIT] CardReader obtained: true
+[2026-03-25 17:47:32.657] [INIT] EmvHandler2 obtained: true
+[2026-03-25 17:47:32.668] [EMVAID] Configuring US payment AIDs (cleared 10 stale AID(s))
+[2026-03-25 17:47:32.800] [EMVAID] setAidParaList result=0 — AIDs after=10 (expected 10)
+[2026-03-25 17:47:32.805] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-25 17:47:32.807] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 → result=-2
+[2026-03-25 17:47:32.808] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 → result=-2
+[2026-03-25 17:47:32.809] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 → result=-2
+[2026-03-25 17:47:32.811] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 → result=-2
+[2026-03-25 17:47:32.812] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 → result=-2
+[2026-03-25 17:47:32.813] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 → result=-2
+[2026-03-25 17:47:32.814] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 → result=-2
+[2026-03-25 17:47:32.815] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 → result=-2
+[2026-03-25 17:47:32.816] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-25 17:47:32.817] [INIT] initialize() complete — contact AIDs=10
+[2026-03-25 17:47:32.820] [CARD] startCardRead() amount=1800.0
+[2026-03-25 17:47:32.823] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-03-25 17:47:36.807] [CARD] onCardInfo OK — slot=ICC1
+[2026-03-25 17:47:36.809] [CARD] Card inserted (chip/ICC)
+[2026-03-25 17:47:36.811] [EMV] processEmvCard() entryMode=chip amount=1800.0
+[2026-03-25 17:47:36.813] [EMV] emvProcess() config — amount=180000 date=260325 time=174736 contactless=false AIDsNow=10
