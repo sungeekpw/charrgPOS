@@ -258,40 +258,38 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Build two AidEntity objects for a given AID — one for the contact (chip) kernel
-     * and one for the contactless (RF) kernel.
+     * Build ONE AidEntity for a given AID using AID_ENTRY_CONTACT_CONTACTLESS.
      *
-     * AID_ENTRY_CONTACT and AID_ENTRY_CONTACTLESS are used instead of
-     * AID_ENTRY_CONTACT_CONTACTLESS so that each kernel's AID search is
-     * unambiguous. The actual fix for -8012 on chip transactions is
-     * initReader(INNER, 0) — the dual-registration is belt-and-suspenders
-     * to ensure both kernels have explicit entries.
+     * Root-cause analysis of -8012 (Emv_Candidatelist_Empty):
+     * The native EMV kernel stores AIDs keyed by AID value (tag df812b encodes the
+     * entry mode). When we registered two entries per AID — AID_ENTRY_CONTACT then
+     * AID_ENTRY_CONTACTLESS — the kernel de-duplicated by AID value, keeping only
+     * the CONTACTLESS entry. Contact transactions then found zero CONTACT-capable
+     * AIDs → empty candidate list → -8012.
+     *
+     * Fix: register each AID exactly once with AID_ENTRY_CONTACT_CONTACTLESS
+     * (ordinal 0, the SDK default), which covers both chip and tap in the same
+     * entry. 10 entries total instead of 20.
      */
-    private fun aidEntities(
+    private fun aidEntity(
         aidHex: String, asi: Int, appVer: String,
         tacDefault: String, tacOnline: String, tacDenial: String,
         floorLimit: Long = 0L,
         clTransLimit: Long = 25000L,
         clCvmLimit: Long = 2500L,
         clFloorLimit: Long = 0L
-    ): List<AidEntity> {
-        fun make(mode: AidEntryModeEnum) = AidEntity().apply {
-            setAid(aidHex)
-            setAsi(asi)
-            setAppVerNum(appVer)
-            setTacDefault(tacDefault)
-            setTacOnline(tacOnline)
-            setTacDenial(tacDenial)
-            setFloorLimit(floorLimit)
-            setContactlessTransLimit(clTransLimit)
-            setContactlessCvmLimit(clCvmLimit)
-            setContactlessFloorLimit(clFloorLimit)
-            setAidEntryModeEnum(mode)
-        }
-        return listOf(
-            make(AidEntryModeEnum.AID_ENTRY_CONTACT),
-            make(AidEntryModeEnum.AID_ENTRY_CONTACTLESS)
-        )
+    ): AidEntity = AidEntity().apply {
+        setAid(aidHex)
+        setAsi(asi)
+        setAppVerNum(appVer)
+        setTacDefault(tacDefault)
+        setTacOnline(tacOnline)
+        setTacDenial(tacDenial)
+        setFloorLimit(floorLimit)
+        setContactlessTransLimit(clTransLimit)
+        setContactlessCvmLimit(clCvmLimit)
+        setContactlessFloorLimit(clFloorLimit)
+        setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
     }
 
     private fun setupEmvAids() {
@@ -307,44 +305,44 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         val aids = mutableListOf<AidEntity>()
 
         // ── Visa Credit / Debit ─────────── A0000000031010
-        aids.addAll(aidEntities("A0000000031010", 0, "0096",
+        aids.add(aidEntity("A0000000031010", 0, "0096",
             "DC4000A800", "DC4004F800", "0010000000"))
 
         // ── Visa Electron ───────────────── A0000000032010
-        aids.addAll(aidEntities("A0000000032010", 0, "0096",
+        aids.add(aidEntity("A0000000032010", 0, "0096",
             "DC4000A800", "DC4004F800", "0010000000"))
 
         // ── Mastercard Credit ───────────── A0000000041010
-        aids.addAll(aidEntities("A0000000041010", 0, "0002",
+        aids.add(aidEntity("A0000000041010", 0, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
         // ── Mastercard Debit ────────────── A0000000042203
-        aids.addAll(aidEntities("A0000000042203", 0, "0002",
+        aids.add(aidEntity("A0000000042203", 0, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
         // ── Maestro ─────────────────────── A0000000043060
-        aids.addAll(aidEntities("A0000000043060", 0, "0002",
+        aids.add(aidEntity("A0000000043060", 0, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
-        // ── American Express (contact) ──── A0000000250101  (exact match)
-        aids.addAll(aidEntities("A0000000250101", 1, "0001",
+        // ── American Express ─────────────── A0000000250101  (exact match)
+        aids.add(aidEntity("A0000000250101", 1, "0001",
             "FC78BCF800", "F878BC7800", "0000000000"))
 
-        // ── Amex ExpressPay (tap) ────────── A000000025010402 (contactless-specific)
+        // ── Amex ExpressPay (tap AID) ────── A000000025010402
         // Contactless Amex cards advertise this AID via PPSE, NOT A0000000250101.
-        aids.addAll(aidEntities("A000000025010402", 1, "0001",
+        aids.add(aidEntity("A000000025010402", 1, "0001",
             "FC78BCF800", "F878BC7800", "0000000000"))
 
         // ── Discover ────────────────────── A0000001523010
-        aids.addAll(aidEntities("A0000001523010", 0, "0001",
+        aids.add(aidEntity("A0000001523010", 0, "0001",
             "F800F0A000", "F800F0A000", "0000000000"))
 
         // ── Diners Club / Discover ──────── A0000001524010
-        aids.addAll(aidEntities("A0000001524010", 0, "0001",
+        aids.add(aidEntity("A0000001524010", 0, "0001",
             "F800F0A000", "F800F0A000", "0000000000"))
 
         // ── JCB ─────────────────────────── A0000000651010
-        aids.addAll(aidEntities("A0000000651010", 0, "0002",
+        aids.add(aidEntity("A0000000651010", 0, "0002",
             "F878248000", "F878248000", "0000000000"))
 
         val result = handler.setAidParaList(aids)
@@ -629,8 +627,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 //   • Chip: EMV_ENTRY_MODE_CONTACT — without this the SDK defaults to
                 //     the RF kernel and causes a native SIGSEGV crash on card insert.
                 //   • Tap:  EMV_ENTRY_MODE_CONTACTLESS — routes to the RF kernel.
-                // The matching AID_ENTRY_CONTACT / AID_ENTRY_CONTACTLESS entries in
-                // setAidParaList ensure each kernel can build a non-empty candidate list.
+                // AIDs registered with AID_ENTRY_CONTACT_CONTACTLESS serve both kernels.
                 setEmvEntryModeEnum(
                     if (isContactless) EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACTLESS
                     else               EmvEntryModeEnum.EMV_ENTRY_MODE_CONTACT
@@ -643,14 +640,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 "date=${emvTransConfig.transDate} time=${emvTransConfig.transTime} " +
                 "entryMode=$entryModeLabel AIDsNow=${handler.aidListNum}")
 
-            // For chip (contact) transactions, ensure the native EMV core is pointed at
-            // the internal ICC slot before every call. initReader(INNER, 0) calls
-            // EmvCore.setEmvExternalDevice(null), which is required for the contact
-            // AID candidate list to be built from our setAidParaList() data.
-            // Not calling this is the root cause of -8012 (Emv_Candidatelist_Empty).
+            // Defensive: re-assert INNER reader before each chip transaction.
+            // initReader(INNER, 0) → EmvCore.setEmvExternalDevice(null) → setExternalReader(0).
+            // The root cause of -8012 was AID de-duplication (see aidEntity() above),
+            // but this call is kept as a safety net in case any SDK state gets reset.
             if (!isContactless) {
                 handler.initReader(ReaderTypeEnum.INNER, 0)
-                log("EMV", "initReader(INNER, 0) called before chip emvProcess")
+                log("EMV", "initReader(INNER, 0) asserted before chip emvProcess")
             }
 
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
