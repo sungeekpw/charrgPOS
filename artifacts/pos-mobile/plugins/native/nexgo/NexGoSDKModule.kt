@@ -28,6 +28,7 @@ import com.nexgo.oaf.apiv3.emv.EmvEntryModeEnum
 import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessFlowEnum
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
+import com.nexgo.oaf.apiv3.emv.EmvDataSourceEnum
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvTerminalDecisionForSecondGAC
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
@@ -852,39 +853,53 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         // The EMV kernel fires onOnlineProc when it needs an online
                         // authorization result before completing the transaction.
                         //
-                        // Root cause of -8021 (Emv_Arpc_Fail) with recvField55=null:
-                        //   The native emvProcessFlow2 sees null field55 and still triggers
-                        //   EXTERNAL AUTHENTICATE with an empty ARPC — the card returns SW=6300
-                        //   (ARPC verification failed) → kernel maps to Emv_Arpc_Fail.
+                        // Root cause of -8021 (Emv_Arpc_Fail):
+                        //   Bytecode analysis of EmvHandler2Impl$4.run() confirms that the
+                        //   native emvProcessFlow2() always runs EXTERNAL AUTHENTICATE when
+                        //   the card's AIP byte-1 bit-4 (issuer authentication supported) is
+                        //   set, regardless of terminalDecision or recvField55 contents.
+                        //   With no valid ARPC the card returns SW=6300 → -8021.
                         //
-                        // Fix: supply a minimal field55 containing ONLY tag 8A (Authorization
-                        //   Response Code = "Y1" approved). The ABSENCE of tag 91 (Issuer
-                        //   Authentication Data / ARPC) tells the kernel no ARPC was received
-                        //   from the acquirer → EXTERNAL AUTHENTICATE is skipped → kernel
-                        //   goes directly to the 2nd GENERATE AC requesting TC.
+                        // Fix: clear AIP bit-4 in the kernel's TLV store BEFORE calling
+                        //   onSetOnlineProcResponse. The kernel re-reads AIP from its TLV
+                        //   store at the start of emvProcessFlow2, so clearing it here
+                        //   prevents EXTERNAL AUTHENTICATE from being sent.
                         //
-                        // field55 BER-TLV encoding:
-                        //   8A = tag (Authorization Response Code)
-                        //   02 = length
-                        //   59 31 = "Y1" in ASCII = approved online, no signature required
+                        //   AIP (tag 82) byte-0 bit layout (EMV notation, b8=MSB, b1=LSB):
+                        //     b8 = SDA supported
+                        //     b7 = DDA supported
+                        //     b6 = Cardholder verification supported
+                        //     b5 = Terminal risk management required
+                        //     b4 = Issuer authentication supported  ← clear this (0x08)
+                        //     b3 = On-device CVM supported
+                        //     b2 = CDA supported
+                        //     b1 = RFU
                         //
-                        // TODO (Charrg API integration): replace this dummy field55 with the
-                        //   real Field 55 from the acquirer response. It will contain:
-                        //     8A: real ARC from issuer
-                        //     91: Issuer Authentication Data (ARPC, 8 or 16 bytes)
-                        //     71/72: Issuer Script Templates (optional)
-                        //   Then switch to DECISION_KERNEL for full ARPC verification.
-                        val minimalField55 = byteArrayOf(
-                            0x8A.toByte(), 0x02.toByte(), // tag 8A, length 2
-                            0x59.toByte(), 0x31.toByte()  // "Y1" — approved, no sig
-                        )
+                        // TODO (Charrg API integration): remove the AIP patch and instead pass
+                        //   the real Field 55 (containing ARPC in tag 91) from the acquirer
+                        //   response, then use DECISION_KERNEL for proper ARPC verification.
+                        try {
+                            val aip = handler.getTlv(
+                                byteArrayOf(0x82.toByte()),
+                                EmvDataSourceEnum.FROM_KERNEL
+                            )
+                            if (aip != null && aip.isNotEmpty()) {
+                                val origByte0 = aip[0].toInt() and 0xFF
+                                aip[0] = (aip[0].toInt() and 0xF7).toByte() // clear b4 (0x08)
+                                val patchResult = handler.setTlv(byteArrayOf(0x82.toByte()), aip)
+                                log("EMV", "AIP patch: byte0 0x${origByte0.toString(16)} → 0x${(aip[0].toInt() and 0xFF).toString(16)} setTlv=$patchResult")
+                            } else {
+                                log("EMV", "AIP patch skipped — getTlv(82) returned null/empty")
+                            }
+                        } catch (e: Exception) {
+                            log("EMV", "AIP patch failed: ${e.message}")
+                        }
                         val onlineResult = EmvOnlineResultEntity().apply {
-                            setAuthCode("000000") // tag 89: 6-char auth code placeholder
-                            setRecvField55(minimalField55) // tag 8A only — no tag 91 → skip EXTERNAL AUTH
+                            setAuthCode("000000")
                             setTerminalDecisionSecondGAC(EmvTerminalDecisionForSecondGAC.DECISION_TERMINAL_TC)
                         }
                         handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
-                        log("EMV", "onOnlineProc — sent approved (field55=8A02Y1, decision=TERMINAL_TC)")
+                        log("EMV", "onOnlineProc — sent approved (AIP-issuer-auth cleared, decision=TERMINAL_TC)")
                     } catch (e: Exception) {
                         logError("EMV", "onOnlineProc threw", e)
                         handler.onSetOnlineProcResponse(SdkResult.Fail, null)
