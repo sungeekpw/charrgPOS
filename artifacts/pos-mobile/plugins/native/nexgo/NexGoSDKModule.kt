@@ -959,6 +959,60 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             // the user to insert their card into the chip slot.
                             log("EMV", "onFinish Emv_FallBack — contactless card requesting chip fallback")
                             sendEvent("contactless_fallback")
+                        } else if (
+                            retCode == SdkResult.Emv_Arpc_Fail ||
+                            retCode == SdkResult.Emv_Script_Fail ||
+                            retCode == SdkResult.Emv_Success_Arpc_Fail
+                        ) {
+                            // The EMV kernel completed online processing but the issuer
+                            // authentication or script stage failed.  However, card data
+                            // (PAN, expiry, track, ARQC) was already captured during
+                            // READ RECORD and 1st GENERATE AC — before this failure.
+                            //
+                            // retCode meaning:
+                            //   Emv_Arpc_Fail       (-8021): EXTERNAL AUTHENTICATE failed
+                            //                                 (card returned SW=6300, no valid ARPC)
+                            //                                 → kernel aborted, no TC issued
+                            //   Emv_Script_Fail     (-8022): Issuer script execution failed post-TC
+                            //   Emv_Success_Arpc_Fail:       TC issued but ARPC check failed
+                            //
+                            // For development (no Charrg API yet): extract card data here and
+                            // fire card_read_complete so the payment flow can proceed.
+                            //
+                            // TODO (Charrg API): with a real ARPC in recvField55 tag 91,
+                            //   Emv_Arpc_Fail should not occur. If it does, this fallback
+                            //   remains useful as a safety net.
+                            log("EMV", "onFinish retCode=$retCode — attempting card data recovery (pre-commit data should be available)")
+                            val emvCardData = try { handler.getEmvCardDataInfo() } catch (e: Exception) {
+                                logError("EMV", "getEmvCardDataInfo() threw during ARPC-fail recovery", e)
+                                null
+                            }
+                            val pan: String    = emvCardData?.cardNo     ?: ""
+                            val expiry: String = emvCardData?.expiredDate ?: ""
+                            val track2: String = emvCardData?.tk2         ?: ""
+                            val track1: String = emvCardData?.tk1         ?: ""
+                            val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
+                            log("EMV", "onFinish ARPC-fail recovery — pan=***$last4 expiry=$expiry track2Empty=${track2.isEmpty()}")
+                            if (pan.isNotEmpty()) {
+                                sendEvent("reading_complete")
+                                sendEvent("card_read_complete", Arguments.createMap().apply {
+                                    putString("pan", pan)
+                                    putString("expiry", expiry)
+                                    putString("cardholder_name", "")
+                                    putString("track1", track1)
+                                    putString("track2", track2)
+                                    putString("emv_data", "")
+                                    putString("entry_mode", entryMode)
+                                    putString("last4", last4)
+                                    putString("card_brand", detectCardBrand(pan))
+                                })
+                                log("EMV", "onFinish ARPC-fail recovery SUCCESS — card_read_complete fired for ***$last4")
+                            } else {
+                                logError("EMV", "onFinish ARPC-fail recovery FAILED — getEmvCardDataInfo() returned no PAN (retCode=$retCode)")
+                                sendEvent("reading_failed", Arguments.createMap().apply {
+                                    putString("message", "Card data unavailable after ARPC failure (code: $retCode)")
+                                })
+                            }
                         } else {
                             logError("EMV", "onFinish FAILED retCode=$retCode — check SdkResult constants for meaning")
                             // Dump AID table here to detect if initEmvConfiguration() (which runs

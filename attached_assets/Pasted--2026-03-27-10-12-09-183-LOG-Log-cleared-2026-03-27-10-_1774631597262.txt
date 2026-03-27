@@ -1,0 +1,94 @@
+[2026-03-27 10:12:09.183] [LOG] Log cleared
+[2026-03-27 10:12:13.935] [INIT] initialize() called — context=MainActivity
+[2026-03-27 10:12:13.936] [INIT] DeviceEngine obtained OK
+[2026-03-27 10:12:13.937] [INIT] CardReader obtained: true
+[2026-03-27 10:12:13.938] [INIT] EmvHandler2 obtained: true
+[2026-03-27 10:12:13.940] [INIT] initReader(INNER, 0) called — native EMV core routed to internal ICC slot
+[2026-03-27 10:12:13.941] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-03-27 10:12:13.942] [TERM] initTermConfig result=0 (0=OK, -2=null input, other=native error)
+[2026-03-27 10:12:13.944] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-03-27 10:12:14.050] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-03-27 10:12:14.079] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.080] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.082] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.083] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.085] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.086] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.087] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.088] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.090] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.091] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.092] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.094] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:14.095] [EMVCAPK] CAPK count after setup=0
+[2026-03-27 10:12:14.096] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-27 10:12:14.099] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 (7 bytes) → result=1
+[2026-03-27 10:12:14.102] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 (7 bytes) → result=1
+[2026-03-27 10:12:14.104] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 (7 bytes) → result=1
+[2026-03-27 10:12:14.107] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 (7 bytes) → result=1
+[2026-03-27 10:12:14.110] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 (7 bytes) → result=1
+[2026-03-27 10:12:14.112] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 (7 bytes) → result=1
+[2026-03-27 10:12:14.115] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 (8 bytes) → result=1
+[2026-03-27 10:12:14.117] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 (7 bytes) → result=1
+[2026-03-27 10:12:14.119] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-27 10:12:14.123] [INIT] initialize() complete — AIDs=12
+[2026-03-27 10:12:18.076] [INIT] initialize() called — context=MainActivity
+[2026-03-27 10:12:18.078] [INIT] DeviceEngine obtained OK
+[2026-03-27 10:12:18.079] [INIT] CardReader obtained: true
+[2026-03-27 10:12:18.081] [INIT] EmvHandler2 obtained: true
+[2026-03-27 10:12:18.083] [INIT] initReader(INNER, 0) called — native EMV core routed to internal ICC slot
+[2026-03-27 10:12:18.085] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-03-27 10:12:18.089] [TERM] initTermConfig result=0 (0=OK, -2=null input, other=native error)
+[2026-03-27 10:12:18.093] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-03-27 10:12:18.194] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-03-27 10:12:18.213] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.214] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.215] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.217] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.218] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.219] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.220] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.221] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.222] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.223] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.224] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.226] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:18.227] [EMVCAPK] CAPK count after setup=0
+[2026-03-27 10:12:18.228] [EMVAID-CL] Contactless kernel AID list reset — registering AIDs per brand
+[2026-03-27 10:12:18.232] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000031010 (7 bytes) → result=1
+[2026-03-27 10:12:18.234] [EMVAID-CL]   EMV_CARD_BRAND_VISA A0000000032010 (7 bytes) → result=1
+[2026-03-27 10:12:18.236] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000041010 (7 bytes) → result=1
+[2026-03-27 10:12:18.238] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000042203 (7 bytes) → result=1
+[2026-03-27 10:12:18.240] [EMVAID-CL]   EMV_CARD_BRAND_MASTER A0000000043060 (7 bytes) → result=1
+[2026-03-27 10:12:18.242] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A0000000250101 (7 bytes) → result=1
+[2026-03-27 10:12:18.245] [EMVAID-CL]   EMV_CARD_BRAND_AMEX A000000025010402 (8 bytes) → result=1
+[2026-03-27 10:12:18.247] [EMVAID-CL]   EMV_CARD_BRAND_JCB A0000000651010 (7 bytes) → result=1
+[2026-03-27 10:12:18.248] [EMVAID-CL] Contactless AIDs registered (8 entries)
+[2026-03-27 10:12:18.250] [INIT] initialize() complete — AIDs=12
+[2026-03-27 10:12:18.265] [CARD] startCardRead() amount=2520.0
+[2026-03-27 10:12:18.267] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-03-27 10:12:20.414] [CARD] onCardInfo OK — slot=ICC1
+[2026-03-27 10:12:20.415] [CARD] Card inserted (chip/ICC)
+[2026-03-27 10:12:20.417] [EMV] processEmvCard() entryMode=chip amount=2520.0
+[2026-03-27 10:12:20.419] [EMV] emvProcess() config — amount=252000 date=260327 time=101220 entryMode=CONTACT AIDsNow=12
+[2026-03-27 10:12:20.420] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-03-27 10:12:20.433] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.435] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.436] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.437] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.438] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.438] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.439] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.440] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.441] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.442] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.443] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.443] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT
+[2026-03-27 10:12:20.444] [EMVCAPK] CAPK count pre-emvProcess=0
+[2026-03-27 10:12:20.593] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-03-27 10:12:20.595] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-03-27 10:12:20.710] [EMV] onConfirmCardNo — last4=7774
+[2026-03-27 10:12:20.831] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-03-27 10:12:20.833] [EMV] onOnlineProc — sent approved (AIP-issuer-auth cleared, decision=TERMINAL_TC)
+[2026-03-27 10:12:20.940] [EMV] onFinish retCode=-8021 (SdkResult.Success=0)
+[2026-03-27 10:12:20.941] [ERROR/EMV] onFinish FAILED retCode=-8021 — check SdkResult constants for meaning
