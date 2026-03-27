@@ -322,27 +322,33 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
         val aids = mutableListOf<AidEntity>()
 
+        // ASI=1 (df01=0x01) enables PARTIAL MATCH: the terminal AID is treated as a
+        // prefix — any card AID that STARTS WITH the terminal AID is accepted.
+        // ASI=0 (df01=0x00) requires EXACT MATCH — the card AID must equal the
+        // terminal AID byte-for-byte. We use ASI=1 for all networks to handle
+        // variant AIDs (e.g. A000000003101001 issued by some US banks).
+
         // ── Visa Credit / Debit ─────────── A0000000031010
-        aids.add(aidEntity("A0000000031010", 0, "0096",
+        aids.add(aidEntity("A0000000031010", 1, "0096",
             "DC4000A800", "DC4004F800", "0010000000"))
 
         // ── Visa Electron ───────────────── A0000000032010
-        aids.add(aidEntity("A0000000032010", 0, "0096",
+        aids.add(aidEntity("A0000000032010", 1, "0096",
             "DC4000A800", "DC4004F800", "0010000000"))
 
         // ── Mastercard Credit ───────────── A0000000041010
-        aids.add(aidEntity("A0000000041010", 0, "0002",
+        aids.add(aidEntity("A0000000041010", 1, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
         // ── Mastercard Debit ────────────── A0000000042203
-        aids.add(aidEntity("A0000000042203", 0, "0002",
+        aids.add(aidEntity("A0000000042203", 1, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
         // ── Maestro ─────────────────────── A0000000043060
-        aids.add(aidEntity("A0000000043060", 0, "0002",
+        aids.add(aidEntity("A0000000043060", 1, "0002",
             "FC50BCF800", "FC50BCF800", "0000000000"))
 
-        // ── American Express ─────────────── A0000000250101  (exact match)
+        // ── American Express ─────────────── A0000000250101
         aids.add(aidEntity("A0000000250101", 1, "0001",
             "FC78BCF800", "F878BC7800", "0000000000"))
 
@@ -352,16 +358,26 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             "FC78BCF800", "F878BC7800", "0000000000"))
 
         // ── Discover ────────────────────── A0000001523010
-        aids.add(aidEntity("A0000001523010", 0, "0001",
+        aids.add(aidEntity("A0000001523010", 1, "0001",
             "F800F0A000", "F800F0A000", "0000000000"))
 
         // ── Diners Club / Discover ──────── A0000001524010
-        aids.add(aidEntity("A0000001524010", 0, "0001",
+        aids.add(aidEntity("A0000001524010", 1, "0001",
             "F800F0A000", "F800F0A000", "0000000000"))
 
         // ── JCB ─────────────────────────── A0000000651010
-        aids.add(aidEntity("A0000000651010", 0, "0002",
+        aids.add(aidEntity("A0000000651010", 1, "0002",
             "F878248000", "F878248000", "0000000000"))
+
+        // ── US Common Debit / STAR EMV ──── A0000002771010
+        // Many US bank-issued debit chip cards expose STAR EMV as their primary
+        // (or only) AID on chip. Without this entry, -8012 fires for those cards.
+        aids.add(aidEntity("A0000002771010", 1, "0001",
+            "DC4000A800", "DC4004F800", "0010000000"))
+
+        // ── US PIN Debit / PULSE ─────────── A0000002761010
+        aids.add(aidEntity("A0000002761010", 1, "0001",
+            "DC4000A800", "DC4004F800", "0010000000"))
 
         val result = handler.setAidParaList(aids)
         log("EMVAID", "setAidParaList result=$result — AIDs after=${handler.aidListNum} (expected ${aids.size})")
@@ -388,6 +404,41 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             }
         } catch (e: Exception) {
             logError("EMVAID-DUMP", "getAidList threw at label=$label", e)
+        }
+    }
+
+    /**
+     * Read recent Android logcat lines that look like native EMV traces.
+     * NexGo's emvDebugLog(true) and LogUtils.setDebugEnable(true) write APDU
+     * command/response bytes and PPSE/SELECT results to logcat. Capturing them
+     * after a -8012 lets us see exactly what AID(s) the card advertised so we
+     * can match (or add) them in our terminal AID table.
+     *
+     * This is best-effort: if the process doesn't have READ_LOGS permission the
+     * exec() will succeed but the output will be empty (or the process may fail),
+     * in which case we log a note and move on.
+     */
+    private fun captureNativeEmvLog() {
+        try {
+            val proc = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", "400"))
+            val raw = proc.inputStream.bufferedReader().readText()
+            proc.destroy()
+            val filtered = raw.lines().filter { line ->
+                val l = line.lowercase()
+                l.contains("emv") || l.contains("pboc") || l.contains("apdu") ||
+                l.contains("ppse") || l.contains("2pay") || l.contains("1pay") ||
+                l.contains("nexgo") || l.contains("candidat") || l.contains("select") ||
+                l.contains("df01") || l.contains("df23") || l.contains("9f06")
+            }.takeLast(120)
+            if (filtered.isEmpty()) {
+                log("LOGCAT", "No EMV-related logcat lines found (READ_LOGS may be unavailable)")
+            } else {
+                log("LOGCAT", "=== NATIVE EMV LOGCAT (${filtered.size} lines) ===")
+                filtered.forEach { log("LOGCAT", it) }
+                log("LOGCAT", "=== END NATIVE EMV LOGCAT ===")
+            }
+        } catch (e: Exception) {
+            log("LOGCAT", "captureNativeEmvLog failed: ${e.message}")
         }
     }
 
@@ -881,6 +932,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 log("EMV", "Post-failure AID dump (retCode=-8012):")
                                 dumpAidTable("post-8012")
                                 log("EMVCAPK", "CAPK count post-8012=${emvHandler?.capkListNum ?: -1}")
+                                // Best-effort logcat capture: NexGo's emvDebugLog(true) writes
+                                // APDU traces and PPSE/SELECT results to Android logcat.
+                                // Capturing it here gives us the exact card AID(s) being advertised
+                                // so we can match them against our registered terminal AID table.
+                                captureNativeEmvLog()
                             }
                             sendEvent("reading_failed", Arguments.createMap().apply {
                                 putString("message", "EMV process failed with code: $retCode")
