@@ -11,6 +11,7 @@ import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.nexgo.common.LogUtils
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.SdkResult
@@ -248,7 +249,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             // AID table, causing -8012 (Emv_Candidatelist_Empty) on every chip transaction.
             emvHandler!!.initReader(ReaderTypeEnum.INNER, 0)
             log("INIT", "initReader(INNER, 0) called — native EMV core routed to internal ICC slot")
+            // Enable verbose native-kernel logging (APDU traces, AID matching detail)
+            // so that Android logcat captures the full emvProcessFlow1 internals.
+            emvHandler!!.emvDebugLog(true)
+            // Enable NexGo Java-layer debug logging (LogUtils gates SDK log output).
+            LogUtils.setDebugEnable(true)
+            log("INIT", "emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled")
+            setupTerminalConfig()
             setupEmvAids()
+            setupContactlessAids()
             log("INIT", "initialize() complete — AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
@@ -374,16 +383,41 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Register AIDs with the contactless (RF/NFC) kernel.
+     * Set terminal-level EMV configuration via initTermConfig() →
+     * EmvCore.setTerminalAttribute(). The native kernel uses these attributes
+     * during the transaction flow (terminal type, capabilities, floor limit, etc.).
+     * Some NexGo kernel versions gate emvProcessFlow1 on terminal config being
+     * present — calling this prevents spurious -8012 (empty candidate list) errors.
      *
-     * The NexGo SDK maintains TWO separate AID tables:
-     *   1. setAidParaList()             → contact (chip) kernel
-     *   2. contactlessAppendAidIntoKernel() → contactless (tap) kernel
-     *
-     * Without calling this, contactless cards always get error 8014
-     * (Emv_Candidatelist_Empty) because the tap kernel has no AIDs registered
-     * even though the chip kernel is fully configured.
+     * Tags used (standard EMV BER-TLV encoding):
+     *   9F1A  Terminal Country Code  (2 bytes BCD — 0840 = USA)
+     *   5F2A  Transaction Currency Code (2 bytes BCD — 0840 = USD)
+     *   9F35  Terminal Type         (1 byte — 0x22 = attended, online, merchant)
+     *   9F33  Terminal Capabilities (3 bytes — E0E8C8 = mag+chip+pin+sig)
+     *   9F40  Additional Terminal Capabilities (5 bytes)
+     *   9F1B  Terminal Floor Limit  (4 bytes — 0 = require online for all)
      */
+    private fun setupTerminalConfig() {
+        val handler = emvHandler ?: run {
+            logError("TERM", "emvHandler is null — cannot configure terminal attributes")
+            return
+        }
+        try {
+            val termTlv = hexToBytes(
+                "9F1A020840" +          // Terminal Country Code: USA (840 → BCD 0840)
+                "5F2A020840" +          // Transaction Currency Code: USD
+                "9F350122" +            // Terminal Type: attended, online, merchant
+                "9F3303E0E8C8" +        // Terminal Capabilities: mag+chip+offline PIN+online PIN+sig
+                "9F4005E000F0A001" +    // Additional Terminal Capabilities
+                "9F1B0400000000"        // Terminal Floor Limit: 0 (all online)
+            )
+            val result = handler.initTermConfig(termTlv)
+            log("TERM", "initTermConfig result=$result (0=OK, -2=null input, other=native error)")
+        } catch (e: Exception) {
+            logError("TERM", "setupTerminalConfig threw", e)
+        }
+    }
+
     private fun setupContactlessAids() {
         val handler = emvHandler ?: return
         try {
@@ -825,6 +859,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             sendEvent("contactless_fallback")
                         } else {
                             logError("EMV", "onFinish FAILED retCode=$retCode — check SdkResult constants for meaning")
+                            // Dump AID table here to detect if initEmvConfiguration() (which runs
+                            // at the top of every emvProcess thread) has cleared the AID table.
+                            // If the count drops to 0 here vs the pre-emvProcess count, that is
+                            // the root cause of the empty candidate list.
+                            if (retCode == -8012) {
+                                log("EMV", "Post-failure AID dump (retCode=-8012):")
+                                dumpAidTable("post-8012")
+                                log("EMVCAPK", "CAPK count post-8012=${emvHandler?.capkListNum ?: -1}")
+                            }
                             sendEvent("reading_failed", Arguments.createMap().apply {
                                 putString("message", "EMV process failed with code: $retCode")
                             })
