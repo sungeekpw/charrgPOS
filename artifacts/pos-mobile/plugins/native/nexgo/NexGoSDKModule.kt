@@ -267,18 +267,24 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Build ONE AidEntity for a given AID using AID_ENTRY_CONTACT_CONTACTLESS.
+     * Build ONE AidEntity for the chip/contact kernel (AID_ENTRY_CONTACT).
      *
      * Root-cause analysis of -8012 (Emv_Candidatelist_Empty):
-     * The native EMV kernel stores AIDs keyed by AID value (tag df812b encodes the
-     * entry mode). When we registered two entries per AID — AID_ENTRY_CONTACT then
-     * AID_ENTRY_CONTACTLESS — the kernel de-duplicated by AID value, keeping only
-     * the CONTACTLESS entry. Contact transactions then found zero CONTACT-capable
-     * AIDs → empty candidate list → -8012.
      *
-     * Fix: register each AID exactly once with AID_ENTRY_CONTACT_CONTACTLESS
-     * (ordinal 0, the SDK default), which covers both chip and tap in the same
-     * entry. 10 entries total instead of 20.
+     * Bytecode analysis of aidEntityToTlv() shows the entry mode enum ordinal is
+     * stored directly as tag df23 (one byte). The native libpboc kernel interprets:
+     *   df23 = 0x00  → AID_ENTRY_CONTACT_CONTACTLESS ordinal — treated as DISABLED
+     *   df23 = 0x01  → AID_ENTRY_CONTACT ordinal         — contact chip ✓
+     *   df23 = 0x02  → AID_ENTRY_CONTACTLESS ordinal     — tap only
+     *
+     * AID_ENTRY_CONTACT_CONTACTLESS (ordinal 0 → df23=0x00) was our "fix" for
+     * de-duplication, but it actually tells the native kernel the AID is not
+     * active for any interface — hence 10 AIDs registered but candidate list
+     * always empty → -8012.
+     *
+     * Correct approach:
+     *   setAidParaList()  → AID_ENTRY_CONTACT (df23=0x01) — chip kernel only
+     *   contactlessAppendAidIntoKernel() — tap kernel gets its own separate list
      */
     private fun aidEntity(
         aidHex: String, asi: Int, appVer: String,
@@ -298,7 +304,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         setContactlessTransLimit(clTransLimit)
         setContactlessCvmLimit(clCvmLimit)
         setContactlessFloorLimit(clFloorLimit)
-        setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
+        // AID_ENTRY_CONTACT (df23=0x01) — the chip kernel only selects AIDs with
+        // this mode. AID_ENTRY_CONTACT_CONTACTLESS (df23=0x00) is treated as
+        // "disabled" by the native kernel, causing -8012 every time.
+        setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT)
     }
 
     private fun setupEmvAids() {
@@ -439,9 +448,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             )
 
             for ((brand, aidHex) in clAids) {
-                // 0x01 = partial-match selection; 0x00 returns Param_In_Invalid (-2)
-                val r = handler.contactlessAppendAidIntoKernel(brand, 0x01.toByte(), hexToBytes(aidHex))
-                log("EMVAID-CL", "  $brand $aidHex → result=$r")
+                // Bytecode analysis of contactlessAppendAidIntoKernel() shows the
+                // second parameter is the MINIMUM AID MATCH LENGTH (not an ASI flag).
+                // Validation rejects values < 5 with -2 (Param_In_Invalid).
+                // Passing the full AID byte length gives exact-match semantics and
+                // passes validation (all our AIDs are 7-8 bytes, well above 5).
+                val aidBytes = hexToBytes(aidHex)
+                val r = handler.contactlessAppendAidIntoKernel(brand, aidBytes.size.toByte(), aidBytes)
+                log("EMVAID-CL", "  $brand $aidHex (${aidBytes.size} bytes) → result=$r")
             }
             log("EMVAID-CL", "Contactless AIDs registered (${clAids.size} entries)")
         } catch (e: Exception) {
