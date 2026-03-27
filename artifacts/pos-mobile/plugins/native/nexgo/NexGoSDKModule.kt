@@ -852,36 +852,39 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         // The EMV kernel fires onOnlineProc when it needs an online
                         // authorization result before completing the transaction.
                         //
-                        // Bytecode analysis of EmvHandler2Impl$4.run():
-                        //   emvProcessFlow2(isApproved, rejCode, authCode, recvField55, terminalDecision)
-                        //   - isApproved = retCode == SdkResult.Success (true here)
-                        //   - authCode   = EmvOnlineResultEntity.getAuthCode().getBytes()
-                        //   - recvField55 = the ISO 8583 Field 55 issuer response (ARPC + scripts)
-                        //   - terminalDecision ordinal: 0=KERNEL, 1=AAC(decline), 2=TC(approve)
+                        // Root cause of -8021 (Emv_Arpc_Fail) with recvField55=null:
+                        //   The native emvProcessFlow2 sees null field55 and still triggers
+                        //   EXTERNAL AUTHENTICATE with an empty ARPC — the card returns SW=6300
+                        //   (ARPC verification failed) → kernel maps to Emv_Arpc_Fail.
                         //
-                        // Root cause of -8021 (Emv_Arpc_Fail):
-                        //   When terminalDecision=DECISION_KERNEL (0), the kernel lets the card
-                        //   verify the ARPC from recvField55. Since we send recvField55=null there
-                        //   is no ARPC for the card to verify → the card fails authentication.
+                        // Fix: supply a minimal field55 containing ONLY tag 8A (Authorization
+                        //   Response Code = "Y1" approved). The ABSENCE of tag 91 (Issuer
+                        //   Authentication Data / ARPC) tells the kernel no ARPC was received
+                        //   from the acquirer → EXTERNAL AUTHENTICATE is skipped → kernel
+                        //   goes directly to the 2nd GENERATE AC requesting TC.
                         //
-                        // Fix: use DECISION_TERMINAL_TC (ordinal 2) to force a TC request.
-                        //   With this decision the kernel tells the card to commit the transaction
-                        //   without waiting for ARPC verification. This is standard for pure-online
-                        //   terminals that do not receive Field 55 from the acquirer.
+                        // field55 BER-TLV encoding:
+                        //   8A = tag (Authorization Response Code)
+                        //   02 = length
+                        //   59 31 = "Y1" in ASCII = approved online, no signature required
                         //
-                        // TODO (Charrg API integration): when the Charrg API returns a Field 55
-                        //   in its authorization response, set it via setRecvField55() and switch
-                        //   back to DECISION_KERNEL so the card performs proper ARPC verification.
+                        // TODO (Charrg API integration): replace this dummy field55 with the
+                        //   real Field 55 from the acquirer response. It will contain:
+                        //     8A: real ARC from issuer
+                        //     91: Issuer Authentication Data (ARPC, 8 or 16 bytes)
+                        //     71/72: Issuer Script Templates (optional)
+                        //   Then switch to DECISION_KERNEL for full ARPC verification.
+                        val minimalField55 = byteArrayOf(
+                            0x8A.toByte(), 0x02.toByte(), // tag 8A, length 2
+                            0x59.toByte(), 0x31.toByte()  // "Y1" — approved, no sig
+                        )
                         val onlineResult = EmvOnlineResultEntity().apply {
-                            // Authorization code: 6 ASCII characters (tag 89).
-                            // "000000" = placeholder; real value comes from acquirer response.
-                            setAuthCode("000000")
-                            // Force TC (Transaction Certificate) in the 2nd GAC —
-                            // tells the card to commit without ARPC verification.
+                            setAuthCode("000000") // tag 89: 6-char auth code placeholder
+                            setRecvField55(minimalField55) // tag 8A only — no tag 91 → skip EXTERNAL AUTH
                             setTerminalDecisionSecondGAC(EmvTerminalDecisionForSecondGAC.DECISION_TERMINAL_TC)
                         }
                         handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
-                        log("EMV", "onOnlineProc — sent approved (authCode=000000, decision=TERMINAL_TC)")
+                        log("EMV", "onOnlineProc — sent approved (field55=8A02Y1, decision=TERMINAL_TC)")
                     } catch (e: Exception) {
                         logError("EMV", "onOnlineProc threw", e)
                         handler.onSetOnlineProcResponse(SdkResult.Fail, null)
