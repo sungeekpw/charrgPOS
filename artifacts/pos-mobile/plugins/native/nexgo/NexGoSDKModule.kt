@@ -29,6 +29,7 @@ import com.nexgo.oaf.apiv3.emv.EmvHandler2
 import com.nexgo.oaf.apiv3.emv.EmvProcessFlowEnum
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
+import com.nexgo.oaf.apiv3.emv.EmvTerminalDecisionForSecondGAC
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
 import com.nexgo.oaf.apiv3.emv.OnEmvProcessListener2
 
@@ -850,19 +851,37 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     try {
                         // The EMV kernel fires onOnlineProc when it needs an online
                         // authorization result before completing the transaction.
-                        // Passing null or wrong data here returns error 8020.
                         //
-                        // We return ARC "00" (approved) so the EMV kernel completes
-                        // the flow and delivers full card data in onFinish.
-                        // The actual payment charge happens via the Charrg API after
-                        // onFinish delivers card data to the TypeScript layer.
+                        // Bytecode analysis of EmvHandler2Impl$4.run():
+                        //   emvProcessFlow2(isApproved, rejCode, authCode, recvField55, terminalDecision)
+                        //   - isApproved = retCode == SdkResult.Success (true here)
+                        //   - authCode   = EmvOnlineResultEntity.getAuthCode().getBytes()
+                        //   - recvField55 = the ISO 8583 Field 55 issuer response (ARPC + scripts)
+                        //   - terminalDecision ordinal: 0=KERNEL, 1=AAC(decline), 2=TC(approve)
                         //
-                        // Field name confirmed via bytecode: setAuthCode(), not setArc().
+                        // Root cause of -8021 (Emv_Arpc_Fail):
+                        //   When terminalDecision=DECISION_KERNEL (0), the kernel lets the card
+                        //   verify the ARPC from recvField55. Since we send recvField55=null there
+                        //   is no ARPC for the card to verify → the card fails authentication.
+                        //
+                        // Fix: use DECISION_TERMINAL_TC (ordinal 2) to force a TC request.
+                        //   With this decision the kernel tells the card to commit the transaction
+                        //   without waiting for ARPC verification. This is standard for pure-online
+                        //   terminals that do not receive Field 55 from the acquirer.
+                        //
+                        // TODO (Charrg API integration): when the Charrg API returns a Field 55
+                        //   in its authorization response, set it via setRecvField55() and switch
+                        //   back to DECISION_KERNEL so the card performs proper ARPC verification.
                         val onlineResult = EmvOnlineResultEntity().apply {
-                            setAuthCode("00") // ARC 00 = approved (String, not ByteArray)
+                            // Authorization code: 6 ASCII characters (tag 89).
+                            // "000000" = placeholder; real value comes from acquirer response.
+                            setAuthCode("000000")
+                            // Force TC (Transaction Certificate) in the 2nd GAC —
+                            // tells the card to commit without ARPC verification.
+                            setTerminalDecisionSecondGAC(EmvTerminalDecisionForSecondGAC.DECISION_TERMINAL_TC)
                         }
                         handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
-                        log("EMV", "onOnlineProc — sent approved (ARC=00 via setAuthCode)")
+                        log("EMV", "onOnlineProc — sent approved (authCode=000000, decision=TERMINAL_TC)")
                     } catch (e: Exception) {
                         logError("EMV", "onOnlineProc threw", e)
                         handler.onSetOnlineProcResponse(SdkResult.Fail, null)
