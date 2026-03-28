@@ -306,8 +306,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         aidHex: String, asi: Int, appVer: String,
         tacDefault: String, tacOnline: String, tacDenial: String,
         floorLimit: Long = 0L,
-        clTransLimit: Long = 25000L,
-        clCvmLimit: Long = 2500L,
+        // US contactless limits (units = cents):
+        //   clTransLimit  — max contactless transaction; set high since Charrg API enforces real limits
+        //   clCvmLimit    — above this amount CVM (PIN) is required; high = no-CVM for all taps
+        //   clFloorLimit  — transactions above this go online; 0 = all go online (correct for online terminal)
+        // Reference app uses contactlessTransLimit=99999999 to avoid any contactless ceiling.
+        // Our previous value (2500 = $25.00 CVM limit) caused Emv_CTLS_TransTryAgain (-8034)
+        // for any contactless amount > $25 because the kernel couldn't do PIN on RF interface.
+        clTransLimit: Long = 9999999L,
+        clCvmLimit: Long = 9999999L,
         clFloorLimit: Long = 0L
     ): AidEntity = AidEntity().apply {
         setAid(aidHex)
