@@ -807,8 +807,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         val aidsSummary  = appInfoList?.joinToString {
                             it.aid?.joinToString("") { b -> "%02X".format(b) } ?: "?"
                         } ?: "none"
-                        log("EMV", "onSelApp REACHED — names=[$namesSummary] aids=[$aidsSummary] isFirstSelect=$isFirstSelect — auto-selecting index 0")
-                        handler.onSetSelAppResponse(0)
+                        // onSetSelAppResponse uses 1-based indexing:
+                        //   0 = cancel/abort the transaction (→ retCode=-8020 Emv_Cancel)
+                        //   1 = select app at list index 0 (first app)
+                        //   2 = select app at list index 1 (second app)
+                        // Reference app (emvTestConsole) always passes 1 for auto-select.
+                        log("EMV", "onSelApp REACHED — names=[$namesSummary] aids=[$aidsSummary] isFirstSelect=$isFirstSelect — auto-selecting 1st app (response=1)")
+                        handler.onSetSelAppResponse(1)
                     } catch (e: Exception) {
                         logError("EMV", "onSelApp threw", e)
                     }
@@ -867,12 +872,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         // The EMV kernel fires onOnlineProc when it needs an online
                         // authorization result before completing the transaction.
                         //
-                        // Root cause of -8021 (Emv_Arpc_Fail):
+                        // Root cause of Emv_Arpc_Fail (-8022, confirmed from SdkResult.class):
                         //   Bytecode analysis of EmvHandler2Impl$4.run() confirms that the
                         //   native emvProcessFlow2() always runs EXTERNAL AUTHENTICATE when
                         //   the card's AIP byte-1 bit-4 (issuer authentication supported) is
                         //   set, regardless of terminalDecision or recvField55 contents.
-                        //   With no valid ARPC the card returns SW=6300 → -8021.
+                        //   With no valid ARPC the card returns SW=6300 → Emv_Arpc_Fail.
                         //
                         // Fix: clear AIP bit-4 in the kernel's TLV store BEFORE calling
                         //   onSetOnlineProcResponse. The kernel re-reads AIP from its TLV
@@ -1001,10 +1006,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             // already captured during READ RECORD — before this failure.
                             // Emv_Success_Arpc_Fail is handled in the success branch above.
                             //
-                            // retCode meaning:
-                            //   Emv_Arpc_Fail   (-8021): EXTERNAL AUTHENTICATE failed
+                            // retCode meaning (confirmed from javap of SdkResult.class):
+                            //   Emv_Arpc_Fail   (-8022): EXTERNAL AUTHENTICATE failed
                             //                            (card returned SW=6300, no valid ARPC)
-                            //   Emv_Script_Fail (-8022): Issuer script execution failed post-TC
+                            //   Emv_Script_Fail (-8023): Issuer script execution failed post-TC
                             //
                             // For development (no Charrg API yet): extract card data here and
                             // fire card_read_complete so the payment flow can proceed.
