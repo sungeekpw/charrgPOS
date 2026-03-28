@@ -272,24 +272,29 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Build ONE AidEntity for the chip/contact kernel (AID_ENTRY_CONTACT).
+     * Build ONE AidEntity registered for both chip and contactless.
      *
-     * Root-cause analysis of -8012 (Emv_Candidatelist_Empty):
+     * AID entry mode analysis (tag df23 in aidEntityToTlv bytecode):
+     *   df23 = 0x00  → AID_ENTRY_CONTACT_CONTACTLESS — both interfaces ✓
+     *   df23 = 0x01  → AID_ENTRY_CONTACT             — chip only
+     *   df23 = 0x02  → AID_ENTRY_CONTACTLESS          — tap only
      *
-     * Bytecode analysis of aidEntityToTlv() shows the entry mode enum ordinal is
-     * stored directly as tag df23 (one byte). The native libpboc kernel interprets:
-     *   df23 = 0x00  → AID_ENTRY_CONTACT_CONTACTLESS ordinal — treated as DISABLED
-     *   df23 = 0x01  → AID_ENTRY_CONTACT ordinal         — contact chip ✓
-     *   df23 = 0x02  → AID_ENTRY_CONTACTLESS ordinal     — tap only
-     *
-     * AID_ENTRY_CONTACT_CONTACTLESS (ordinal 0 → df23=0x00) was our "fix" for
-     * de-duplication, but it actually tells the native kernel the AID is not
-     * active for any interface — hence 10 AIDs registered but candidate list
-     * always empty → -8012.
-     *
-     * Correct approach:
-     *   setAidParaList()  → AID_ENTRY_CONTACT (df23=0x01) — chip kernel only
-     *   contactlessAppendAidIntoKernel() — tap kernel gets its own separate list
+     * History:
+     *   v1: AID_ENTRY_CONTACT_CONTACTLESS → chip -8012 (candidate list empty)
+     *   v2: AID_ENTRY_CONTACT → chip works, contactless -8012:
+     *         contactlessAppendAidIntoKernel configures a separate subsystem
+     *         (likely PayWave/PayPass offline kernel), NOT the contactless
+     *         emvProcessFlow1 AID list. emvProcessFlow1 for contactless uses
+     *         the setAidParaList AIDs filtered by mode — with all AIDs as
+     *         AID_ENTRY_CONTACT, the contactless filter returned zero entries
+     *         → immediate -8012 before PPSE is even sent. Logcat confirmed:
+     *         no APDU lines between emvProcessFlow1 start and onFinish -8012.
+     *   v3: AID_ENTRY_CONTACT_CONTACTLESS — both kernels see the AIDs.
+     *         The reference app (NexGo emvTestConsole) uses only setAidParaList
+     *         with the default mode (AID_ENTRY_CONTACT_CONTACTLESS) for both
+     *         chip and contactless — no contactlessAppendAidIntoKernel at all.
+     *         initReader(INNER, 0) is still called before chip emvProcess,
+     *         which routes the EMV core to the ICC slot so chip still works.
      */
     private fun aidEntity(
         aidHex: String, asi: Int, appVer: String,
@@ -309,10 +314,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         setContactlessTransLimit(clTransLimit)
         setContactlessCvmLimit(clCvmLimit)
         setContactlessFloorLimit(clFloorLimit)
-        // AID_ENTRY_CONTACT (df23=0x01) — the chip kernel only selects AIDs with
-        // this mode. AID_ENTRY_CONTACT_CONTACTLESS (df23=0x00) is treated as
-        // "disabled" by the native kernel, causing -8012 every time.
-        setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT)
+        // AID_ENTRY_CONTACT_CONTACTLESS (df23=0x00) — both the chip kernel and
+        // the contactless emvProcessFlow1 see this AID. The reference app uses
+        // this default mode exclusively (no contactlessAppendAidIntoKernel).
+        setAidEntryModeEnum(AidEntryModeEnum.AID_ENTRY_CONTACT_CONTACTLESS)
     }
 
     private fun setupEmvAids() {
