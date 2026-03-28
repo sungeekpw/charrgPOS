@@ -30,7 +30,6 @@ import com.nexgo.oaf.apiv3.emv.EmvProcessFlowEnum
 import com.nexgo.oaf.apiv3.emv.EmvProcessResultEntity
 import com.nexgo.oaf.apiv3.emv.EmvDataSourceEnum
 import com.nexgo.oaf.apiv3.emv.EmvOnlineResultEntity
-import com.nexgo.oaf.apiv3.emv.EmvTerminalDecisionForSecondGAC
 import com.nexgo.oaf.apiv3.emv.EmvTransConfigurationEntity
 import com.nexgo.oaf.apiv3.emv.OnEmvProcessListener2
 
@@ -894,12 +893,23 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         } catch (e: Exception) {
                             log("EMV", "AIP patch failed: ${e.message}")
                         }
+                        // Match reference app exactly: authCode + rejCode="00" + null field55.
+                        // Do NOT call setTerminalDecisionSecondGAC() — the reference app
+                        // omits this entirely, which lets the kernel decide. When the
+                        // kernel sees rejCode="00" with no explicit DECISION_TERMINAL_TC,
+                        // it takes a code path that yields Emv_Success_Arpc_Fail (TC issued,
+                        // ARPC absent) rather than Emv_Arpc_Fail (EXTERNAL AUTHENTICATE
+                        // failed). See NexGo emvTestConsole onOnlineProc for reference.
+                        //
+                        // TODO (Charrg API): pass real field55 (tag 8A + tag 91 ARPC) and
+                        //   use DECISION_KERNEL for full issuer authentication.
                         val onlineResult = EmvOnlineResultEntity().apply {
                             setAuthCode("000000")
-                            setTerminalDecisionSecondGAC(EmvTerminalDecisionForSecondGAC.DECISION_TERMINAL_TC)
+                            setRejCode("00")
+                            setRecvField55(null)
                         }
                         handler.onSetOnlineProcResponse(SdkResult.Success, onlineResult)
-                        log("EMV", "onOnlineProc — sent approved (AIP-issuer-auth cleared, decision=TERMINAL_TC)")
+                        log("EMV", "onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)")
                     } catch (e: Exception) {
                         logError("EMV", "onOnlineProc threw", e)
                         handler.onSetOnlineProcResponse(SdkResult.Fail, null)
@@ -926,7 +936,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     try {
                         log("EMV", "onFinish retCode=$retCode (SdkResult.Success=${SdkResult.Success})")
-                        if (retCode == SdkResult.Success) {
+                        if (retCode == SdkResult.Success ||
+                            retCode == SdkResult.Emv_Success_Arpc_Fail
+                        ) {
+                            // Success: SdkResult.Success = full TC issued, ARPC verified.
+                            // Emv_Success_Arpc_Fail = TC was issued but ARPC was absent/invalid.
+                            // The reference app (NexGo emvTestConsole) treats both as approved
+                            // because the terminal received a TC and the processor approved
+                            // online — ARPC is only needed if the card enforces it.
+                            //
                             // CRITICAL: For chip (EMV) transactions the PAN, expiry and track
                             // data are NOT in the original cardInfo from searchCard — they are
                             // only available after emvProcess via getEmvCardDataInfo().
@@ -938,7 +956,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             val track2: String = emvCardData?.tk2          ?: ""
                             val track1: String = emvCardData?.tk1          ?: ""
                             val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
-                            log("EMV", "onFinish SUCCESS — pan=***$last4 expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
+                            log("EMV", "onFinish SUCCESS (retCode=$retCode) — pan=***$last4 expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
                             sendEvent("reading_complete")
                             sendEvent("card_read_complete", Arguments.createMap().apply {
                                 putString("pan", pan)
@@ -961,20 +979,17 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             sendEvent("contactless_fallback")
                         } else if (
                             retCode == SdkResult.Emv_Arpc_Fail ||
-                            retCode == SdkResult.Emv_Script_Fail ||
-                            retCode == SdkResult.Emv_Success_Arpc_Fail
+                            retCode == SdkResult.Emv_Script_Fail
                         ) {
-                            // The EMV kernel completed online processing but the issuer
-                            // authentication or script stage failed.  However, card data
-                            // (PAN, expiry, track, ARQC) was already captured during
-                            // READ RECORD and 1st GENERATE AC — before this failure.
+                            // The EMV kernel completed online processing but hard ARPC or
+                            // script execution failed.  Card data (PAN, expiry, track) was
+                            // already captured during READ RECORD — before this failure.
+                            // Emv_Success_Arpc_Fail is handled in the success branch above.
                             //
                             // retCode meaning:
-                            //   Emv_Arpc_Fail       (-8021): EXTERNAL AUTHENTICATE failed
-                            //                                 (card returned SW=6300, no valid ARPC)
-                            //                                 → kernel aborted, no TC issued
-                            //   Emv_Script_Fail     (-8022): Issuer script execution failed post-TC
-                            //   Emv_Success_Arpc_Fail:       TC issued but ARPC check failed
+                            //   Emv_Arpc_Fail   (-8021): EXTERNAL AUTHENTICATE failed
+                            //                            (card returned SW=6300, no valid ARPC)
+                            //   Emv_Script_Fail (-8022): Issuer script execution failed post-TC
                             //
                             // For development (no Charrg API yet): extract card data here and
                             // fire card_read_complete so the payment flow can proceed.
