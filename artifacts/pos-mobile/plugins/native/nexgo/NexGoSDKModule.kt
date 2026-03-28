@@ -262,7 +262,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler!!.contactlessSupportAppSelectCallback(true)
             setupTerminalConfig()
             setupEmvAids()
-            setupContactlessAids()
+            // setupContactlessAids() — REMOVED: contactlessAppendAidIntoKernel configures
+            // a secondary PayWave/PayPass offline kernel, NOT the standard emvProcessFlow1
+            // contactless path. The reference app (NexGo emvTestConsole) does not call
+            // contactlessAppendAidIntoKernel at all. Having it alongside emvProcessFlow1
+            // contactless causes an RF kernel state conflict → wrapper_spi_ddi_rf_exchange_apdu
+            // ret=-1 during SELECT. The emvProcessFlow1 path uses setAidParaList AIDs
+            // filtered by AID_ENTRY_CONTACT_CONTACTLESS mode, which is now correct.
             log("INIT", "initialize() complete — AIDs=${emvHandler?.aidListNum ?: 0}")
             promise.resolve(true)
         } catch (e: Exception) {
