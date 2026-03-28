@@ -243,19 +243,23 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             log("INIT", "CardReader obtained: ${cardReader != null}")
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
-            // Tell the native EMV core to use the built-in chip slot (INNER reader).
-            // Bytecode analysis of initReader() shows it calls EmvCore.setEmvExternalDevice(null)
-            // for INNER — without this call setEmvExternalDevice() is never invoked and the
-            // native emvProcessFlow1() falls back to the external reader path, which has no
-            // AID table, causing -8012 (Emv_Candidatelist_Empty) on every chip transaction.
-            emvHandler!!.initReader(ReaderTypeEnum.INNER, 0)
-            log("INIT", "initReader(INNER, 0) called — native EMV core routed to internal ICC slot")
+            // NOTE: initReader(INNER, 0) is intentionally NOT called here.
+            // Calling it in initialize() permanently routes the EMV core to the ICC
+            // contact slot, which breaks contactless (RF) emvProcess — the contactless
+            // kernel fails immediately with -8012 because the EMV core is pointing at
+            // the wrong interface. Instead, initReader(INNER, 0) is called only
+            // immediately before a chip emvProcess in processEmvCard (guarded by
+            // !isContactless). The reference app (NexGo emvTestConsole) does not call
+            // initReader during initialization either.
             // Enable verbose native-kernel logging (APDU traces, AID matching detail)
             // so that Android logcat captures the full emvProcessFlow1 internals.
             emvHandler!!.emvDebugLog(true)
             // Enable NexGo Java-layer debug logging (LogUtils gates SDK log output).
             LogUtils.setDebugEnable(true)
             log("INIT", "emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled")
+            // Enable the onSelectApp callback for contactless transactions so the
+            // kernel notifies us when multiple AIDs match (same as reference app).
+            emvHandler!!.contactlessSupportAppSelectCallback(true)
             setupTerminalConfig()
             setupEmvAids()
             setupContactlessAids()
