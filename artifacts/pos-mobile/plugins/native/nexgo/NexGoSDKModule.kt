@@ -360,16 +360,22 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             "DC4000A800", "DC4004F800", "0010000000"))
 
         // ── Mastercard Credit ───────────── A0000000041010
+        // TAC values from NexGo reference app (inbas_aid.json A0000000041010).
+        // Key difference from our previous values: tacDefault byte4 = A0 (not F8).
+        // F8 includes bits for SDA-failed + DDA-failed + card-on-exception-file;
+        // with CAPK count=0 those bits fire during ODA → TAC-Default match →
+        // offline decline → contactless kernel returns -8034 (CTLS_TransTryAgain).
+        // A0 removes those bits so the kernel proceeds to online auth (onOnlineProc).
         aids.add(aidEntity("A0000000041010", 1, "0002",
-            "FC50BCF800", "FC50BCF800", "0000000000"))
+            "FC50B8A000", "FC50808800", "0000000000"))
 
         // ── Mastercard Debit ────────────── A0000000042203
         aids.add(aidEntity("A0000000042203", 1, "0002",
-            "FC50BCF800", "FC50BCF800", "0000000000"))
+            "FC50BCA000", "FC50BCF800", "0000000000"))
 
         // ── Maestro ─────────────────────── A0000000043060
         aids.add(aidEntity("A0000000043060", 1, "0002",
-            "FC50BCF800", "FC50BCF800", "0000000000"))
+            "FC50BCA000", "FC50BCF800", "0000000000"))
 
         // ── American Express ─────────────── A0000000250101
         aids.add(aidEntity("A0000000250101", 1, "0001",
@@ -800,6 +806,20 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             dumpAidTable("pre-emvProcess")
             log("EMVCAPK", "CAPK count pre-emvProcess=${handler.capkListNum}")
 
+            // Defensively cancel any lingering EMV/RF kernel state before starting a new
+            // emvProcess() call. After a contactless error (-8012 card removed too quickly,
+            // -8034 try-another-interface) the SDK's RF state machine leaves the card
+            // in "activated" state. The next emvProcess() call then hangs at powerOn because
+            // the card is already activated but no longer present → stuck on "card detected"
+            // screen with no further callbacks. emvProcessCancel() resets the kernel cleanly.
+            // This is a no-op if no transaction is in progress (safe to call unconditionally).
+            try {
+                handler.emvProcessCancel()
+                log("EMV", "emvProcessCancel() called before emvProcess — kernel state cleared")
+            } catch (e: Exception) {
+                log("EMV", "emvProcessCancel() pre-call skipped (not supported or no-op): ${e.message}")
+            }
+
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
                 override fun onSelApp(
@@ -1098,6 +1118,9 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     @ReactMethod
     fun cancelCardRead(promise: Promise) {
         try {
+            // Cancel any in-progress EMV kernel transaction first (clears RF/contact state).
+            // This must come before stopSearch() so the kernel is idle before the search ends.
+            try { emvHandler?.emvProcessCancel() } catch (e: Exception) { /* safe to ignore */ }
             cardReader?.stopSearch()
             isReading = false
             sendEvent("card_removed")
