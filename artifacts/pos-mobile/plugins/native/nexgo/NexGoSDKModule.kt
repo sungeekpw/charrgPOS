@@ -483,13 +483,22 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
      *   emvHandler.initTermConfig(9F1A0208405F2A0208409F3C020840)
      *
      * Tags:
-     *   9F33  Terminal Capabilities  E0F8C8
+     *   9F33  Terminal Capabilities  E0F800
      *           Byte1 E0 = Manual+MagStripe+IC
      *           Byte2 F8 = OfflineEncPin+OnlinePin+Sig+OfflinePlainPin+NoCVM
-     *           Byte3 C8 = CDA+DDA (offline data authentication)
+     *           Byte3 00 = NO offline data authentication (SDA/DDA/CDA disabled)
      *   9F1A  Terminal Country Code  0840 (USA)
      *   5F2A  Transaction Currency Code  0840 (USD)
      *   9F3C  Reference Currency Code  0840 (USD) — required by reference app
+     *
+     * Why byte3=00 (no ODA): contactless cards have CDA in their AIP. With our test
+     * CAPKs expired (expiry 20201231) the kernel's CDA verification fails, setting the
+     * CDA-failed bit (0x04) in TVR byte1. The card's IAC-Denial includes CDA-failed,
+     * so the card returns AAC → offline decline → -8034. Advertising no ODA capability
+     * prevents CDA from being attempted; TVR gets ODA-not-performed (0x80) instead,
+     * which is in TAC-Online (not IAC-Denial), so the floor-limit check fires ARQC →
+     * onOnlineProc → online approval. For chip the AIP never had ODA bits so this is
+     * unchanged. In production with valid CAPKs, byte3 can be restored to C8.
      *
      * NOT set via initTermConfig (left as SDK device defaults, per reference app):
      *   9F35 Terminal Type, 9F40 Additional Terminal Capabilities, 9F1B Floor Limit
@@ -500,11 +509,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
         try {
-            handler.setTlv(hexToBytes("9F33"), hexToBytes("E0F8C8"))
+            handler.setTlv(hexToBytes("9F33"), hexToBytes("E0F800"))
             val result = handler.initTermConfig(
                 hexToBytes("9F1A020840" + "5F2A020840" + "9F3C020840")
             )
-            log("TERM", "configureTerminal: setTlv(9F33=E0F8C8) + initTermConfig(9F1A+5F2A+9F3C) result=$result")
+            log("TERM", "configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=$result")
         } catch (e: Exception) {
             logError("TERM", "setupTerminalConfig threw", e)
         }
