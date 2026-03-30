@@ -15,7 +15,7 @@ import com.nexgo.common.LogUtils
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.SdkResult
-import com.nexgo.oaf.apiv3.device.buzzer.Buzzer
+import com.nexgo.oaf.apiv3.device.beeper.Beeper
 import com.nexgo.oaf.apiv3.device.reader.CardInfoEntity
 import com.nexgo.oaf.apiv3.device.reader.CardReader
 import com.nexgo.oaf.apiv3.device.reader.CardSlotTypeEnum
@@ -41,7 +41,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var deviceEngine: DeviceEngine? = null
     private var cardReader: CardReader? = null
     private var emvHandler: EmvHandler2? = null
-    private var buzzer: Buzzer? = null
+    private var beeper: Beeper? = null
     private var isReading = false
 
     // Dedicated background thread for EMV processing.
@@ -90,14 +90,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         } catch (_: Exception) {}
     }
 
-    // ─── Buzzer helpers ───────────────────────────────────────────────────────
+    // ─── Beeper helpers ───────────────────────────────────────────────────────
     //
     // beepCardDetected : very short (100 ms) — "I see your card, keep it there"
     // beepSuccess      : medium (200 ms) — "approved, you can remove the card"
     // beepError        : two short bursts — "something went wrong, try again"
     //
+    // SDK class : com.nexgo.oaf.apiv3.device.beeper.Beeper
+    // Accessor  : DeviceEngine.getBeeper()
+    // Method    : Beeper.beep(durationMs: Int)
+    //
     // All calls are fire-and-forget on a background thread so they never block
-    // the EMV callbacks.  Buzzer may be null if the device doesn't expose one;
+    // the EMV callbacks.  Beeper may be null if the device doesn't expose one;
     // all calls are no-ops in that case.
 
     private fun beepCardDetected() = fireBeep(100)
@@ -107,16 +111,16 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private fun beepError() {
         Thread {
             try {
-                buzzer?.startBeep(100)
+                beeper?.beep(100)
                 Thread.sleep(200)
-                buzzer?.startBeep(100)
+                beeper?.beep(100)
             } catch (_: Exception) {}
         }.start()
     }
 
     private fun fireBeep(durationMs: Int) {
         Thread {
-            try { buzzer?.startBeep(durationMs) } catch (_: Exception) {}
+            try { beeper?.beep(durationMs) } catch (_: Exception) {}
         }.start()
     }
 
@@ -274,8 +278,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             log("INIT", "DeviceEngine obtained OK")
             cardReader = deviceEngine!!.cardReader
             log("INIT", "CardReader obtained: ${cardReader != null}")
-            buzzer = try { deviceEngine!!.getBuzzer() } catch (e: Exception) { null }
-            log("INIT", "Buzzer obtained: ${buzzer != null}")
+            beeper = try { deviceEngine!!.getBeeper() } catch (e: Exception) { null }
+            log("INIT", "Beeper obtained: ${beeper != null}")
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             // NOTE: initReader(INNER, 0) is intentionally NOT called here.
