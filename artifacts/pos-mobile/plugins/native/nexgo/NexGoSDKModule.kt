@@ -861,6 +861,30 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             // before every emvProcess() — state may be reset between transactions).
             setupTerminalConfig()
 
+            // For M/Chip contactless: set Terminal Transaction Qualifiers (TTQ, tag 9F66)
+            // with "Online Cryptogram Required" (byte1 bit 0x01) BEFORE emvProcess.
+            //
+            // TTQ is included in the PDOL response the kernel sends to the card during GPO.
+            // The card reads TTQ to decide its GenAC1 response: ARQC (online), TC (offline
+            // approve), or AAC (offline decline).
+            //
+            // Without Online Required (0x01) the card treats the terminal as "offline capable"
+            // and may return AAC when its internal risk management says the transaction must
+            // not go offline — instead of returning ARQC to request online auth. Setting
+            // 0x01 forces the card to always return ARQC for M/Chip contactless, which then
+            // triggers onOnlineProc → online approval.
+            //
+            // Byte1 = 0x2D breakdown:
+            //   0x20 = EMV contactless mode supported (M/Chip kernel path)
+            //   0x08 = Online PIN supported
+            //   0x04 = Signature supported
+            //   0x01 = Online Cryptogram Required ← card MUST return ARQC, not AAC
+            // Bytes 2-4 = 0x00 (no ODA for online, standard CVM flags)
+            if (isContactless) {
+                emvHandler?.setTlv(hexToBytes("9F66"), hexToBytes("2D000000"))
+                log("EMV", "setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless")
+            }
+
             // NOTE: Do NOT call emvProcessCancel() here before emvProcess().
             // emvProcessCancel() sets an internal "cancel" flag in the SDK kernel that
             // persists into the next transaction — the kernel fires onFinish(-8031) immediately
@@ -1136,6 +1160,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 // APDU traces and PPSE/SELECT results to Android logcat.
                                 // Capturing it here gives us the exact card AID(s) being advertised
                                 // so we can match them against our registered terminal AID table.
+                                captureNativeEmvLog()
+                            } else if (retCode == -8034) {
+                                // -8034 = Emv_Offline_Declined: card returned AAC in GPO (M/Chip
+                                // contactless) or in GenAC1 (contact). Capture native logcat to
+                                // see TVR, TTQ, and card GenAC response that triggered the decline.
                                 captureNativeEmvLog()
                             }
                             sendEvent("reading_failed", Arguments.createMap().apply {
