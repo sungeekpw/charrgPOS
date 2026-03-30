@@ -15,6 +15,7 @@ import com.nexgo.common.LogUtils
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.SdkResult
+import com.nexgo.oaf.apiv3.device.buzzer.Buzzer
 import com.nexgo.oaf.apiv3.device.reader.CardInfoEntity
 import com.nexgo.oaf.apiv3.device.reader.CardReader
 import com.nexgo.oaf.apiv3.device.reader.CardSlotTypeEnum
@@ -40,6 +41,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var deviceEngine: DeviceEngine? = null
     private var cardReader: CardReader? = null
     private var emvHandler: EmvHandler2? = null
+    private var buzzer: Buzzer? = null
     private var isReading = false
 
     // Dedicated background thread for EMV processing.
@@ -86,6 +88,36 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         try {
             FileWriter(logFile, true).use { it.write(line) }
         } catch (_: Exception) {}
+    }
+
+    // ─── Buzzer helpers ───────────────────────────────────────────────────────
+    //
+    // beepCardDetected : very short (100 ms) — "I see your card, keep it there"
+    // beepSuccess      : medium (200 ms) — "approved, you can remove the card"
+    // beepError        : two short bursts — "something went wrong, try again"
+    //
+    // All calls are fire-and-forget on a background thread so they never block
+    // the EMV callbacks.  Buzzer may be null if the device doesn't expose one;
+    // all calls are no-ops in that case.
+
+    private fun beepCardDetected() = fireBeep(100)
+
+    private fun beepSuccess() = fireBeep(200)
+
+    private fun beepError() {
+        Thread {
+            try {
+                buzzer?.startBeep(100)
+                Thread.sleep(200)
+                buzzer?.startBeep(100)
+            } catch (_: Exception) {}
+        }.start()
+    }
+
+    private fun fireBeep(durationMs: Int) {
+        Thread {
+            try { buzzer?.startBeep(durationMs) } catch (_: Exception) {}
+        }.start()
     }
 
     @ReactMethod
@@ -242,6 +274,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             log("INIT", "DeviceEngine obtained OK")
             cardReader = deviceEngine!!.cardReader
             log("INIT", "CardReader obtained: ${cardReader != null}")
+            buzzer = try { deviceEngine!!.getBuzzer() } catch (e: Exception) { null }
+            log("INIT", "Buzzer obtained: ${buzzer != null}")
             emvHandler = deviceEngine!!.getEmvHandler2("app1")
             log("INIT", "EmvHandler2 obtained: ${emvHandler != null}")
             // NOTE: initReader(INNER, 0) is intentionally NOT called here.
@@ -671,6 +705,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                     val slot = cardInfo.cardExistslot
                     log("CARD", "onCardInfo OK — slot=$slot")
+                    beepCardDetected()   // short beep: "card seen, keep it there"
 
                     when (slot) {
                         CardSlotTypeEnum.ICC1, CardSlotTypeEnum.ICC2 -> {
@@ -1075,6 +1110,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             val track1: String = emvCardData?.tk1          ?: ""
                             val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
                             log("EMV", "onFinish SUCCESS (retCode=$retCode) — pan=***$last4 expiry=$expiry brand=${detectCardBrand(pan)} entryMode=$entryMode")
+                            beepSuccess()   // medium beep: "approved — remove card"
                             sendEvent("reading_complete")
                             sendEvent("card_read_complete", Arguments.createMap().apply {
                                 putString("pan", pan)
@@ -1094,6 +1130,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             // Signal the JS layer to stop the current read and re-prompt
                             // the user to insert their card into the chip slot.
                             log("EMV", "onFinish Emv_FallBack — contactless card requesting chip fallback")
+                            beepError()     // double beep: "tap failed — please insert chip"
                             sendEvent("contactless_fallback")
                         } else if (
                             retCode == SdkResult.Emv_Arpc_Fail ||
@@ -1127,6 +1164,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             val last4          = if (pan.length >= 4) pan.takeLast(4) else pan
                             log("EMV", "onFinish ARPC-fail recovery — pan=***$last4 expiry=$expiry track2Empty=${track2.isEmpty()}")
                             if (pan.isNotEmpty()) {
+                                beepSuccess()   // medium beep: card data recovered OK
                                 sendEvent("reading_complete")
                                 sendEvent("card_read_complete", Arguments.createMap().apply {
                                     putString("pan", pan)
@@ -1141,12 +1179,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 })
                                 log("EMV", "onFinish ARPC-fail recovery SUCCESS — card_read_complete fired for ***$last4")
                             } else {
+                                beepError()
                                 logError("EMV", "onFinish ARPC-fail recovery FAILED — getEmvCardDataInfo() returned no PAN (retCode=$retCode)")
                                 sendEvent("reading_failed", Arguments.createMap().apply {
                                     putString("message", "Card data unavailable after ARPC failure (code: $retCode)")
                                 })
                             }
                         } else {
+                            beepError()     // double beep: "card read failed — try again"
                             logError("EMV", "onFinish FAILED retCode=$retCode — check SdkResult constants for meaning")
                             // Dump AID table here to detect if initEmvConfiguration() (which runs
                             // at the top of every emvProcess thread) has cleared the AID table.
