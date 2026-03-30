@@ -30,6 +30,7 @@ import {
   initializeSDK,
   isSDKAvailable,
   FALLBACK_TO_CHIP,
+  CONTACTLESS_FAILED,
 } from "@/services/nexgo-sdk";
 import type { SDKEventType } from "@/services/nexgo-sdk";
 import type { Transaction } from "@/services/transaction-storage";
@@ -44,6 +45,7 @@ const CHARRG_CONFIGURED = !!CHARRG_BASE_URL;
 type PaymentPhase =
   | "ready"
   | "reading"
+  | "chip_prompt"
   | "processing"
   | "success"
   | "error"
@@ -189,13 +191,11 @@ export default function PaymentScreen() {
       if (isCancelled.current) return;
       const msg = err instanceof Error ? err.message : "Unknown error";
 
-      if (msg === FALLBACK_TO_CHIP) {
-        // Card's contactless chip said "use contact chip instead" (EMV FallBack).
-        // Don't record a failed transaction — just re-prompt with chip instructions.
-        setErrorMsg("This card requires chip. Please insert it into the slot.");
-        setPhase("error");
+      // Both EMV FallBack (-8014) and any other contactless failure (-8034, -8012, …)
+      // go to the chip_prompt phase — no error recorded, reader auto-restarts in 1.5 s.
+      if (msg === FALLBACK_TO_CHIP || msg === CONTACTLESS_FAILED) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        animateResult();
+        setPhase("chip_prompt");
         return;
       }
 
@@ -220,7 +220,7 @@ export default function PaymentScreen() {
 
   const handleCancel = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    if (phase === "reading" || phase === "processing") {
+    if (phase === "reading" || phase === "processing" || phase === "chip_prompt") {
       isCancelled.current = true;
       await cancelCardRead();
       await addTransaction({
@@ -259,7 +259,19 @@ export default function PaymentScreen() {
     handleStartRead();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const isActive = phase === "reading" || phase === "processing";
+  // When a contactless read fails, pause 1.5 s so the customer can read the
+  // on-screen instruction, then silently restart the reader for chip insertion.
+  useEffect(() => {
+    if (phase !== "chip_prompt") return;
+    const timer = setTimeout(() => {
+      setSdkEvent(null);
+      setLastCardData(null);
+      handleStartRead();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [phase, handleStartRead]);
+
+  const isActive = phase === "reading" || phase === "processing" || phase === "chip_prompt";
   const isDone = phase === "success" || phase === "error";
 
   return (
@@ -281,7 +293,7 @@ export default function PaymentScreen() {
           />
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.text }]}>
-          {phase === "processing" ? "Processing..." : "Payment"}
+          {phase === "processing" ? "Processing..." : phase === "chip_prompt" ? "Insert Card" : "Payment"}
         </Text>
         <View style={{ width: 38 }} />
       </View>
@@ -334,6 +346,22 @@ export default function PaymentScreen() {
             event={phase === "processing" ? "reading_complete" : sdkEvent}
             isReading={phase === "reading"}
           />
+        )}
+
+        {/* Chip insert prompt — shown after a contactless failure */}
+        {phase === "chip_prompt" && (
+          <View style={[styles.chipPromptCard, { backgroundColor: Colors.warning + "18", borderColor: Colors.warning + "60" }]}>
+            <MaterialCommunityIcons name="credit-card-chip" size={72} color={Colors.warning} />
+            <Text style={[styles.chipPromptTitle, { color: Colors.warning }]}>
+              Tap Failed
+            </Text>
+            <Text style={[styles.chipPromptBody, { color: theme.textSecondary }]}>
+              Please insert your card into the chip slot below the screen.
+            </Text>
+            <Text style={[styles.chipPromptHint, { color: theme.textMuted }]}>
+              Starting chip reader…
+            </Text>
+          </View>
         )}
 
         {phase === "processing" && (
@@ -400,7 +428,7 @@ export default function PaymentScreen() {
           </View>
         )}
 
-        {(phase === "ready" || isActive) && (
+        {(phase === "ready" || isActive || phase === "chip_prompt") && (
           <PrimaryButton
             label="Cancel"
             onPress={handleCancel}
@@ -633,4 +661,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   btnCol: { gap: 12 },
+  chipPromptCard: {
+    borderRadius: 20,
+    borderWidth: 1.5,
+    padding: 28,
+    alignItems: "center",
+    gap: 12,
+  },
+  chipPromptTitle: {
+    fontSize: 26,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: -0.5,
+  },
+  chipPromptBody: {
+    fontSize: 15,
+    fontFamily: "Inter_500Medium",
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  chipPromptHint: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    marginTop: 4,
+  },
 });

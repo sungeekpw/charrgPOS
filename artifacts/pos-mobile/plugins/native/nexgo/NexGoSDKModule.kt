@@ -1207,9 +1207,21 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 // see TVR, TTQ, and card GenAC response that triggered the decline.
                                 captureNativeEmvLog()
                             }
-                            sendEvent("reading_failed", Arguments.createMap().apply {
-                                putString("message", "EMV process failed with code: $retCode")
-                            })
+                            // When the failure came from a contactless (RF) read, tell the JS
+                            // layer to reprompt the customer to insert their chip card instead.
+                            // For contact (chip) failures we keep the generic reading_failed
+                            // so the screen can show a standard "try again" error.
+                            if (isContactless) {
+                                log("EMV", "Contactless failure (retCode=$retCode) → emitting contactless_failed for chip reprompt")
+                                sendEvent("contactless_failed", Arguments.createMap().apply {
+                                    putString("message", "Tap read failed (code: $retCode)")
+                                    putInt("retCode", retCode)
+                                })
+                            } else {
+                                sendEvent("reading_failed", Arguments.createMap().apply {
+                                    putString("message", "EMV process failed with code: $retCode")
+                                })
+                            }
                         }
                     } catch (e: Exception) {
                         logError("EMV", "onFinish threw", e)
