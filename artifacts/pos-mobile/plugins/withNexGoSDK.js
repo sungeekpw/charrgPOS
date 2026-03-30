@@ -10,6 +10,7 @@ function withNexGoSDK(config) {
   config = withNexGoGradle(config);
   config = withNexGoMainApplication(config);
   config = withNexGoKotlinSource(config);
+  config = withNexGoAssets(config);
   return config;
 }
 
@@ -164,6 +165,36 @@ function withNexGoKotlinSource(config) {
         const dst = path.join(destDir, file);
         fs.copyFileSync(src, dst);
         console.log(`[withNexGoSDK] Copied ${file} → nexgo/`);
+      }
+      return config;
+    },
+  ]);
+}
+
+// ─── 5. Copy EMV CAPK/AID JSON assets into android/app/src/main/assets ───────
+function withNexGoAssets(config) {
+  return withDangerousMod(config, [
+    "android",
+    async (config) => {
+      const projectRoot = config.modRequest.projectRoot;
+      const destDir = path.join(
+        projectRoot,
+        "android", "app", "src", "main", "assets"
+      );
+      fs.mkdirSync(destDir, { recursive: true });
+
+      const sourceDir = path.join(projectRoot, "plugins", "native", "nexgo", "assets");
+      if (!fs.existsSync(sourceDir)) {
+        console.warn(`[withNexGoSDK] CAPK assets dir not found: ${sourceDir}`);
+        return config;
+      }
+
+      const files = fs.readdirSync(sourceDir).filter((f) => f.endsWith(".json"));
+      for (const file of files) {
+        const src = path.join(sourceDir, file);
+        const dst = path.join(destDir, file);
+        fs.copyFileSync(src, dst);
+        console.log(`[withNexGoSDK] Copied ${file} → assets/`);
       }
       return config;
     },

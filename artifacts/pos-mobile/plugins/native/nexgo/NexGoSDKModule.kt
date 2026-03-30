@@ -22,6 +22,7 @@ import com.nexgo.oaf.apiv3.device.reader.OnCardInfoListener
 import com.nexgo.oaf.apiv3.device.reader.ReaderTypeEnum
 import com.nexgo.oaf.apiv3.emv.AidEntity
 import com.nexgo.oaf.apiv3.emv.AidEntryModeEnum
+import com.nexgo.oaf.apiv3.emv.CapkEntity
 import com.nexgo.oaf.apiv3.emv.CandidateAppInfoEntity
 import com.nexgo.oaf.apiv3.emv.EmvCardBrandEnum
 import com.nexgo.oaf.apiv3.emv.EmvEntryModeEnum
@@ -262,6 +263,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             emvHandler!!.contactlessSupportAppSelectCallback(true)
             setupTerminalConfig()
             setupEmvAids()
+            setupCapks()
             // setupContactlessAids() — REMOVED: contactlessAppendAidIntoKernel configures
             // a secondary PayWave/PayPass offline kernel, NOT the standard emvProcessFlow1
             // contactless path. The reference app (NexGo emvTestConsole) does not call
@@ -472,19 +474,25 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Set terminal-level EMV configuration via initTermConfig() →
-     * EmvCore.setTerminalAttribute(). The native kernel uses these attributes
-     * during the transaction flow (terminal type, capabilities, floor limit, etc.).
-     * Some NexGo kernel versions gate emvProcessFlow1 on terminal config being
-     * present — calling this prevents spurious -8012 (empty candidate list) errors.
+     * Set terminal-level EMV configuration matching the reference app (NexGo emvTestConsole).
+     * Called once at initialize() and again per-transaction (reference app calls
+     * configureTerminal() immediately before every emvProcess()).
      *
-     * Tags used (standard EMV BER-TLV encoding):
-     *   9F1A  Terminal Country Code  (2 bytes BCD — 0840 = USA)
-     *   5F2A  Transaction Currency Code (2 bytes BCD — 0840 = USD)
-     *   9F35  Terminal Type         (1 byte — 0x22 = attended, online, merchant)
-     *   9F33  Terminal Capabilities (3 bytes — E0E8C8 = mag+chip+pin+sig)
-     *   9F40  Additional Terminal Capabilities (5 bytes)
-     *   9F1B  Terminal Floor Limit  (4 bytes — 0 = require online for all)
+     * Reference app configureTerminal():
+     *   emvHandler.setTlv(9F33, E0F8C8)                 — Terminal Capabilities
+     *   emvHandler.initTermConfig(9F1A0208405F2A0208409F3C020840)
+     *
+     * Tags:
+     *   9F33  Terminal Capabilities  E0F8C8
+     *           Byte1 E0 = Manual+MagStripe+IC
+     *           Byte2 F8 = OfflineEncPin+OnlinePin+Sig+OfflinePlainPin+NoCVM
+     *           Byte3 C8 = CDA+DDA (offline data authentication)
+     *   9F1A  Terminal Country Code  0840 (USA)
+     *   5F2A  Transaction Currency Code  0840 (USD)
+     *   9F3C  Reference Currency Code  0840 (USD) — required by reference app
+     *
+     * NOT set via initTermConfig (left as SDK device defaults, per reference app):
+     *   9F35 Terminal Type, 9F40 Additional Terminal Capabilities, 9F1B Floor Limit
      */
     private fun setupTerminalConfig() {
         val handler = emvHandler ?: run {
@@ -492,18 +500,52 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             return
         }
         try {
-            val termTlv = hexToBytes(
-                "9F1A020840" +          // Terminal Country Code: USA (840 → BCD 0840)
-                "5F2A020840" +          // Transaction Currency Code: USD
-                "9F350122" +            // Terminal Type: attended, online, merchant
-                "9F3303E0E8C8" +        // Terminal Capabilities: mag+chip+offline PIN+online PIN+sig
-                "9F4005E000F0A001" +    // Additional Terminal Capabilities
-                "9F1B0400000000"        // Terminal Floor Limit: 0 (all online)
+            handler.setTlv(hexToBytes("9F33"), hexToBytes("E0F8C8"))
+            val result = handler.initTermConfig(
+                hexToBytes("9F1A020840" + "5F2A020840" + "9F3C020840")
             )
-            val result = handler.initTermConfig(termTlv)
-            log("TERM", "initTermConfig result=$result (0=OK, -2=null input, other=native error)")
+            log("TERM", "configureTerminal: setTlv(9F33=E0F8C8) + initTermConfig(9F1A+5F2A+9F3C) result=$result")
         } catch (e: Exception) {
             logError("TERM", "setupTerminalConfig threw", e)
+        }
+    }
+
+    /**
+     * Load 60 CAPKs from the bundled inbas_capk.json asset and register them with the
+     * EMV kernel via setCAPKList(). CAPKs cover Visa (a000000003), Mastercard (a000000004),
+     * Amex (a000000025), JCB (a000000065), Discover (a000000152), UnionPay (a000000333).
+     *
+     * Without CAPKs the kernel cannot perform offline data authentication (SDA/DDA/CDA).
+     * The reference app (NexGo emvTestConsole) loads the same set via Gson deserialization.
+     */
+    private fun setupCapks() {
+        val handler = emvHandler ?: run {
+            logError("CAPK", "emvHandler null — cannot load CAPKs")
+            return
+        }
+        try {
+            val context = sdkContext()
+            val json = context.assets.open("inbas_capk.json").use { it.readBytes().toString(Charsets.UTF_8) }
+            val arr = org.json.JSONArray(json)
+            val capkList = ArrayList<CapkEntity>(arr.length())
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                val capk = CapkEntity()
+                capk.setRid(o.optString("rid", ""))
+                capk.setCapkIdx(o.optInt("capkIdx", 0))
+                capk.setHashInd(o.optInt("hashInd", 1))
+                capk.setArithInd(o.optInt("arithInd", 1))
+                capk.setModulus(o.optString("modulus", ""))
+                capk.setExponent(o.optString("exponent", ""))
+                capk.setCheckSum(o.optString("checkSum", ""))
+                capk.setExpireDate(o.optString("expireDate", "99991231"))
+                capkList.add(capk)
+            }
+            handler.setCAPKList(capkList)
+            val count = handler.capkListNum
+            log("CAPK", "Loaded ${capkList.size} CAPKs from assets → kernel reports $count")
+        } catch (e: Exception) {
+            logError("CAPK", "setupCapks threw", e)
         }
     }
 
@@ -805,6 +847,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             // still has all AIDs at call time (state reset between init and use would show here).
             dumpAidTable("pre-emvProcess")
             log("EMVCAPK", "CAPK count pre-emvProcess=${handler.capkListNum}")
+
+            // Re-apply terminal config per-transaction (reference app calls configureTerminal()
+            // before every emvProcess() — state may be reset between transactions).
+            setupTerminalConfig()
 
             // NOTE: Do NOT call emvProcessCancel() here before emvProcess().
             // emvProcessCancel() sets an internal "cancel" flag in the SDK kernel that
