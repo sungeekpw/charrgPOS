@@ -42,7 +42,27 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var cardReader: CardReader? = null
     private var emvHandler: EmvHandler2? = null
     private var beeper: Beeper? = null
-    private var isReading = false
+    @Volatile private var isReading = false
+
+    // ─── Contactless timeout ──────────────────────────────────────────────────
+    // When a contactless emvProcess() hangs (card left RF field before the kernel
+    // finished), onFinish never fires, or fires 14+ seconds after onRemoveCard.
+    // We use two safety valves posted to the MAIN thread (not emvWorker, which
+    // is blocked inside emvProcess):
+    //
+    //   • General timeout  (10 s from emvProcess start) — catches hangs before
+    //     the card ever reaches onSelApp (card too briefly in the field).
+    //
+    //   • onRemoveCard timeout (2 s from card removal) — fires quickly after
+    //     onRemoveCard is received, replacing the 14 s kernel-wait window.
+    //
+    // contactlessForceCancelled is set to true when either timer fires so that
+    // a late-arriving onFinish is silently ignored (prevents double events).
+
+    private val timeoutHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var contactlessGeneralTimeout: Runnable? = null
+    private var contactlessRemoveTimeout: Runnable? = null
+    @Volatile private var contactlessForceCancelled = false
 
     // Dedicated background thread for EMV processing.
     // emvProcess() is a blocking call — running it on the main thread blocks the
@@ -122,6 +142,33 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         Thread {
             try { beeper?.beep(durationMs) } catch (_: Exception) {}
         }.start()
+    }
+
+    /**
+     * Called by either the general (10 s) or onRemoveCard (2 s) timeout when a
+     * contactless emvProcess is hanging.  Cancels both timers, emits
+     * contactless_failed immediately, and sets contactlessForceCancelled so a
+     * late-arriving onFinish is silently discarded.
+     *
+     * Must only be called from the main thread (both Runnables are posted there).
+     */
+    private fun forceContactlessFallback(reason: String) {
+        if (contactlessForceCancelled) return   // already fired — don't double-emit
+        contactlessForceCancelled = true
+        // Cancel both timers so they don't fire again
+        contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+        contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+        contactlessGeneralTimeout = null
+        contactlessRemoveTimeout  = null
+        if (!isReading) return   // transaction already completed normally
+        log("EMV", "forceContactlessFallback($reason) — emitting contactless_failed immediately")
+        beepError()
+        isReading = false
+        try { cardReader?.stopSearch() } catch (_: Exception) {}
+        sendEvent("contactless_failed", Arguments.createMap().apply {
+            putString("message", "Tap timed out — please insert chip")
+            putInt("retCode", -9999)
+        })
     }
 
     @ReactMethod
@@ -924,6 +971,26 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 log("EMV", "setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless")
             }
 
+            // ── Contactless hang protection ───────────────────────────────────
+            // If the card leaves the RF field before the kernel finishes, onFinish
+            // either never fires (card gone before onSelApp) or fires 10–15 s late
+            // (kernel waits for card to return). Both produce an unresponsive UI.
+            //
+            // We post a 10-second general timeout to the MAIN thread.  The main
+            // thread runs independently of the emvWorker (which is blocked inside
+            // emvProcess), so it CAN interrupt the stuck session.
+            //
+            // A second 2-second timer is armed from onRemoveCard (below).
+            if (isContactless) {
+                contactlessForceCancelled = false
+                val generalTimeout = Runnable {
+                    forceContactlessFallback("general-10s")
+                }
+                contactlessGeneralTimeout = generalTimeout
+                timeoutHandler.postDelayed(generalTimeout, 10_000)
+                log("EMV", "Contactless general timeout armed (10 s)")
+            }
+
             // NOTE: Do NOT call emvProcessCancel() here before emvProcess().
             // emvProcessCancel() sets an internal "cancel" flag in the SDK kernel that
             // persists into the next transaction — the kernel fires onFinish(-8031) immediately
@@ -1085,6 +1152,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     try {
                         log("EMV", "onRemoveCard")
                         sendEvent("card_removed")
+                        // For contactless: arm a 2-second timeout.  The NexGo kernel
+                        // waits up to ~14 s for the card to return to the RF field
+                        // before calling onFinish — far too long for a POS interaction.
+                        // If onFinish hasn't arrived in 2 s we force the chip fallback.
+                        if (isContactless && !contactlessForceCancelled) {
+                            val removeTimeout = Runnable {
+                                forceContactlessFallback("onRemoveCard-2s")
+                            }
+                            contactlessRemoveTimeout = removeTimeout
+                            timeoutHandler.postDelayed(removeTimeout, 2_000)
+                            log("EMV", "onRemoveCard: 2-second fallback timer armed")
+                        }
                     } catch (e: Exception) {
                         logError("EMV", "onRemoveCard threw", e)
                     }
@@ -1092,6 +1171,17 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     try {
+                        // Cancel both contactless timeouts — normal completion arrived.
+                        contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+                        contactlessRemoveTimeout?.let  { timeoutHandler.removeCallbacks(it) }
+                        contactlessGeneralTimeout = null
+                        contactlessRemoveTimeout  = null
+                        // If a timeout already fired and emitted contactless_failed, ignore
+                        // this late-arriving onFinish to avoid sending duplicate events.
+                        if (contactlessForceCancelled) {
+                            log("EMV", "onFinish retCode=$retCode — discarded (contactless timeout already fired)")
+                            return
+                        }
                         log("EMV", "onFinish retCode=$retCode (SdkResult.Success=${SdkResult.Success})")
                         if (retCode == SdkResult.Success ||
                             retCode == SdkResult.Emv_Success_Arpc_Fail
@@ -1239,6 +1329,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 }
             })
         } catch (e: Exception) {
+            // Cancel any outstanding contactless timeouts before surfacing the error.
+            contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout?.let  { timeoutHandler.removeCallbacks(it) }
+            contactlessGeneralTimeout = null
+            contactlessRemoveTimeout  = null
             isReading = false
             logError("EMV", "processEmvCard threw exception before emvProcess", e)
             sendEvent("reading_failed", Arguments.createMap().apply {
