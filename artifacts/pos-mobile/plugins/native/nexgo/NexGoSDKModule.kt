@@ -806,20 +806,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             dumpAidTable("pre-emvProcess")
             log("EMVCAPK", "CAPK count pre-emvProcess=${handler.capkListNum}")
 
-            // Defensively cancel any lingering EMV/RF kernel state before starting a new
-            // emvProcess() call. After a contactless error (-8012 card removed too quickly,
-            // -8034 try-another-interface) the SDK's RF state machine leaves the card
-            // in "activated" state. The next emvProcess() call then hangs at powerOn because
-            // the card is already activated but no longer present → stuck on "card detected"
-            // screen with no further callbacks. emvProcessCancel() resets the kernel cleanly.
-            // This is a no-op if no transaction is in progress (safe to call unconditionally).
-            try {
-                handler.emvProcessCancel()
-                log("EMV", "emvProcessCancel() called before emvProcess — kernel state cleared")
-            } catch (e: Exception) {
-                log("EMV", "emvProcessCancel() pre-call skipped (not supported or no-op): ${e.message}")
-            }
-
+            // NOTE: Do NOT call emvProcessCancel() here before emvProcess().
+            // emvProcessCancel() sets an internal "cancel" flag in the SDK kernel that
+            // persists into the next transaction — the kernel fires onFinish(-8031) immediately
+            // after onSelApp even though no user cancellation occurred. emvProcessCancel()
+            // is only valid when called to interrupt an ACTIVE emvProcess() call (e.g., user
+            // presses cancel). We call it correctly in cancelCardRead() for that purpose.
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
                 override fun onSelApp(
