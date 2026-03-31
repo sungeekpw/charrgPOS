@@ -11,6 +11,7 @@ export type SDKEventType =
   | "reading_failed"
   | "contactless_fallback"
   | "contactless_failed"
+  | "contactless_processing"
   | "pin_requested"
   | "pin_entered"
   | "timeout";
@@ -225,6 +226,7 @@ export async function startCardRead(
       mod.removeListener("card_inserted", onEvent);
       mod.removeListener("card_swiped", onEvent);
       mod.removeListener("card_tapped", onEvent);
+      mod.removeListener("contactless_processing", onEvent);
       mod.removeListener("reading_started", onEvent);
       mod.removeListener("pin_requested", onEvent);
       mod.removeListener("pin_entered", onEvent);
@@ -280,6 +282,7 @@ export async function startCardRead(
     mod.addListener("card_inserted", onEvent);
     mod.addListener("card_swiped", onEvent);
     mod.addListener("card_tapped", onEvent);
+    mod.addListener("contactless_processing", onEvent);
     mod.addListener("reading_started", onEvent);
     mod.addListener("pin_requested", onEvent);
     mod.addListener("pin_entered", onEvent);

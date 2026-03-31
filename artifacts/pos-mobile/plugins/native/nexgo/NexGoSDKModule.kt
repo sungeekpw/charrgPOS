@@ -1043,6 +1043,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     // directly is safe (no re-entry, no deadlock).
                     try {
                         log("EMV", "onTransInitBeforeGPO — responding directly on SDK callback thread")
+                        // Fire contactless_processing before the GPO response so the UI
+                        // can show "HOLD CARD STILL" before the card records are read.
+                        // This is the last moment we can instruct the user because after
+                        // GPO the card MUST stay in the RF field until onFinish fires.
+                        if (isContactless) {
+                            sendEvent("contactless_processing")
+                        }
                         handler.onSetTransInitBeforeGPOResponse(true)
                         log("EMV", "onSetTransInitBeforeGPOResponse sent OK")
                     } catch (e: Exception) {

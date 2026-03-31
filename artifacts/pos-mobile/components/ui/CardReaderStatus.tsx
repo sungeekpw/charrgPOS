@@ -20,38 +20,49 @@ interface CardReaderStatusProps {
 function getStatusInfo(event: SDKEventType | null) {
   switch (event) {
     case "reading_started":
-      return { icon: "contactless-payment", text: "Present card to reader", color: Colors.primary };
+      return { icon: "contactless-payment", text: "Hold, insert, or swipe card", color: Colors.primary, holdAlert: false };
     case "card_inserted":
-      return { icon: "credit-card-chip", text: "Card inserted — reading...", color: Colors.primary };
+      return { icon: "credit-card-chip", text: "Card inserted — reading...", color: Colors.primary, holdAlert: false };
     case "card_swiped":
-      return { icon: "credit-card-scan", text: "Card swiped — processing...", color: Colors.primary };
+      return { icon: "credit-card-scan", text: "Card swiped — processing...", color: Colors.primary, holdAlert: false };
     case "card_tapped":
-      return { icon: "contactless-payment", text: "Card detected — processing...", color: Colors.primary };
+      return { icon: "contactless-payment", text: "Card detected — hold steady...", color: Colors.primary, holdAlert: false };
+    case "contactless_processing":
+      return { icon: "contactless-payment", text: "HOLD CARD STILL", color: Colors.success, holdAlert: true };
     case "pin_requested":
-      return { icon: "lock-outline", text: "Enter PIN on device", color: Colors.warning };
+      return { icon: "lock-outline", text: "Enter PIN on device", color: Colors.warning, holdAlert: false };
     case "pin_entered":
-      return { icon: "lock-check-outline", text: "PIN accepted", color: Colors.success };
+      return { icon: "lock-check-outline", text: "PIN accepted", color: Colors.success, holdAlert: false };
     case "reading_complete":
-      return { icon: "check-circle-outline", text: "Card read complete", color: Colors.success };
+      return { icon: "check-circle-outline", text: "Card read complete", color: Colors.success, holdAlert: false };
     case "reading_failed":
-      return { icon: "alert-circle-outline", text: "Card read failed", color: Colors.danger };
+      return { icon: "alert-circle-outline", text: "Card read failed", color: Colors.danger, holdAlert: false };
     case "timeout":
-      return { icon: "clock-alert-outline", text: "Timed out — try again", color: Colors.danger };
+      return { icon: "clock-alert-outline", text: "Timed out — try again", color: Colors.danger, holdAlert: false };
     default:
-      return { icon: "contactless-payment", text: "Tap, insert, or swipe card", color: Colors.primary };
+      return { icon: "contactless-payment", text: "Hold, insert, or swipe card", color: Colors.primary, holdAlert: false };
   }
 }
 
 export function CardReaderStatus({ event, isReading }: CardReaderStatusProps) {
-  const isDark = useColorScheme() === "dark";
   const theme = Colors.dark;
-  const { icon, text, color } = getStatusInfo(event);
+  const { icon, text, color, holdAlert } = getStatusInfo(event);
 
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (isReading && event !== "reading_complete" && event !== "reading_failed") {
+    if (holdAlert) {
+      // Fast urgent pulse when card must be held still
+      scale.value = withRepeat(
+        withSequence(
+          withTiming(1.12, { duration: 300, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 300, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1
+      );
+      opacity.value = 1;
+    } else if (isReading && event !== "reading_complete" && event !== "reading_failed") {
       scale.value = withRepeat(
         withSequence(
           withTiming(1.08, { duration: 700, easing: Easing.inOut(Easing.ease) }),
@@ -70,7 +81,7 @@ export function CardReaderStatus({ event, isReading }: CardReaderStatusProps) {
       scale.value = withTiming(1, { duration: 300 });
       opacity.value = withTiming(1, { duration: 300 });
     }
-  }, [isReading, event]);
+  }, [isReading, event, holdAlert]);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -82,17 +93,38 @@ export function CardReaderStatus({ event, isReading }: CardReaderStatusProps) {
       <Animated.View
         style={[
           styles.iconRing,
-          { borderColor: color + "40", backgroundColor: color + "15" },
+          {
+            borderColor: color + (holdAlert ? "90" : "40"),
+            backgroundColor: color + (holdAlert ? "25" : "15"),
+            borderWidth: holdAlert ? 3 : 2,
+          },
           animStyle,
         ]}
       >
-        <MaterialCommunityIcons name={icon as any} size={52} color={color} />
+        <MaterialCommunityIcons name={icon as any} size={holdAlert ? 60 : 52} color={color} />
       </Animated.View>
-      <Text style={[styles.statusText, { color: theme.text }]}>{text}</Text>
-      {isReading && event !== "reading_complete" && event !== "reading_failed" && (
-        <Text style={[styles.subText, { color: theme.textSecondary }]}>
-          Do not remove card
+      <Text
+        style={[
+          styles.statusText,
+          {
+            color: holdAlert ? color : theme.text,
+            fontSize: holdAlert ? 22 : 17,
+            letterSpacing: holdAlert ? 1 : 0,
+          },
+        ]}
+      >
+        {text}
+      </Text>
+      {holdAlert ? (
+        <Text style={[styles.subText, { color: theme.textSecondary, fontSize: 15 }]}>
+          Keep card against reader until approved
         </Text>
+      ) : (
+        isReading && event !== "reading_complete" && event !== "reading_failed" && (
+          <Text style={[styles.subText, { color: theme.textSecondary }]}>
+            Do not remove card
+          </Text>
+        )
       )}
     </View>
   );
