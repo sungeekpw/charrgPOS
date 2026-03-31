@@ -972,17 +972,22 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             }
 
             // ── Contactless hang protection ───────────────────────────────────
-            // If the card leaves the RF field before the kernel finishes, onFinish
-            // either never fires (card gone before onSelApp) or fires 10–15 s late
-            // (kernel waits for card to return). Both produce an unresponsive UI.
-            //
-            // We post a 10-second general timeout to the MAIN thread.  The main
-            // thread runs independently of the emvWorker (which is blocked inside
-            // emvProcess), so it CAN interrupt the stuck session.
-            //
+            // Always reset the force-cancelled flag and clear any stale timers at
+            // the start of EVERY transaction (chip or contactless).  Without this,
+            // a contactless timeout that fired during a previous read would leave
+            // contactlessForceCancelled=true, causing the NEXT chip onFinish to be
+            // silently discarded (the exact failure observed in testing).
+            contactlessForceCancelled = false
+            contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout?.let  { timeoutHandler.removeCallbacks(it) }
+            contactlessGeneralTimeout = null
+            contactlessRemoveTimeout  = null
+
+            // For contactless-only: arm a 10-second general timeout on the MAIN
+            // thread.  The main thread runs independently of the emvWorker (which
+            // is blocked inside emvProcess), so it CAN interrupt a stuck session.
             // A second 2-second timer is armed from onRemoveCard (below).
             if (isContactless) {
-                contactlessForceCancelled = false
                 val generalTimeout = Runnable {
                     forceContactlessFallback("general-10s")
                 }
@@ -1345,6 +1350,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     @ReactMethod
     fun cancelCardRead(promise: Promise) {
         try {
+            // Cancel any pending contactless hang timers immediately so they cannot
+            // fire after this cancel and leave contactlessForceCancelled=true, which
+            // would cause the NEXT chip transaction's onFinish to be discarded.
+            contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout?.let  { timeoutHandler.removeCallbacks(it) }
+            contactlessGeneralTimeout = null
+            contactlessRemoveTimeout  = null
+
             // Cancel any in-progress EMV kernel transaction first (clears RF/contact state).
             // This must come before stopSearch() so the kernel is idle before the search ends.
             try { emvHandler?.emvProcessCancel() } catch (e: Exception) { /* safe to ignore */ }
