@@ -164,6 +164,14 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         log("EMV", "forceContactlessFallback($reason) — emitting contactless_failed immediately")
         beepError()
         isReading = false
+        // CRITICAL: cancel the active emvProcess BEFORE stopSearch().
+        // Without this, the SDK's emvProcess thread keeps running after stopSearch().
+        // Because NexGo appears to store only ONE global listener, all pending
+        // emvProcess completions from earlier sessions fire on the NEXT session's
+        // listener.  With contactlessForceCancelled=true already set above,
+        // emvProcessCancel() causes the kernel to return immediately (−8020/−8031)
+        // and that stale onFinish callback is then silently discarded by our guard.
+        try { emvHandler?.emvProcessCancel() } catch (_: Exception) {}
         try { cardReader?.stopSearch() } catch (_: Exception) {}
         sendEvent("contactless_failed", Arguments.createMap().apply {
             putString("message", "Tap timed out — please insert chip")
