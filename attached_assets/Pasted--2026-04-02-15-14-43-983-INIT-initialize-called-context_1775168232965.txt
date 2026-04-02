@@ -1,0 +1,995 @@
+[2026-04-02 15:14:43.983] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:14:44.326] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:14:44.340] [INIT] CardReader obtained: true
+[2026-04-02 15:14:44.350] [INIT] Beeper obtained: true
+[2026-04-02 15:14:45.370] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:14:45.374] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:14:45.386] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:14:45.391] [EMVAID] Configuring US payment AIDs (cleared 0 stale AID(s))
+[2026-04-02 15:14:45.440] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:14:45.463] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.464] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.464] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.465] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.466] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.467] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.468] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.469] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.469] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.470] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.471] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.472] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.475] [EMVCAPK] CAPK count after setup=0
+[2026-04-02 15:14:45.575] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:14:45.576] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:14:45.582] [CARD] startCardRead() amount=5100.0
+[2026-04-02 15:14:45.584] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:14:45.895] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 15:14:45.898] [CARD] Card tapped (contactless/RF)
+[2026-04-02 15:14:45.901] [EMV] processEmvCard() entryMode=contactless amount=5100.0
+[2026-04-02 15:14:45.903] [EMV] emvProcess() config — amount=510000 date=260402 time=151445 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 15:14:45.939] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.941] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.942] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.943] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.945] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.946] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.947] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.948] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.951] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.953] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.954] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.955] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:45.956] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:14:45.958] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:14:45.960] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 15:14:46.199] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 15:14:46.218] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:14:46.220] [EMV] onTransInitBeforeGPO: setTlv(9F66=80000000) result=0 — set AFTER initEmvConfiguration, BEFORE GPO
+[2026-04-02 15:14:46.224] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:14:46.513] [EMV] onRemoveCard
+[2026-04-02 15:14:46.514] [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 15:14:46.605] [LOGCAT] === NATIVE EMV LOGCAT (24 lines) ===
+[2026-04-02 15:14:46.606] [LOGCAT] 04-02 15:14:34.062  4438  4461 I OpenGLRenderer: Davey! duration=1003ms; Flags=1, IntendedVsync=9667176627470, Vsync=9667176627470, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=9667177406265, AnimationStart=9667177409803, PerformTraversalsStart=9668098034880, DrawStart=9668120838265, SyncQueued=9668163397342, SyncStart=9668164000804, IssueDrawCommandsStart=9668164833188, SwapBuffers=9668177299111, FrameCompleted=9668181059650, DequeueBufferDuration=477154, QueueBufferDuration=1643846, GpuCompleted=0,
+[2026-04-02 15:14:46.607] [LOGCAT] 04-02 15:14:45.378  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:46.608] [LOGCAT] 04-02 15:14:45.383  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:46.609] [LOGCAT] 04-02 15:14:45.389  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:14:46.610] [LOGCAT] 04-02 15:14:45.393  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:14:46.611] [LOGCAT] 04-02 15:14:45.481  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:14:46.612] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:46.613] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:46.614] [LOGCAT] 04-02 15:14:45.963  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:14:46.614] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:14:46.615] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:14:46.616] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:14:46.617] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:14:46.618] [LOGCAT] 04-02 15:14:46.146  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:14:46.619] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:14:46.620] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:14:46.621] [LOGCAT] 04-02 15:14:46.147  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:14:46.622] [LOGCAT] 04-02 15:14:46.197  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:14:46.623] [LOGCAT] 04-02 15:14:46.201  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:14:46.624] [LOGCAT] 04-02 15:14:46.217  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:14:46.625] [LOGCAT] 04-02 15:14:46.220  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:46.625] [LOGCAT] 04-02 15:14:46.223  4438  4513 I Sdk_Model.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:14:46.626] [LOGCAT] 04-02 15:14:46.513  4438  4513 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 15:14:46.627] [LOGCAT] 04-02 15:14:46.515  4438  4513 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 15:14:46.628] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 15:14:55.976] [EMV] forceContactlessFallback(general-10s) — emitting contactless_failed immediately
+[2026-04-02 15:14:56.047] [LOGCAT] === NATIVE EMV LOGCAT (24 lines) ===
+[2026-04-02 15:14:56.049] [LOGCAT] 04-02 15:14:34.062  4438  4461 I OpenGLRenderer: Davey! duration=1003ms; Flags=1, IntendedVsync=9667176627470, Vsync=9667176627470, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=9667177406265, AnimationStart=9667177409803, PerformTraversalsStart=9668098034880, DrawStart=9668120838265, SyncQueued=9668163397342, SyncStart=9668164000804, IssueDrawCommandsStart=9668164833188, SwapBuffers=9668177299111, FrameCompleted=9668181059650, DequeueBufferDuration=477154, QueueBufferDuration=1643846, GpuCompleted=0,
+[2026-04-02 15:14:56.051] [LOGCAT] 04-02 15:14:45.378  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:56.053] [LOGCAT] 04-02 15:14:45.383  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:56.056] [LOGCAT] 04-02 15:14:45.389  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:14:56.057] [LOGCAT] 04-02 15:14:45.393  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:14:56.058] [LOGCAT] 04-02 15:14:45.481  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:14:56.059] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:56.060] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:56.061] [LOGCAT] 04-02 15:14:45.963  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:14:56.062] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:14:56.063] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:14:56.065] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:14:56.066] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:14:56.067] [LOGCAT] 04-02 15:14:46.146  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:14:56.068] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:14:56.069] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:14:56.070] [LOGCAT] 04-02 15:14:46.147  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:14:56.071] [LOGCAT] 04-02 15:14:46.197  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:14:56.072] [LOGCAT] 04-02 15:14:46.201  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:14:56.073] [LOGCAT] 04-02 15:14:46.217  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:14:56.074] [LOGCAT] 04-02 15:14:46.220  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:56.075] [LOGCAT] 04-02 15:14:46.223  4438  4513 I Sdk_Model.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:14:56.076] [LOGCAT] 04-02 15:14:46.513  4438  4513 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 15:14:56.077] [LOGCAT] 04-02 15:14:46.515  4438  4513 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 15:14:56.078] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 15:14:56.089] [EMV] onFinish retCode=-8020 — discarded (contactless timeout already fired)
+[2026-04-02 15:14:57.675] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:14:57.676] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:14:57.677] [INIT] CardReader obtained: true
+[2026-04-02 15:14:57.678] [INIT] Beeper obtained: true
+[2026-04-02 15:14:57.679] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:14:57.681] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:14:57.683] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:14:57.685] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:14:57.777] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:14:57.799] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.800] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.802] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.803] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.804] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.806] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.807] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.808] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.809] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.810] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.811] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.812] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:57.813] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:14:57.897] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:14:57.899] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:14:57.903] [CARD] startCardRead() amount=5100.0
+[2026-04-02 15:14:57.905] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:14:58.249] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 15:14:58.252] [CARD] Card tapped (contactless/RF)
+[2026-04-02 15:14:58.255] [EMV] processEmvCard() entryMode=contactless amount=5100.0
+[2026-04-02 15:14:58.257] [EMV] emvProcess() config — amount=510000 date=260402 time=151458 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 15:14:58.280] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.281] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.282] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.288] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.290] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.291] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.293] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.294] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.296] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.297] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.302] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.314] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:14:58.315] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:14:58.320] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:14:58.322] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 15:14:58.457] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 15:14:58.484] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:14:58.485] [EMV] onTransInitBeforeGPO: setTlv(9F66=80000000) result=0 — set AFTER initEmvConfiguration, BEFORE GPO
+[2026-04-02 15:14:58.487] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:14:58.758] [EMV] onFinish retCode=-8034 (SdkResult.Success=0)
+[2026-04-02 15:14:58.759] [ERROR/EMV] onFinish FAILED retCode=-8034 — check SdkResult constants for meaning
+[2026-04-02 15:14:58.804] [LOGCAT] === NATIVE EMV LOGCAT (49 lines) ===
+[2026-04-02 15:14:58.806] [LOGCAT] 04-02 15:14:34.062  4438  4461 I OpenGLRenderer: Davey! duration=1003ms; Flags=1, IntendedVsync=9667176627470, Vsync=9667176627470, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=9667177406265, AnimationStart=9667177409803, PerformTraversalsStart=9668098034880, DrawStart=9668120838265, SyncQueued=9668163397342, SyncStart=9668164000804, IssueDrawCommandsStart=9668164833188, SwapBuffers=9668177299111, FrameCompleted=9668181059650, DequeueBufferDuration=477154, QueueBufferDuration=1643846, GpuCompleted=0,
+[2026-04-02 15:14:58.807] [LOGCAT] 04-02 15:14:45.378  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.808] [LOGCAT] 04-02 15:14:45.383  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:58.809] [LOGCAT] 04-02 15:14:45.389  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:14:58.809] [LOGCAT] 04-02 15:14:45.393  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:14:58.810] [LOGCAT] 04-02 15:14:45.481  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:14:58.811] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.812] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:58.813] [LOGCAT] 04-02 15:14:45.963  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:14:58.813] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:14:58.814] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:14:58.815] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:14:58.815] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:14:58.816] [LOGCAT] 04-02 15:14:46.146  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:14:58.816] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:14:58.817] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:14:58.818] [LOGCAT] 04-02 15:14:46.147  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:14:58.818] [LOGCAT] 04-02 15:14:46.197  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:14:58.819] [LOGCAT] 04-02 15:14:46.201  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:14:58.820] [LOGCAT] 04-02 15:14:46.217  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:14:58.821] [LOGCAT] 04-02 15:14:46.220  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.822] [LOGCAT] 04-02 15:14:46.223  4438  4513 I Sdk_Model.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:14:58.822] [LOGCAT] 04-02 15:14:46.513  4438  4513 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 15:14:58.823] [LOGCAT] 04-02 15:14:46.515  4438  4513 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 15:14:58.824] [LOGCAT] 04-02 15:14:56.080  4438  4438 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 15:14:58.825] [LOGCAT] 04-02 15:14:57.679  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:14:58.826] [LOGCAT] 04-02 15:14:57.682  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.827] [LOGCAT] 04-02 15:14:57.683  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:58.827] [LOGCAT] 04-02 15:14:57.684  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:14:58.828] [LOGCAT] 04-02 15:14:57.687  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:14:58.829] [LOGCAT] 04-02 15:14:57.822  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:14:58.830] [LOGCAT] 04-02 15:14:58.318  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.830] [LOGCAT] 04-02 15:14:58.320  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:14:58.831] [LOGCAT] 04-02 15:14:58.324  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:14:58.831] [LOGCAT] 04-02 15:14:58.324  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:14:58.832] [LOGCAT] 04-02 15:14:58.325  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:14:58.832] [LOGCAT] 04-02 15:14:58.353  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:14:58.833] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:14:58.833] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:14:58.834] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:14:58.835] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:14:58.836] [LOGCAT] 04-02 15:14:58.357  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:14:58.837] [LOGCAT] 04-02 15:14:58.456  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:14:58.837] [LOGCAT] 04-02 15:14:58.458  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:14:58.838] [LOGCAT] 04-02 15:14:58.483  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:14:58.839] [LOGCAT] 04-02 15:14:58.485  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:14:58.840] [LOGCAT] 04-02 15:14:58.487  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:14:58.841] [LOGCAT] 04-02 15:14:58.757  4438  4513 E Ddi_jni : wrapper_spi_ddi_rf_exchange_apdu ret=-1 ffffffff!
+[2026-04-02 15:14:58.842] [LOGCAT] 04-02 15:14:58.759  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8034 — check SdkResult constants for meaning
+[2026-04-02 15:14:58.843] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 15:14:58.843] [EMV] Contactless failure (retCode=-8034) → emitting contactless_failed for chip reprompt
+[2026-04-02 15:15:00.401] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:00.403] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:00.404] [INIT] CardReader obtained: true
+[2026-04-02 15:15:00.405] [INIT] Beeper obtained: true
+[2026-04-02 15:15:00.408] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:00.410] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:00.413] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:00.416] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:00.531] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:00.549] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.551] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.554] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.556] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.558] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.559] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.561] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.562] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.563] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.565] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.566] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.567] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:00.568] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:00.621] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:00.622] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:00.626] [CARD] startCardRead() amount=5100.0
+[2026-04-02 15:15:00.627] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:02.930] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 15:15:02.932] [CARD] Card inserted (chip/ICC)
+[2026-04-02 15:15:02.936] [EMV] processEmvCard() entryMode=chip amount=5100.0
+[2026-04-02 15:15:02.938] [EMV] emvProcess() config — amount=510000 date=260402 time=151502 entryMode=CONTACT AIDsNow=12
+[2026-04-02 15:15:02.942] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 15:15:02.985] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.987] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.988] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.989] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.991] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.992] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.993] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.994] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.995] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.996] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:02.997] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:03.002] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:03.003] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:03.006] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:03.338] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 15:15:03.438] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:15:03.440] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:15:03.750] [EMV] onConfirmCardNo — last4=3191
+[2026-04-02 15:15:03.938] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 15:15:03.940] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 15:15:04.115] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 15:15:04.121] [EMV] onFinish SUCCESS (retCode=0) — pan=***3191 expiry=2610 brand=Mastercard entryMode=chip
+[2026-04-02 15:15:08.249] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:08.250] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:08.251] [INIT] CardReader obtained: true
+[2026-04-02 15:15:08.252] [INIT] Beeper obtained: true
+[2026-04-02 15:15:08.253] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:08.254] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:08.255] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:08.256] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:08.334] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:08.355] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.355] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.356] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.357] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.358] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.359] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.360] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.361] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.362] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.363] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.364] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.365] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:08.366] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:08.424] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:08.425] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:08.428] [CARD] startCardRead() amount=5100.0
+[2026-04-02 15:15:08.430] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:10.813] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 15:15:10.816] [CARD] Card inserted (chip/ICC)
+[2026-04-02 15:15:10.820] [EMV] processEmvCard() entryMode=chip amount=5100.0
+[2026-04-02 15:15:10.822] [EMV] emvProcess() config — amount=510000 date=260402 time=151510 entryMode=CONTACT AIDsNow=12
+[2026-04-02 15:15:10.824] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 15:15:10.855] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.856] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.857] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.858] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.859] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.860] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.861] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.862] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.864] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.865] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.866] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.868] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:10.870] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:10.872] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:11.177] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 15:15:11.275] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:15:11.277] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:15:11.584] [EMV] onConfirmCardNo — last4=3191
+[2026-04-02 15:15:11.777] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 15:15:11.779] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 15:15:11.948] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 15:15:11.956] [EMV] onFinish SUCCESS (retCode=0) — pan=***3191 expiry=2610 brand=Mastercard entryMode=chip
+[2026-04-02 15:15:35.674] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:35.675] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:35.676] [INIT] CardReader obtained: true
+[2026-04-02 15:15:35.677] [INIT] Beeper obtained: true
+[2026-04-02 15:15:35.678] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:35.679] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:35.682] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:35.684] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:35.773] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:35.788] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.790] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.791] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.792] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.793] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.794] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.794] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.795] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.796] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.797] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.798] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.799] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:35.800] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:35.879] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:35.881] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:35.885] [CARD] startCardRead() amount=2150.0
+[2026-04-02 15:15:35.887] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:36.850] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 15:15:36.852] [CARD] Card tapped (contactless/RF)
+[2026-04-02 15:15:36.854] [EMV] processEmvCard() entryMode=contactless amount=2150.0
+[2026-04-02 15:15:36.856] [EMV] emvProcess() config — amount=215000 date=260402 time=151536 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 15:15:36.882] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.884] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.885] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.886] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.887] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.887] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.888] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.889] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.890] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.890] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.891] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.892] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:36.893] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:36.896] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:36.897] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 15:15:36.959] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:15:36.961] [EMV] onTransInitBeforeGPO: setTlv(9F66=80000000) result=0 — set AFTER initEmvConfiguration, BEFORE GPO
+[2026-04-02 15:15:36.963] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:15:37.032] [EMV] onFinish retCode=-1 (SdkResult.Success=0)
+[2026-04-02 15:15:37.034] [ERROR/EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:15:37.036] [EMV] Contactless failure (retCode=-1) → emitting contactless_failed for chip reprompt
+[2026-04-02 15:15:38.614] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:38.615] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:38.616] [INIT] CardReader obtained: true
+[2026-04-02 15:15:38.617] [INIT] Beeper obtained: true
+[2026-04-02 15:15:38.619] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:38.621] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:38.623] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:38.626] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:38.761] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:38.782] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.784] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.785] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.786] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.787] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.788] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.788] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.789] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.790] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.791] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.792] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.793] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:38.795] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:38.873] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:38.875] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:38.878] [CARD] startCardRead() amount=2150.0
+[2026-04-02 15:15:38.879] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:39.801] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 15:15:39.803] [CARD] Card tapped (contactless/RF)
+[2026-04-02 15:15:39.807] [EMV] processEmvCard() entryMode=contactless amount=2150.0
+[2026-04-02 15:15:39.809] [EMV] emvProcess() config — amount=215000 date=260402 time=151539 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 15:15:39.842] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.843] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.845] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.846] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.847] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.849] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.850] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.853] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.854] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.855] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.856] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.856] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:39.857] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:39.859] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:39.860] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 15:15:39.920] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:15:39.922] [EMV] onTransInitBeforeGPO: setTlv(9F66=80000000) result=0 — set AFTER initEmvConfiguration, BEFORE GPO
+[2026-04-02 15:15:39.926] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:15:39.984] [EMV] onFinish retCode=-1 (SdkResult.Success=0)
+[2026-04-02 15:15:39.985] [ERROR/EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:15:39.987] [EMV] Contactless failure (retCode=-1) → emitting contactless_failed for chip reprompt
+[2026-04-02 15:15:41.555] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:41.556] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:41.557] [INIT] CardReader obtained: true
+[2026-04-02 15:15:41.558] [INIT] Beeper obtained: true
+[2026-04-02 15:15:41.560] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:41.562] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:41.564] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:41.567] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:41.687] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:41.706] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.707] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.708] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.708] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.708] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.709] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.709] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.710] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.710] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.711] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.712] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.713] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:41.714] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:41.794] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:41.795] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:41.798] [CARD] startCardRead() amount=2150.0
+[2026-04-02 15:15:41.799] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:43.640] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 15:15:43.642] [CARD] Card inserted (chip/ICC)
+[2026-04-02 15:15:43.645] [EMV] processEmvCard() entryMode=chip amount=2150.0
+[2026-04-02 15:15:43.649] [EMV] emvProcess() config — amount=215000 date=260402 time=151543 entryMode=CONTACT AIDsNow=12
+[2026-04-02 15:15:43.652] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 15:15:43.675] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.676] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.677] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.679] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.682] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.683] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.684] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.685] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.685] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.686] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.687] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.689] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:43.690] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:43.692] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:43.873] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 15:15:43.876] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 15:15:44.021] [EMV] onConfirmCardNo — last4=2692
+[2026-04-02 15:15:44.126] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 15:15:44.128] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 15:15:44.221] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 15:15:44.231] [EMV] onFinish SUCCESS (retCode=0) — pan=***2692 expiry=3002 brand=Visa entryMode=chip
+[2026-04-02 15:15:57.359] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:15:57.360] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:15:57.360] [INIT] CardReader obtained: true
+[2026-04-02 15:15:57.362] [INIT] Beeper obtained: true
+[2026-04-02 15:15:57.363] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:15:57.365] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:15:57.367] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:57.368] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:15:57.437] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:15:57.449] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.450] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.451] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.452] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.453] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.454] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.454] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.455] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.456] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.457] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.458] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.461] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:57.462] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:15:57.555] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:15:57.556] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:15:57.563] [CARD] startCardRead() amount=6300.0
+[2026-04-02 15:15:57.568] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:15:58.803] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 15:15:58.805] [CARD] Card tapped (contactless/RF)
+[2026-04-02 15:15:58.810] [EMV] processEmvCard() entryMode=contactless amount=6300.0
+[2026-04-02 15:15:58.812] [EMV] emvProcess() config — amount=630000 date=260402 time=151558 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 15:15:58.839] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.840] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.843] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.844] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.846] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.847] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.848] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.850] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.851] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.853] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.856] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.857] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.858] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:15:58.861] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:15:58.863] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 15:15:58.958] [EMV] onFinish retCode=-8012 (SdkResult.Success=0)
+[2026-04-02 15:15:58.960] [ERROR/EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 15:15:58.962] [EMV] Post-failure AID dump (retCode=-8012):
+[2026-04-02 15:15:58.992] [EMVAID-DUMP[post-8012]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.993] [EMVAID-DUMP[post-8012]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.995] [EMVAID-DUMP[post-8012]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.996] [EMVAID-DUMP[post-8012]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:58.998] [EMVAID-DUMP[post-8012]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.000] [EMVAID-DUMP[post-8012]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.001] [EMVAID-DUMP[post-8012]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.003] [EMVAID-DUMP[post-8012]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.004] [EMVAID-DUMP[post-8012]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.005] [EMVAID-DUMP[post-8012]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.007] [EMVAID-DUMP[post-8012]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.008] [EMVAID-DUMP[post-8012]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:15:59.009] [EMVCAPK] CAPK count post-8012=60
+[2026-04-02 15:15:59.011] [EMV] Contactless failure (retCode=-8012) → emitting contactless_failed for chip reprompt
+[2026-04-02 15:15:59.385] [LOGCAT] === NATIVE EMV LOGCAT (200 lines) ===
+[2026-04-02 15:15:59.386] [LOGCAT] 04-02 15:14:45.393  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.387] [LOGCAT] 04-02 15:14:45.481  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.388] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.389] [LOGCAT] 04-02 15:14:45.958  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.390] [LOGCAT] 04-02 15:14:45.963  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.390] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.391] [LOGCAT] 04-02 15:14:45.965  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.392] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.393] [LOGCAT] 04-02 15:14:46.145  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.394] [LOGCAT] 04-02 15:14:46.146  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.394] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.395] [LOGCAT] 04-02 15:14:46.146  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.395] [LOGCAT] 04-02 15:14:46.147  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.396] [LOGCAT] 04-02 15:14:46.197  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:15:59.396] [LOGCAT] 04-02 15:14:46.201  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:15:59.396] [LOGCAT] 04-02 15:14:46.217  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.397] [LOGCAT] 04-02 15:14:46.220  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.397] [LOGCAT] 04-02 15:14:46.223  4438  4513 I Sdk_Model.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.398] [LOGCAT] 04-02 15:14:46.513  4438  4513 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 15:15:59.398] [LOGCAT] 04-02 15:14:46.515  4438  4513 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 15:15:59.399] [LOGCAT] 04-02 15:14:56.080  4438  4438 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 15:15:59.399] [LOGCAT] 04-02 15:14:57.679  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.400] [LOGCAT] 04-02 15:14:57.682  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.400] [LOGCAT] 04-02 15:14:57.683  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.401] [LOGCAT] 04-02 15:14:57.684  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.401] [LOGCAT] 04-02 15:14:57.687  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.402] [LOGCAT] 04-02 15:14:57.822  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.402] [LOGCAT] 04-02 15:14:58.318  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.403] [LOGCAT] 04-02 15:14:58.320  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.403] [LOGCAT] 04-02 15:14:58.324  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.404] [LOGCAT] 04-02 15:14:58.324  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.404] [LOGCAT] 04-02 15:14:58.325  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.405] [LOGCAT] 04-02 15:14:58.353  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.405] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.406] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.406] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.407] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.407] [LOGCAT] 04-02 15:14:58.357  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.408] [LOGCAT] 04-02 15:14:58.456  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:15:59.408] [LOGCAT] 04-02 15:14:58.458  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:15:59.409] [LOGCAT] 04-02 15:14:58.483  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.409] [LOGCAT] 04-02 15:14:58.485  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.410] [LOGCAT] 04-02 15:14:58.487  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.411] [LOGCAT] 04-02 15:14:58.757  4438  4513 E Ddi_jni : wrapper_spi_ddi_rf_exchange_apdu ret=-1 ffffffff!
+[2026-04-02 15:15:59.411] [LOGCAT] 04-02 15:14:58.759  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8034 — check SdkResult constants for meaning
+[2026-04-02 15:15:59.412] [LOGCAT] 04-02 15:15:00.408  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.413] [LOGCAT] 04-02 15:15:00.412  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.413] [LOGCAT] 04-02 15:15:00.413  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.413] [LOGCAT] 04-02 15:15:00.415  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.414] [LOGCAT] 04-02 15:15:00.418  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.414] [LOGCAT] 04-02 15:15:00.575  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.415] [LOGCAT] 04-02 15:15:02.991  4438  4468 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 15:15:59.415] [LOGCAT] 04-02 15:15:03.005  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.416] [LOGCAT] 04-02 15:15:03.006  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.416] [LOGCAT] 04-02 15:15:03.007  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.416] [LOGCAT] 04-02 15:15:03.008  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.417] [LOGCAT] 04-02 15:15:03.008  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.417] [LOGCAT] 04-02 15:15:03.042  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.418] [LOGCAT] 04-02 15:15:03.042  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.418] [LOGCAT] 04-02 15:15:03.097  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.419] [LOGCAT] 04-02 15:15:03.108  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.419] [LOGCAT] 04-02 15:15:03.108  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.420] [LOGCAT] 04-02 15:15:03.109  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.420] [LOGCAT] 04-02 15:15:03.337  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:15:59.420] [LOGCAT] 04-02 15:15:03.342  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:15:59.421] [LOGCAT] 04-02 15:15:03.438  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.422] [LOGCAT] 04-02 15:15:03.440  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.422] [LOGCAT] 04-02 15:15:03.740  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:15:59.423] [LOGCAT] 04-02 15:15:03.740  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.423] [LOGCAT] 04-02 15:15:03.741  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.424] [LOGCAT] 04-02 15:15:03.748  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.425] [LOGCAT] 04-02 15:15:03.751  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:15:59.425] [LOGCAT] 04-02 15:15:03.937  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.426] [LOGCAT] 04-02 15:15:03.937  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.426] [LOGCAT] 04-02 15:15:03.939  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:15:59.426] [LOGCAT] 04-02 15:15:04.116  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.427] [LOGCAT] 04-02 15:15:04.117  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.427] [LOGCAT] 04-02 15:15:04.117  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.428] [LOGCAT] 04-02 15:15:08.253  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.428] [LOGCAT] 04-02 15:15:08.254  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.429] [LOGCAT] 04-02 15:15:08.255  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.429] [LOGCAT] 04-02 15:15:08.256  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.429] [LOGCAT] 04-02 15:15:08.257  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.430] [LOGCAT] 04-02 15:15:08.372  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.430] [LOGCAT] 04-02 15:15:10.871  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.431] [LOGCAT] 04-02 15:15:10.872  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.432] [LOGCAT] 04-02 15:15:10.873  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.432] [LOGCAT] 04-02 15:15:10.873  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.433] [LOGCAT] 04-02 15:15:10.874  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.433] [LOGCAT] 04-02 15:15:10.894  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.434] [LOGCAT] 04-02 15:15:10.894  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.434] [LOGCAT] 04-02 15:15:10.946  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.435] [LOGCAT] 04-02 15:15:10.950  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.435] [LOGCAT] 04-02 15:15:10.950  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.435] [LOGCAT] 04-02 15:15:10.951  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.436] [LOGCAT] 04-02 15:15:11.175  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:15:59.436] [LOGCAT] 04-02 15:15:11.179  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:15:59.437] [LOGCAT] 04-02 15:15:11.275  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.437] [LOGCAT] 04-02 15:15:11.277  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.438] [LOGCAT] 04-02 15:15:11.578  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:15:59.438] [LOGCAT] 04-02 15:15:11.578  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.439] [LOGCAT] 04-02 15:15:11.579  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.439] [LOGCAT] 04-02 15:15:11.583  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.440] [LOGCAT] 04-02 15:15:11.587  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:15:59.440] [LOGCAT] 04-02 15:15:11.776  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.441] [LOGCAT] 04-02 15:15:11.777  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.441] [LOGCAT] 04-02 15:15:11.779  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:15:59.442] [LOGCAT] 04-02 15:15:11.950  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.443] [LOGCAT] 04-02 15:15:11.950  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.443] [LOGCAT] 04-02 15:15:11.951  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.444] [LOGCAT] 04-02 15:15:35.678  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.444] [LOGCAT] 04-02 15:15:35.680  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.444] [LOGCAT] 04-02 15:15:35.681  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.445] [LOGCAT] 04-02 15:15:35.684  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.445] [LOGCAT] 04-02 15:15:35.686  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.446] [LOGCAT] 04-02 15:15:35.812  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.447] [LOGCAT] 04-02 15:15:36.895  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.448] [LOGCAT] 04-02 15:15:36.896  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.449] [LOGCAT] 04-02 15:15:36.898  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.449] [LOGCAT] 04-02 15:15:36.898  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.450] [LOGCAT] 04-02 15:15:36.898  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.450] [LOGCAT] 04-02 15:15:36.912  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.451] [LOGCAT] 04-02 15:15:36.912  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.452] [LOGCAT] 04-02 15:15:36.913  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.452] [LOGCAT] 04-02 15:15:36.913  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.453] [LOGCAT] 04-02 15:15:36.913  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.454] [LOGCAT] 04-02 15:15:36.915  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.455] [LOGCAT] 04-02 15:15:36.959  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.455] [LOGCAT] 04-02 15:15:36.961  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.456] [LOGCAT] 04-02 15:15:36.963  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.457] [LOGCAT] 04-02 15:15:37.035  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:15:59.458] [LOGCAT] 04-02 15:15:38.619  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.458] [LOGCAT] 04-02 15:15:38.623  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.459] [LOGCAT] 04-02 15:15:38.623  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.459] [LOGCAT] 04-02 15:15:38.625  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.460] [LOGCAT] 04-02 15:15:38.628  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.461] [LOGCAT] 04-02 15:15:38.805  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.461] [LOGCAT] 04-02 15:15:39.858  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.462] [LOGCAT] 04-02 15:15:39.859  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.462] [LOGCAT] 04-02 15:15:39.861  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.463] [LOGCAT] 04-02 15:15:39.862  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.463] [LOGCAT] 04-02 15:15:39.862  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.464] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.465] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.465] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.466] [LOGCAT] 04-02 15:15:39.878  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.466] [LOGCAT] 04-02 15:15:39.879  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.467] [LOGCAT] 04-02 15:15:39.879  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.467] [LOGCAT] 04-02 15:15:39.920  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.468] [LOGCAT] 04-02 15:15:39.922  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.468] [LOGCAT] 04-02 15:15:39.926  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.469] [LOGCAT] 04-02 15:15:39.986  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:15:59.469] [LOGCAT] 04-02 15:15:41.560  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.470] [LOGCAT] 04-02 15:15:41.564  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.470] [LOGCAT] 04-02 15:15:41.564  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.471] [LOGCAT] 04-02 15:15:41.566  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.472] [LOGCAT] 04-02 15:15:41.568  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.472] [LOGCAT] 04-02 15:15:41.720  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.473] [LOGCAT] 04-02 15:15:43.692  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.474] [LOGCAT] 04-02 15:15:43.692  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.474] [LOGCAT] 04-02 15:15:43.693  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.475] [LOGCAT] 04-02 15:15:43.694  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.475] [LOGCAT] 04-02 15:15:43.694  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.476] [LOGCAT] 04-02 15:15:43.717  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.477] [LOGCAT] 04-02 15:15:43.717  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.477] [LOGCAT] 04-02 15:15:43.771  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.478] [LOGCAT] 04-02 15:15:43.774  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.479] [LOGCAT] 04-02 15:15:43.775  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.479] [LOGCAT] 04-02 15:15:43.776  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.480] [LOGCAT] 04-02 15:15:43.873  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:15:59.481] [LOGCAT] 04-02 15:15:43.876  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:15:59.481] [LOGCAT] 04-02 15:15:44.013  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:15:59.482] [LOGCAT] 04-02 15:15:44.013  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.482] [LOGCAT] 04-02 15:15:44.014  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.483] [LOGCAT] 04-02 15:15:44.019  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.484] [LOGCAT] 04-02 15:15:44.023  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:15:59.484] [LOGCAT] 04-02 15:15:44.125  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.485] [LOGCAT] 04-02 15:15:44.126  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.485] [LOGCAT] 04-02 15:15:44.128  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:15:59.486] [LOGCAT] 04-02 15:15:44.223  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.486] [LOGCAT] 04-02 15:15:44.224  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:15:59.487] [LOGCAT] 04-02 15:15:44.224  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:15:59.488] [LOGCAT] 04-02 15:15:57.363  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:15:59.489] [LOGCAT] 04-02 15:15:57.366  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.489] [LOGCAT] 04-02 15:15:57.366  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.490] [LOGCAT] 04-02 15:15:57.368  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:15:59.490] [LOGCAT] 04-02 15:15:57.370  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:15:59.491] [LOGCAT] 04-02 15:15:57.483  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:15:59.492] [LOGCAT] 04-02 15:15:58.860  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:15:59.492] [LOGCAT] 04-02 15:15:58.861  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:15:59.493] [LOGCAT] 04-02 15:15:58.865  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:15:59.494] [LOGCAT] 04-02 15:15:58.866  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:15:59.494] [LOGCAT] 04-02 15:15:58.866  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:15:59.495] [LOGCAT] 04-02 15:15:58.889  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:15:59.496] [LOGCAT] 04-02 15:15:58.889  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:15:59.497] [LOGCAT] 04-02 15:15:58.890  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:15:59.498] [LOGCAT] 04-02 15:15:58.890  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:15:59.498] [LOGCAT] 04-02 15:15:58.891  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:15:59.499] [LOGCAT] 04-02 15:15:58.891  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:15:59.499] [LOGCAT] 04-02 15:15:58.961  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 15:15:59.500] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 15:16:00.610] [INIT] initialize() called — context=MainActivity
+[2026-04-02 15:16:00.611] [INIT] DeviceEngine obtained OK
+[2026-04-02 15:16:00.613] [INIT] CardReader obtained: true
+[2026-04-02 15:16:00.614] [INIT] Beeper obtained: true
+[2026-04-02 15:16:00.617] [INIT] EmvHandler2 obtained: true
+[2026-04-02 15:16:00.619] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 15:16:00.621] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:16:00.624] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 15:16:00.757] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 15:16:00.777] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.779] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.780] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.781] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.782] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.783] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.784] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.785] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.786] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.787] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.788] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.790] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:00.791] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 15:16:00.873] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 15:16:00.874] [INIT] initialize() complete — AIDs=12
+[2026-04-02 15:16:00.878] [CARD] startCardRead() amount=6300.0
+[2026-04-02 15:16:00.880] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 15:16:03.374] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 15:16:03.377] [CARD] Card inserted (chip/ICC)
+[2026-04-02 15:16:03.380] [EMV] processEmvCard() entryMode=chip amount=6300.0
+[2026-04-02 15:16:03.382] [EMV] emvProcess() config — amount=630000 date=260402 time=151603 entryMode=CONTACT AIDsNow=12
+[2026-04-02 15:16:03.384] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 15:16:03.411] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.412] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.414] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.416] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.417] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.419] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.420] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.422] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.426] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.427] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.428] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.429] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:03.430] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 15:16:03.432] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 15:16:04.021] [EMV] onFinish retCode=-8012 (SdkResult.Success=0)
+[2026-04-02 15:16:04.023] [ERROR/EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.024] [EMV] Post-failure AID dump (retCode=-8012):
+[2026-04-02 15:16:04.048] [EMVAID-DUMP[post-8012]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.050] [EMVAID-DUMP[post-8012]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.051] [EMVAID-DUMP[post-8012]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.052] [EMVAID-DUMP[post-8012]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.053] [EMVAID-DUMP[post-8012]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.055] [EMVAID-DUMP[post-8012]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.056] [EMVAID-DUMP[post-8012]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.057] [EMVAID-DUMP[post-8012]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.059] [EMVAID-DUMP[post-8012]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.060] [EMVAID-DUMP[post-8012]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.062] [EMVAID-DUMP[post-8012]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.063] [EMVAID-DUMP[post-8012]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 15:16:04.064] [EMVCAPK] CAPK count post-8012=60
+[2026-04-02 15:16:04.460] [LOGCAT] === NATIVE EMV LOGCAT (200 lines) ===
+[2026-04-02 15:16:04.462] [LOGCAT] 04-02 15:14:46.513  4438  4513 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 15:16:04.463] [LOGCAT] 04-02 15:14:46.515  4438  4513 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 15:16:04.464] [LOGCAT] 04-02 15:14:56.080  4438  4438 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 15:16:04.465] [LOGCAT] 04-02 15:14:57.679  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.466] [LOGCAT] 04-02 15:14:57.682  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.467] [LOGCAT] 04-02 15:14:57.683  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.468] [LOGCAT] 04-02 15:14:57.684  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.469] [LOGCAT] 04-02 15:14:57.687  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.470] [LOGCAT] 04-02 15:14:57.822  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.471] [LOGCAT] 04-02 15:14:58.318  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.472] [LOGCAT] 04-02 15:14:58.320  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.473] [LOGCAT] 04-02 15:14:58.324  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.474] [LOGCAT] 04-02 15:14:58.324  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.474] [LOGCAT] 04-02 15:14:58.325  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.475] [LOGCAT] 04-02 15:14:58.353  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.476] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.476] [LOGCAT] 04-02 15:14:58.354  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.477] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.478] [LOGCAT] 04-02 15:14:58.355  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.478] [LOGCAT] 04-02 15:14:58.357  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.479] [LOGCAT] 04-02 15:14:58.456  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:16:04.480] [LOGCAT] 04-02 15:14:58.458  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:16:04.481] [LOGCAT] 04-02 15:14:58.483  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.483] [LOGCAT] 04-02 15:14:58.485  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.484] [LOGCAT] 04-02 15:14:58.487  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.485] [LOGCAT] 04-02 15:14:58.757  4438  4513 E Ddi_jni : wrapper_spi_ddi_rf_exchange_apdu ret=-1 ffffffff!
+[2026-04-02 15:16:04.486] [LOGCAT] 04-02 15:14:58.759  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8034 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.487] [LOGCAT] 04-02 15:15:00.408  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.488] [LOGCAT] 04-02 15:15:00.412  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.489] [LOGCAT] 04-02 15:15:00.413  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.490] [LOGCAT] 04-02 15:15:00.415  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.491] [LOGCAT] 04-02 15:15:00.418  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.492] [LOGCAT] 04-02 15:15:00.575  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.492] [LOGCAT] 04-02 15:15:02.991  4438  4468 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 15:16:04.493] [LOGCAT] 04-02 15:15:03.005  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.494] [LOGCAT] 04-02 15:15:03.006  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.495] [LOGCAT] 04-02 15:15:03.007  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.496] [LOGCAT] 04-02 15:15:03.008  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.497] [LOGCAT] 04-02 15:15:03.008  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.498] [LOGCAT] 04-02 15:15:03.042  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.498] [LOGCAT] 04-02 15:15:03.042  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.500] [LOGCAT] 04-02 15:15:03.097  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.501] [LOGCAT] 04-02 15:15:03.108  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.502] [LOGCAT] 04-02 15:15:03.108  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.504] [LOGCAT] 04-02 15:15:03.109  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.505] [LOGCAT] 04-02 15:15:03.337  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:16:04.506] [LOGCAT] 04-02 15:15:03.342  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:16:04.507] [LOGCAT] 04-02 15:15:03.438  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.508] [LOGCAT] 04-02 15:15:03.440  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.509] [LOGCAT] 04-02 15:15:03.740  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:16:04.510] [LOGCAT] 04-02 15:15:03.740  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.510] [LOGCAT] 04-02 15:15:03.741  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.511] [LOGCAT] 04-02 15:15:03.748  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.512] [LOGCAT] 04-02 15:15:03.751  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:16:04.512] [LOGCAT] 04-02 15:15:03.937  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.513] [LOGCAT] 04-02 15:15:03.937  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.514] [LOGCAT] 04-02 15:15:03.939  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:16:04.515] [LOGCAT] 04-02 15:15:04.116  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.515] [LOGCAT] 04-02 15:15:04.117  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.516] [LOGCAT] 04-02 15:15:04.117  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.517] [LOGCAT] 04-02 15:15:08.253  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.519] [LOGCAT] 04-02 15:15:08.254  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.520] [LOGCAT] 04-02 15:15:08.255  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.521] [LOGCAT] 04-02 15:15:08.256  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.522] [LOGCAT] 04-02 15:15:08.257  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.524] [LOGCAT] 04-02 15:15:08.372  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.525] [LOGCAT] 04-02 15:15:10.871  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.526] [LOGCAT] 04-02 15:15:10.872  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.527] [LOGCAT] 04-02 15:15:10.873  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.528] [LOGCAT] 04-02 15:15:10.873  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.528] [LOGCAT] 04-02 15:15:10.874  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.529] [LOGCAT] 04-02 15:15:10.894  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.530] [LOGCAT] 04-02 15:15:10.894  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.531] [LOGCAT] 04-02 15:15:10.946  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.532] [LOGCAT] 04-02 15:15:10.950  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.532] [LOGCAT] 04-02 15:15:10.950  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.533] [LOGCAT] 04-02 15:15:10.951  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.534] [LOGCAT] 04-02 15:15:11.175  4438  4513 I Sdk_EmvHandler2Impl.java: [line:312] - call onSelApp
+[2026-04-02 15:16:04.535] [LOGCAT] 04-02 15:15:11.179  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1437] - call onSetSelAppResponse
+[2026-04-02 15:16:04.537] [LOGCAT] 04-02 15:15:11.275  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.538] [LOGCAT] 04-02 15:15:11.277  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.539] [LOGCAT] 04-02 15:15:11.578  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:16:04.541] [LOGCAT] 04-02 15:15:11.578  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.544] [LOGCAT] 04-02 15:15:11.579  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.545] [LOGCAT] 04-02 15:15:11.583  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.547] [LOGCAT] 04-02 15:15:11.587  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:16:04.548] [LOGCAT] 04-02 15:15:11.776  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.549] [LOGCAT] 04-02 15:15:11.777  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.550] [LOGCAT] 04-02 15:15:11.779  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:16:04.550] [LOGCAT] 04-02 15:15:11.950  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.551] [LOGCAT] 04-02 15:15:11.950  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.552] [LOGCAT] 04-02 15:15:11.951  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.553] [LOGCAT] 04-02 15:15:35.678  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.555] [LOGCAT] 04-02 15:15:35.680  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.556] [LOGCAT] 04-02 15:15:35.681  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.557] [LOGCAT] 04-02 15:15:35.684  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.558] [LOGCAT] 04-02 15:15:35.686  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.559] [LOGCAT] 04-02 15:15:35.812  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.560] [LOGCAT] 04-02 15:15:36.895  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.561] [LOGCAT] 04-02 15:15:36.896  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.562] [LOGCAT] 04-02 15:15:36.898  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.563] [LOGCAT] 04-02 15:15:36.898  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.564] [LOGCAT] 04-02 15:15:36.898  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.565] [LOGCAT] 04-02 15:15:36.912  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.566] [LOGCAT] 04-02 15:15:36.912  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.567] [LOGCAT] 04-02 15:15:36.913  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.568] [LOGCAT] 04-02 15:15:36.913  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.569] [LOGCAT] 04-02 15:15:36.913  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.570] [LOGCAT] 04-02 15:15:36.915  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.571] [LOGCAT] 04-02 15:15:36.959  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.573] [LOGCAT] 04-02 15:15:36.961  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.574] [LOGCAT] 04-02 15:15:36.963  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.575] [LOGCAT] 04-02 15:15:37.035  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.576] [LOGCAT] 04-02 15:15:38.619  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.577] [LOGCAT] 04-02 15:15:38.623  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.577] [LOGCAT] 04-02 15:15:38.623  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.578] [LOGCAT] 04-02 15:15:38.625  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.578] [LOGCAT] 04-02 15:15:38.628  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.579] [LOGCAT] 04-02 15:15:38.805  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.580] [LOGCAT] 04-02 15:15:39.858  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.581] [LOGCAT] 04-02 15:15:39.859  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.582] [LOGCAT] 04-02 15:15:39.861  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.583] [LOGCAT] 04-02 15:15:39.862  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.585] [LOGCAT] 04-02 15:15:39.862  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.586] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.587] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.588] [LOGCAT] 04-02 15:15:39.878  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.589] [LOGCAT] 04-02 15:15:39.878  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.590] [LOGCAT] 04-02 15:15:39.879  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.591] [LOGCAT] 04-02 15:15:39.879  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.592] [LOGCAT] 04-02 15:15:39.920  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.593] [LOGCAT] 04-02 15:15:39.922  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.594] [LOGCAT] 04-02 15:15:39.926  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.595] [LOGCAT] 04-02 15:15:39.986  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-1 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.596] [LOGCAT] 04-02 15:15:41.560  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.596] [LOGCAT] 04-02 15:15:41.564  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.597] [LOGCAT] 04-02 15:15:41.564  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.598] [LOGCAT] 04-02 15:15:41.566  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.598] [LOGCAT] 04-02 15:15:41.568  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.599] [LOGCAT] 04-02 15:15:41.720  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.600] [LOGCAT] 04-02 15:15:43.692  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.601] [LOGCAT] 04-02 15:15:43.692  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.602] [LOGCAT] 04-02 15:15:43.693  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.603] [LOGCAT] 04-02 15:15:43.694  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.604] [LOGCAT] 04-02 15:15:43.694  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.605] [LOGCAT] 04-02 15:15:43.717  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.606] [LOGCAT] 04-02 15:15:43.717  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.608] [LOGCAT] 04-02 15:15:43.771  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.610] [LOGCAT] 04-02 15:15:43.774  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.611] [LOGCAT] 04-02 15:15:43.775  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.613] [LOGCAT] 04-02 15:15:43.776  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.614] [LOGCAT] 04-02 15:15:43.873  4438  4513 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 15:16:04.614] [LOGCAT] 04-02 15:15:43.876  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 15:16:04.615] [LOGCAT] 04-02 15:15:44.013  4438  4513 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 15:16:04.616] [LOGCAT] 04-02 15:15:44.013  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.618] [LOGCAT] 04-02 15:15:44.014  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.619] [LOGCAT] 04-02 15:15:44.019  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.621] [LOGCAT] 04-02 15:15:44.023  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 15:16:04.622] [LOGCAT] 04-02 15:15:44.125  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.624] [LOGCAT] 04-02 15:15:44.126  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.625] [LOGCAT] 04-02 15:15:44.128  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 15:16:04.627] [LOGCAT] 04-02 15:15:44.223  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.628] [LOGCAT] 04-02 15:15:44.224  4438  4513 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 15:16:04.629] [LOGCAT] 04-02 15:15:44.224  4438  4513 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 15:16:04.631] [LOGCAT] 04-02 15:15:57.363  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.631] [LOGCAT] 04-02 15:15:57.366  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.632] [LOGCAT] 04-02 15:15:57.366  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.634] [LOGCAT] 04-02 15:15:57.368  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.635] [LOGCAT] 04-02 15:15:57.370  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.637] [LOGCAT] 04-02 15:15:57.483  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.638] [LOGCAT] 04-02 15:15:58.860  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.639] [LOGCAT] 04-02 15:15:58.861  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.640] [LOGCAT] 04-02 15:15:58.865  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.642] [LOGCAT] 04-02 15:15:58.866  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.643] [LOGCAT] 04-02 15:15:58.866  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.645] [LOGCAT] 04-02 15:15:58.889  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.646] [LOGCAT] 04-02 15:15:58.889  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.648] [LOGCAT] 04-02 15:15:58.890  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.649] [LOGCAT] 04-02 15:15:58.890  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.650] [LOGCAT] 04-02 15:15:58.891  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.652] [LOGCAT] 04-02 15:15:58.891  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.654] [LOGCAT] 04-02 15:15:58.961  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.655] [LOGCAT] 04-02 15:16:00.617  4438  4468 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 15:16:04.656] [LOGCAT] 04-02 15:16:00.620  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.657] [LOGCAT] 04-02 15:16:00.621  4438  4468 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.659] [LOGCAT] 04-02 15:16:00.623  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 15:16:04.660] [LOGCAT] 04-02 15:16:00.626  4438  4468 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 15:16:04.662] [LOGCAT] 04-02 15:16:00.799  4438  4468 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 15:16:04.663] [LOGCAT] 04-02 15:16:03.431  4438  4484 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 15:16:04.664] [LOGCAT] 04-02 15:16:03.431  4438  4484 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 15:16:04.666] [LOGCAT] 04-02 15:16:03.433  4438  4484 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 15:16:04.667] [LOGCAT] 04-02 15:16:03.433  4438  4513 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 15:16:04.669] [LOGCAT] 04-02 15:16:03.433  4438  4513 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 15:16:04.670] [LOGCAT] 04-02 15:16:03.454  4438  4513 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 15:16:04.671] [LOGCAT] 04-02 15:16:03.454  4438  4513 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 15:16:04.673] [LOGCAT] 04-02 15:16:03.506  4438  4513 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 15:16:04.674] [LOGCAT] 04-02 15:16:03.508  4438  4513 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 15:16:04.675] [LOGCAT] 04-02 15:16:03.509  4438  4513 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 15:16:04.676] [LOGCAT] 04-02 15:16:03.509  4438  4513 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 15:16:04.677] [LOGCAT] 04-02 15:16:04.023  4438  4513 E NexGoSDK: [EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 15:16:04.679] [LOGCAT] === END NATIVE EMV LOGCAT ===

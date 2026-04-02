@@ -67,6 +67,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private var contactlessGeneralTimeout: Runnable? = null
     @Volatile private var contactlessForceCancelled = false
 
+    // Recorded at the start of every emvProcess() call so captureNativeEmvLog()
+    // can use logcat -T <epochMs> to fetch ONLY the current transaction's native
+    // APDU trace, avoiding the stale-data problem where previous transactions
+    // fill the buffer and bury the current session's SELECT/GPO lines.
+    @Volatile private var emvStartMs: Long = 0L
+
     // Dedicated background thread for EMV processing.
     // emvProcess() is a blocking call — running it on the main thread blocks the
     // main looper, which then can't dispatch the onSetTransInitBeforeGPOResponse()
@@ -548,19 +554,34 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     }
 
     /**
-     * Read recent Android logcat lines that look like native EMV traces.
-     * NexGo's emvDebugLog(true) and LogUtils.setDebugEnable(true) write APDU
-     * command/response bytes and PPSE/SELECT results to logcat. Capturing them
-     * after a -8012 lets us see exactly what AID(s) the card advertised so we
-     * can match (or add) them in our terminal AID table.
+     * Capture the native EMV APDU trace from Android logcat.
      *
-     * This is best-effort: if the process doesn't have READ_LOGS permission the
-     * exec() will succeed but the output will be empty (or the process may fail),
-     * in which case we log a note and move on.
+     * Uses logcat -T <epochMs> (Android 7+ flag) to fetch ONLY logs since the
+     * emvProcess() call started, so previous transactions don't fill the buffer
+     * and bury the current session's SELECT/GPO/PPSE APDU lines.
+     *
+     * The [sinceMs] parameter defaults to [emvStartMs] which is recorded
+     * immediately before each emvProcess() invocation.
+     *
+     * Filter keywords include:
+     *  - SDK Java-layer: "emv", "pboc", "nexgo", "candidat", "select", "remove"
+     *  - APDU command bytes: "00a4" (SELECT), "00b2" (READ RECORD),
+     *    "80ae" (GENERATE AC), "80ca" (GET DATA), "gpo", "genac"
+     *  - Tag/TLV bytes: "df01", "df23", "9f06", "ppse", "2pay", "1pay"
+     *  - Native JNI layer: "ddi_jni", "wrapper" — captures raw APDU bytes and
+     *    RF exchange errors (wrapper_spi_ddi_rf_exchange_apdu ret=-1 etc.)
+     *  - Other: "afl", "sfi", "-8020", "comm", "deselect"
      */
-    private fun captureNativeEmvLog() {
+    private fun captureNativeEmvLog(sinceMs: Long = emvStartMs) {
         try {
-            val proc = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", "600"))
+            // Use -T <epochMs> for timestamp-based capture (avoids stale data).
+            // Fall back to -t 600 if no start time was recorded.
+            val cmd = if (sinceMs > 0L) {
+                arrayOf("logcat", "-d", "-T", sinceMs.toString())
+            } else {
+                arrayOf("logcat", "-d", "-t", "600")
+            }
+            val proc = Runtime.getRuntime().exec(cmd)
             val raw = proc.inputStream.bufferedReader().readText()
             proc.destroy()
             val filtered = raw.lines().filter { line ->
@@ -572,13 +593,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 l.contains("read record") || l.contains("00b2") || l.contains("sfi") ||
                 l.contains("afl") || l.contains("gpo") || l.contains("00a4") ||
                 l.contains("genac") || l.contains("80ae") || l.contains("remove") ||
-                l.contains("deselect") || l.contains("-8020") || l.contains("comm")
-            }.takeLast(200)
-            if (filtered.isEmpty()) {
+                l.contains("deselect") || l.contains("-8020") || l.contains("comm") ||
+                // Native JNI layer — catches raw APDU bytes and RF errors:
+                l.contains("ddi_jni") || l.contains("wrapper") || l.contains("nativelog")
+            }
+            // No takeLast() when timestamp-filtered: we already have only the
+            // current session's data. Apply a safety cap to avoid flooding logs.
+            val output = if (sinceMs > 0L) filtered else filtered.takeLast(200)
+            if (output.isEmpty()) {
                 log("LOGCAT", "No EMV-related logcat lines found (READ_LOGS may be unavailable)")
             } else {
-                log("LOGCAT", "=== NATIVE EMV LOGCAT (${filtered.size} lines) ===")
-                filtered.forEach { log("LOGCAT", it) }
+                log("LOGCAT", "=== NATIVE EMV LOGCAT (${output.size} lines) ===")
+                output.forEach { log("LOGCAT", it) }
                 log("LOGCAT", "=== END NATIVE EMV LOGCAT ===")
             }
         } catch (e: Exception) {
@@ -1018,6 +1044,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             // after onSelApp even though no user cancellation occurred. emvProcessCancel()
             // is only valid when called to interrupt an ACTIVE emvProcess() call (e.g., user
             // presses cancel). We call it correctly in cancelCardRead() for that purpose.
+            emvStartMs = System.currentTimeMillis()
             handler.emvProcess(emvTransConfig, object : OnEmvProcessListener2 {
 
                 override fun onSelApp(
@@ -1059,18 +1086,25 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                             // EMVB_PaywavePreProcessing reads TTQ for GPO construction —
                             // the only safe window where setTlv(9F66) actually sticks.
                             //
-                            // TTQ = 0x80000000:
-                            //   Byte 1: 0x80 = 1000 0000
+                            // TTQ = 0xC0000000:
+                            //   Byte 1: 0xC0 = 1100 0000
                             //     b8=1  Online Cryptogram Required — card MUST return
                             //           ARQC (online auth request), not TC/AAC.
                             //           Without this bit, empty TTQ causes the card to
                             //           deselect (EmvCoreDispCardOutCb) after one READ
                             //           RECORD because it can't resolve the transaction
                             //           online without a terminal online-required signal.
+                            //     b7=1  CVM Required — tells the card that the terminal
+                            //           can perform CVM (signature / online PIN).
+                            //           When b7=0 ("no CVM") and the amount exceeds the
+                            //           card's no-CVM limit, some Mastercard and Visa cards
+                            //           return AAC (offline decline) via GPO, producing
+                            //           -8034 (Emv_Offline_Declined) even though we set
+                            //           Online Cryptogram Required.  Setting b7=1 prevents
+                            //           this card-side CVM-limit enforcement from triggering.
                             //   Bytes 2-4: 0x00 — no ODA, no offline PIN, no signature.
-                            //     This is the correct profile for an online-only terminal.
-                            val ttqResult = emvHandler?.setTlv(hexToBytes("9F66"), hexToBytes("80000000"))
-                            log("EMV", "onTransInitBeforeGPO: setTlv(9F66=80000000) result=$ttqResult — set AFTER initEmvConfiguration, BEFORE GPO")
+                            val ttqResult = emvHandler?.setTlv(hexToBytes("9F66"), hexToBytes("C0000000"))
+                            log("EMV", "onTransInitBeforeGPO: setTlv(9F66=C0000000) result=$ttqResult — set AFTER initEmvConfiguration, BEFORE GPO")
 
                             // Fire contactless_processing so the UI shows "HOLD CARD STILL".
                             beepHoldCard()
