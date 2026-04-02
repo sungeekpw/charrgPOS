@@ -53,18 +53,25 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     //   • General timeout (10 s from emvProcess start) — the only hard backstop.
     //     Catches hangs where onFinish never arrives at all.
     //
-    // NOTE: A previous implementation also armed a 2-second timer from onRemoveCard.
-    // This was removed because onRemoveCard fires during normal contactless processing
-    // when there is a BRIEF RF interruption — the card has NOT necessarily left the
-    // field.  Calling emvProcessCancel() from onRemoveCard caused us to GENERATE the
-    // -8020 error ourselves, 7ms before the SDK would have fired onFinish on its own.
-    // The SDK handles brief RF interruptions natively; we must let onFinish decide.
+    // Two-tier contactless timeout strategy:
     //
-    // contactlessForceCancelled is set to true when the general timer fires so that
-    // a late-arriving onFinish is silently ignored (prevents double events).
+    //   contactlessGeneralTimeout (10 s) — armed when emvProcess() starts.  Acts as
+    //     a hard backstop for any scenario where the SDK hangs and onRemoveCard never
+    //     fires (e.g., RF field stuck open, SDK deadlock).
+    //
+    //   contactlessRemoveTimeout (2 s) — armed when onRemoveCard fires.  The 10-second
+    //     general timer is cancelled at that point and replaced by this shorter timer.
+    //     When the card leaves the field after GPO (having sent ARQC), the SDK waits
+    //     forever for onOnlineProc because it never receives the card data needed to
+    //     proceed.  A 2-second window is long enough for the SDK to fire onFinish
+    //     naturally if it recovers, but short enough to give a responsive UX.
+    //
+    // contactlessForceCancelled is set to true when either timer fires so that a
+    // late-arriving onFinish is silently ignored (prevents double events).
 
     private val timeoutHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var contactlessGeneralTimeout: Runnable? = null
+    private var contactlessRemoveTimeout: Runnable? = null
     @Volatile private var contactlessForceCancelled = false
 
     // Recorded at the start of every emvProcess() call so captureNativeEmvLog()
@@ -176,9 +183,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     private fun forceContactlessFallback(reason: String) {
         if (contactlessForceCancelled) return   // already fired — don't double-emit
         contactlessForceCancelled = true
-        // Cancel the general timer so it doesn't fire again
+        // Cancel both timers so neither fires again
         contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
         contactlessGeneralTimeout = null
+        contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+        contactlessRemoveTimeout = null
         if (!isReading) return   // transaction already completed normally
         log("EMV", "forceContactlessFallback($reason) — emitting contactless_failed immediately")
         // Capture native APDU trace before we cancel the kernel so the log
@@ -494,12 +503,27 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         aids.add(aidEntity("A0000000043060", 1, "0002",
             "FC50BCA000", "FC50BCF800", "0000000000"))
 
-        // ── American Express ─────────────── A0000000250101
-        aids.add(aidEntity("A0000000250101", 1, "0001",
+        // ── American Express (all products) ─ A000000025 (RID-only prefix)
+        // All Amex AIDs begin with the 5-byte Amex RID A000000025.  Using only
+        // the RID with ASI=1 (partial match) ensures we match any Amex card
+        // regardless of which specific AID suffix it uses:
+        //   A0000000250101    — standard credit/charge (Green/Gold/Platinum)
+        //   A000000025010401  — ExpressPay credit
+        //   A000000025010402  — ExpressPay debit
+        //   A000000025010403  — ExpressPay prepaid
+        //   (any other variant the issuer may use)
+        // Previous entries A0000000250101 and A000000025010402 failed to match
+        // this card's actual AID; the SDK tried all 12 registered AIDs (578ms) and
+        // returned -8012 for both chip and contactless.  Using the 5-byte RID prefix
+        // guarantees a match for every Amex application.
+        aids.add(aidEntity("A000000025", 1, "0001",
             "FC78BCF800", "F878BC7800", "0000000000"))
 
-        // ── Amex ExpressPay (tap AID) ────── A000000025010402
-        // Contactless Amex cards advertise this AID via PPSE, NOT A0000000250101.
+        // ── Amex ExpressPay (explicit 8-byte AID) ─── A000000025010402
+        // Keep as a secondary entry so the SDK can resolve the more specific
+        // ExpressPay debit AID when the card's PPSE reports exactly this AID.
+        // The 5-byte RID entry above is the primary catch-all; this one provides
+        // a longer-match candidate that may improve product-name resolution.
         aids.add(aidEntity("A000000025010402", 1, "0001",
             "FC78BCF800", "F878BC7800", "0000000000"))
 
@@ -712,8 +736,8 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000041010"), // Mastercard PayPass
                 CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000042203"), // Mastercard Debit
                 CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_MASTER, "A0000000043060"), // Maestro
-                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A0000000250101"), // Amex contact
-                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A000000025010402"), // Amex ExpressPay
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A000000025"),       // Amex RID prefix (all products)
+                CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_AMEX,   "A000000025010402"), // Amex ExpressPay debit
                 CLAid(EmvCardBrandEnum.EMV_CARD_BRAND_JCB,    "A0000000651010"), // JCB J/Speedy
             )
 
@@ -1022,13 +1046,15 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             contactlessForceCancelled = false
             contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
             contactlessGeneralTimeout = null
+            contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout = null
 
             // For contactless-only: arm a 10-second general timeout on the MAIN
             // thread.  The main thread runs independently of the emvWorker (which
             // is blocked inside emvProcess), so it CAN interrupt a stuck session.
-            // This is the ONLY hard backstop — onRemoveCard no longer arms its own
-            // timer because onRemoveCard fires during normal RF processing and must
-            // not prematurely cancel a live transaction.
+            // This is a hard backstop for the case where onRemoveCard never fires
+            // (SDK or RF deadlock).  When onRemoveCard DOES fire, this timer is
+            // replaced by the shorter 2-second post-remove timer (see onRemoveCard).
             if (isContactless) {
                 val generalTimeout = Runnable {
                     forceContactlessFallback("general-10s")
@@ -1232,18 +1258,27 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     try {
                         log("EMV", "onRemoveCard")
                         sendEvent("card_removed")
-                        // For contactless, DO NOT cancel emvProcess here.
-                        // onRemoveCard fires during normal RF processing when there is a
-                        // brief field interruption — the card has not necessarily left the
-                        // reader.  Calling emvProcessCancel() prematurely generates -8020
-                        // ourselves.  The SDK handles brief interruptions natively and will
-                        // call onFinish with the real outcome.  The 10-second general timeout
-                        // (contactlessGeneralTimeout) is the only hard backstop we need.
                         if (isContactless) {
-                            log("EMV", "onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)")
-                            // Capture native APDU trace immediately at the moment of RF disconnect
-                            // so we can see exactly which READ RECORD or GenAC command was last
-                            // sent before the card dropped the field.
+                            // Cancel the 10-second general timer and replace it with a
+                            // 2-second post-remove timer.  The card has left the RF field.
+                            // Two scenarios:
+                            //   (a) Card left AFTER GPO returned ARQC: the SDK is now
+                            //       waiting forever for onOnlineProc because READ RECORD
+                            //       data was never fully collected.  The 2-second timer
+                            //       cancels this hang and routes the user to chip.
+                            //   (b) Brief wobble during a successful tap: the SDK fires
+                            //       onFinish on its own within milliseconds; the 2-second
+                            //       timer is cancelled by onFinish before it fires.
+                            contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
+                            contactlessGeneralTimeout = null
+                            val removeTimeout = Runnable {
+                                forceContactlessFallback("post-remove-2s")
+                            }
+                            contactlessRemoveTimeout = removeTimeout
+                            timeoutHandler.postDelayed(removeTimeout, 2_000)
+                            log("EMV", "onRemoveCard: contactless — 10s general timer replaced with 2s post-remove timer")
+                            // Capture native APDU trace at the moment of RF disconnect to
+                            // see exactly which READ RECORD or GenAC was last sent.
                             Thread { captureNativeEmvLog() }.start()
                         }
                     } catch (e: Exception) {
@@ -1253,9 +1288,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
 
                 override fun onFinish(retCode: Int, result: EmvProcessResultEntity?) {
                     try {
-                        // Cancel the general timeout — completion arrived.
+                        // Cancel both timers — completion arrived (success or failure).
                         contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
                         contactlessGeneralTimeout = null
+                        contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+                        contactlessRemoveTimeout = null
                         // If a timeout already fired and emitted contactless_failed, ignore
                         // this late-arriving onFinish to avoid sending duplicate events.
                         if (contactlessForceCancelled) {
@@ -1412,9 +1449,11 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 }
             })
         } catch (e: Exception) {
-            // Cancel the general contactless timeout before surfacing the error.
+            // Cancel both contactless timers before surfacing the error.
             contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
             contactlessGeneralTimeout = null
+            contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout = null
             isReading = false
             logError("EMV", "processEmvCard threw exception before emvProcess", e)
             sendEvent("reading_failed", Arguments.createMap().apply {
@@ -1426,11 +1465,13 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
     @ReactMethod
     fun cancelCardRead(promise: Promise) {
         try {
-            // Cancel the general contactless timeout so it cannot fire after this
-            // cancel and leave contactlessForceCancelled=true, which would cause the
-            // NEXT chip transaction's onFinish to be discarded.
+            // Cancel both contactless timers so neither can fire after this cancel
+            // and leave contactlessForceCancelled=true, which would cause the NEXT
+            // chip transaction's onFinish to be discarded.
             contactlessGeneralTimeout?.let { timeoutHandler.removeCallbacks(it) }
             contactlessGeneralTimeout = null
+            contactlessRemoveTimeout?.let { timeoutHandler.removeCallbacks(it) }
+            contactlessRemoveTimeout = null
 
             // Cancel any in-progress EMV kernel transaction first (clears RF/contact state).
             // This must come before stopSearch() so the kernel is idle before the search ends.
