@@ -138,6 +138,18 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         }.start()
     }
 
+    // Two quick beeps fired the instant onTransInitBeforeGPO fires —
+    // zero-latency audio cue to hold the card still while the RF record read completes.
+    private fun beepHoldCard() {
+        Thread {
+            try {
+                beeper?.beep(80)
+                Thread.sleep(90)
+                beeper?.beep(80)
+            } catch (_: Exception) {}
+        }.start()
+    }
+
     private fun fireBeep(durationMs: Int) {
         Thread {
             try { beeper?.beep(durationMs) } catch (_: Exception) {}
@@ -1048,6 +1060,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         // This is the last moment we can instruct the user because after
                         // GPO the card MUST stay in the RF field until onFinish fires.
                         if (isContactless) {
+                            beepHoldCard()
                             sendEvent("contactless_processing")
                         }
                         handler.onSetTransInitBeforeGPOResponse(true)
