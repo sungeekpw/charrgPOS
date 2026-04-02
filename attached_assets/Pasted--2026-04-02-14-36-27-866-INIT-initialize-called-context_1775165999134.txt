@@ -1,0 +1,824 @@
+[2026-04-02 14:36:27.866] [INIT] initialize() called — context=MainActivity
+[2026-04-02 14:36:28.229] [INIT] DeviceEngine obtained OK
+[2026-04-02 14:36:28.245] [INIT] CardReader obtained: true
+[2026-04-02 14:36:28.252] [INIT] Beeper obtained: true
+[2026-04-02 14:36:29.212] [INIT] EmvHandler2 obtained: true
+[2026-04-02 14:36:29.216] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 14:36:29.228] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:36:29.234] [EMVAID] Configuring US payment AIDs (cleared 0 stale AID(s))
+[2026-04-02 14:36:29.275] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 14:36:29.298] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.299] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.300] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.301] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.302] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.303] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.303] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.304] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.305] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.306] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.306] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.307] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:29.310] [EMVCAPK] CAPK count after setup=0
+[2026-04-02 14:36:29.394] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 14:36:29.395] [INIT] initialize() complete — AIDs=12
+[2026-04-02 14:36:29.397] [CARD] startCardRead() amount=2500.0
+[2026-04-02 14:36:29.399] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 14:36:30.993] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 14:36:30.995] [CARD] Card inserted (chip/ICC)
+[2026-04-02 14:36:30.999] [EMV] processEmvCard() entryMode=chip amount=2500.0
+[2026-04-02 14:36:31.002] [EMV] emvProcess() config — amount=250000 date=260402 time=143631 entryMode=CONTACT AIDsNow=12
+[2026-04-02 14:36:31.009] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 14:36:31.036] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.037] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.038] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.039] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.040] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.042] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.043] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.045] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.047] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.048] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.050] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.052] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:31.054] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 14:36:31.056] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:36:31.587] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 14:36:31.686] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:36:31.689] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:36:32.002] [EMV] onConfirmCardNo — last4=3191
+[2026-04-02 14:36:32.193] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 14:36:32.196] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 14:36:32.377] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 14:36:32.387] [EMV] onFinish SUCCESS (retCode=0) — pan=***3191 expiry=2610 brand=Mastercard entryMode=chip
+[2026-04-02 14:36:54.663] [INIT] initialize() called — context=MainActivity
+[2026-04-02 14:36:54.664] [INIT] DeviceEngine obtained OK
+[2026-04-02 14:36:54.665] [INIT] CardReader obtained: true
+[2026-04-02 14:36:54.666] [INIT] Beeper obtained: true
+[2026-04-02 14:36:54.667] [INIT] EmvHandler2 obtained: true
+[2026-04-02 14:36:54.668] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 14:36:54.670] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:36:54.672] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 14:36:54.759] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 14:36:54.774] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.775] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.775] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.776] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.777] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.778] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.779] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.780] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.780] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.781] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.782] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.783] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:54.785] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 14:36:54.867] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 14:36:54.868] [INIT] initialize() complete — AIDs=12
+[2026-04-02 14:36:54.871] [CARD] startCardRead() amount=6500.0
+[2026-04-02 14:36:54.873] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 14:36:56.328] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 14:36:56.398] [CARD] Card tapped (contactless/RF)
+[2026-04-02 14:36:56.402] [EMV] processEmvCard() entryMode=contactless amount=6500.0
+[2026-04-02 14:36:56.406] [EMV] emvProcess() config — amount=650000 date=260402 time=143656 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 14:36:56.427] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.429] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.430] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.432] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.435] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.436] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.437] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.439] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.440] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.442] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.443] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.445] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:36:56.447] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 14:36:56.449] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:36:56.453] [EMV] setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless
+[2026-04-02 14:36:56.454] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 14:36:56.524] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:36:56.526] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:36:56.686] [EMV] onRemoveCard
+[2026-04-02 14:36:56.688] [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 14:36:56.820] [LOGCAT] === NATIVE EMV LOGCAT (200 lines) ===
+[2026-04-02 14:36:56.821] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.821] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.822] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: gstPaywaveTradeUnionStruct->EMVTradeParam=0x9090e830
+[2026-04-02 14:36:56.823] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug:  TAG:emv  INFO:AAA TAG_paypassun ccc
+[2026-04-02 14:36:56.823] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.824] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.824] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: open newPath=/data/user/0/com.charrg.pos/files/emv/app1/EmvCore/RupayTornTimeLimit
+[2026-04-02 14:36:56.826] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.828] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.828] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.829] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: gstBancomatTradeUnionStruct->EMVTradeParam=0x8e481f00
+[2026-04-02 14:36:56.830] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.831] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: =====initEmvConfiguration  end===========
+[2026-04-02 14:36:56.832] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 14:36:56.833] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 14:36:56.834] [LOGCAT] 04-02 14:36:56.480  3919  3993 D Sdk_EmvHandler2Impl.java: [line:691] - 准备激活卡片
+[2026-04-02 14:36:56.834] [LOGCAT] 04-02 14:36:56.480  3919  3993 D Sdk_EmvHandler2Impl.java: [line:701] - RF卡片已激活
+[2026-04-02 14:36:56.835] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 14:36:56.836] [LOGCAT] 04-02 14:36:56.481  3919  3993 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 14:36:56.836] [LOGCAT] 04-02 14:36:56.481  3919  3993 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 14:36:56.837] [LOGCAT] 04-02 14:36:56.482  3919  3993 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 14:36:56.837] [LOGCAT] 04-02 14:36:56.482  3919  3993 D Sdk_EmvHandler2Impl.java: [line:2314] - emvTransData.countryCode 30383430
+[2026-04-02 14:36:56.838] [LOGCAT] 04-02 14:36:56.482  3919  3993 D Sdk_EmvHandler2Impl.java: [line:2319] - emvTransData.currencyCode 30383430
+[2026-04-02 14:36:56.839] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.841] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: ====== start emvProcessFlow1 ======
+[2026-04-02 14:36:56.842] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.843] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.844] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.845] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.846] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:pstTransOption LEN:176 
+[2026-04-02 14:36:56.847] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.848] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: ====pstTransOption->ucEmvContactSetConfig=0
+[2026-04-02 14:36:56.849] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.849] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.850] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvGetRupayCardUnlockFlag = 1
+[2026-04-02 14:36:56.850] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.851] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreGetRupayForceOnline gucRupayForceOnline = 0
+[2026-04-02 14:36:56.851] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.852] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: isQpbocForGlobal rslt = 0
+[2026-04-02 14:36:56.852] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.853] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: isQpbocForceOnline rslt = 0
+[2026-04-02 14:36:56.853] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:TerminalAttr LEN:15 
+[2026-04-02 14:36:56.854] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:UserSetTlv LEN:19 
+[2026-04-02 14:36:56.854] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.854] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreGetContactlessSupportSPI ucSupportCtlsSPI = 0
+[2026-04-02 14:36:56.855] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.856] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreSetPrivateTagToKernel gsUserSetPrivateTagNum:0
+[2026-04-02 14:36:56.857] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.858] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreSetPrivateTagToKernel =========no private tag==========
+[2026-04-02 14:36:56.859] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.860] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.861] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.862] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: EmvCoreGetContactlessAppSelectCallbackSupport gucCtlsAppSelectCabback = 1
+[2026-04-02 14:36:56.863] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.864] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: === goto EmvCoreProcessContactlessTransFlow1_CTLSCallback ===
+[2026-04-02 14:36:56.864] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:20 
+[2026-04-02 14:36:56.865] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:20 
+[2026-04-02 14:36:56.866] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:20 
+[2026-04-02 14:36:56.867] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:36:56.868] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.869] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:36:56.870] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:95 
+[2026-04-02 14:36:56.871] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:95 
+[2026-04-02 14:36:56.872] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:93 
+[2026-04-02 14:36:56.874] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:36:56.875] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:36:56.875] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.876] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:36:56.877] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.878] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.879] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: *ExtendedSelectionFlag=0
+[2026-04-02 14:36:56.880] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.881] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: match aid by gEmvbaseAidIndex.contactorcontectless==0 && gEmvbaseAidIndex.tradetypevalue==FF
+[2026-04-02 14:36:56.881] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.882] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:36:56.884] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.885] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: emv error ! not match aid
+[2026-04-02 14:36:56.886] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectDFRetData-retCode: 0
+[2026-04-02 14:36:56.886] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.887] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectPPSE ret = 0
+[2026-04-02 14:36:56.888] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.889] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_ChooseApp ret = 0
+[2026-04-02 14:36:56.890] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-rfu:  LEN:10 
+[2026-04-02 14:36:56.890] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:1 
+[2026-04-02 14:36:56.891] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.892] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 3
+[2026-04-02 14:36:56.893] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:2 
+[2026-04-02 14:36:56.893] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.894] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 2
+[2026-04-02 14:36:56.895] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:Entry Point Select Aid: LEN:7 
+[2026-04-02 14:36:56.896] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:monitor tempaid LEN:7 
+[2026-04-02 14:36:56.896] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.897] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBaseEntryPoint rslt = 1, aidlen =7
+[2026-04-02 14:36:56.898] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.899] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.899] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.900] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: aid list num form entrypoint:1,gstEMVBase_EntryPoint->AppListCandidateMaxNum=8
+[2026-04-02 14:36:56.901] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.902] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.903] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.903] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.904] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetUserAppendContactlessAidFirst gucUserAppendContactlessAidFirst = 0
+[2026-04-02 14:36:56.905] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.906] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetCardBrand: Match default Aid
+[2026-04-02 14:36:56.906] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.907] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline[Brand:0]
+[2026-04-02 14:36:56.907] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.908] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline standard flow!!!
+[2026-04-02 14:36:56.908] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.909] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, bedore setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:36:56.909] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, after setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:36:56.909] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: paywave-info: ---final select---
+[2026-04-02 14:36:56.910] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:13 
+[2026-04-02 14:36:56.910] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:13 
+[2026-04-02 14:36:56.911] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:13 
+[2026-04-02 14:36:56.911] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:36:56.912] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.912] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:36:56.913] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:83 
+[2026-04-02 14:36:56.913] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:83 
+[2026-04-02 14:36:56.913] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:81 
+[2026-04-02 14:36:56.914] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:36:56.914] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:36:56.914] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: paywave-info: ---response message of final select parsing---
+[2026-04-02 14:36:56.915] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.916] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: paywave_FinalSelectedApp retCode = 51
+[2026-04-02 14:36:56.917] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.917] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.918] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: open newPath=/data/user/0/com.charrg.pos/files/emv/app1/EmvCore/emvbaseaid
+[2026-04-02 14:36:56.919] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:termaidparam + i)->cl_cvmlimit LEN:6 
+[2026-04-02 14:36:56.919] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:rmaidparam + i)->cl_translimit LEN:6 
+[2026-04-02 14:36:56.920] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:aidparam + i)->cl_offlinelimit LEN:6 
+[2026-04-02 14:36:56.921] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: after sdkPaywaveFinalSelectedApp:
+[2026-04-02 14:36:56.922] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.922] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: sdkPaywaveFinalSelectedApp ret = 1
+[2026-04-02 14:36:56.923] [LOGCAT] 04-02 14:36:56.523  3919  3993 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 14:36:56.924] [LOGCAT] 04-02 14:36:56.524  3919  3993 D Sdk_EmvHandler2Impl.java: [line:1442] - isSupportFasterEMV false
+[2026-04-02 14:36:56.924] [LOGCAT] 04-02 14:36:56.524  3919  3993 D NexGoSDK: [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:36:56.925] [LOGCAT] 04-02 14:36:56.526  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 14:36:56.926] [LOGCAT] 04-02 14:36:56.527  3919  3993 D NexGoSDK: [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:36:56.926] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug: EMVB_PaywavePreProcessing paywavepredealparam[0]=fa
+[2026-04-02 14:36:56.927] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug:  TAG:emv  INFO:PreProcessing RCFL Check:  LEN:6 
+[2026-04-02 14:36:56.927] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.927] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.928] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.928] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  tempApp_UnionStruct->EMVTradeParam->VisaAPFlag=0
+[2026-04-02 14:36:56.929] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.929] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.930] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.930] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.930] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.931] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.931] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.932] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.932] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.933] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.934] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.935] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:AmtAuthNum:  LEN:6 
+[2026-04-02 14:36:56.935] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.936] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.937] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.938] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.939] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.939] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  EMVTradeParam->PaywaveCANAI = 0
+[2026-04-02 14:36:56.940] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: before GPO,TTQ:
+[2026-04-02 14:36:56.941] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: paywave-info: ---GPO---
+[2026-04-02 14:36:56.942] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:41 
+[2026-04-02 14:36:56.943] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:41 
+[2026-04-02 14:36:56.943] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:41 
+[2026-04-02 14:36:56.944] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:36:56.945] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.945] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:36:56.945] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:99 
+[2026-04-02 14:36:56.946] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:99 
+[2026-04-02 14:36:56.946] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:97 
+[2026-04-02 14:36:56.947] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:36:56.947] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:36:56.947] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: paywave-info: GPO template 77
+[2026-04-02 14:36:56.948] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.948] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.948] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:5 
+[2026-04-02 14:36:56.949] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:5 
+[2026-04-02 14:36:56.949] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:5 
+[2026-04-02 14:36:56.950] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:36:56.950] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.950] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:36:56.951] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:14 
+[2026-04-02 14:36:56.952] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:14 
+[2026-04-02 14:36:56.953] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:12 
+[2026-04-02 14:36:56.953] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:36:56.954] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:36:56.955] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: paywave-info: Mandatory Data Check: AFL Exist              = 1
+[2026-04-02 14:36:56.956] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:36:56.956] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: EmvCoreDispCardOutCb
+[2026-04-02 14:36:56.957] [LOGCAT] 04-02 14:36:56.686  3919  3993 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 14:36:56.958] [LOGCAT] 04-02 14:36:56.687  3919  3993 D NexGoSDK: [EMV] onRemoveCard
+[2026-04-02 14:36:56.959] [LOGCAT] 04-02 14:36:56.688  3919  3993 D NexGoSDK: [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 14:36:56.959] [LOGCAT] 04-02 14:36:56.690  3919  3993 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 14:36:56.960] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:724] - ==========准备下电===========
+[2026-04-02 14:36:56.960] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:726] - 非接卡槽关闭
+[2026-04-02 14:36:56.961] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 14:37:06.458] [EMV] forceContactlessFallback(general-10s) — emitting contactless_failed immediately
+[2026-04-02 14:37:06.515] [LOGCAT] === NATIVE EMV LOGCAT (200 lines) ===
+[2026-04-02 14:37:06.516] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.517] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.518] [LOGCAT] 04-02 14:36:56.472  3919  3993 D jnidebug: gstPaywaveTradeUnionStruct->EMVTradeParam=0x9090e830
+[2026-04-02 14:37:06.519] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug:  TAG:emv  INFO:AAA TAG_paypassun ccc
+[2026-04-02 14:37:06.520] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.522] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.523] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: open newPath=/data/user/0/com.charrg.pos/files/emv/app1/EmvCore/RupayTornTimeLimit
+[2026-04-02 14:37:06.525] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.526] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.527] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.528] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: gstBancomatTradeUnionStruct->EMVTradeParam=0x8e481f00
+[2026-04-02 14:37:06.529] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.530] [LOGCAT] 04-02 14:36:56.479  3919  3993 D jnidebug: =====initEmvConfiguration  end===========
+[2026-04-02 14:37:06.532] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 14:37:06.533] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 14:37:06.534] [LOGCAT] 04-02 14:36:56.480  3919  3993 D Sdk_EmvHandler2Impl.java: [line:691] - 准备激活卡片
+[2026-04-02 14:37:06.534] [LOGCAT] 04-02 14:36:56.480  3919  3993 D Sdk_EmvHandler2Impl.java: [line:701] - RF卡片已激活
+[2026-04-02 14:37:06.535] [LOGCAT] 04-02 14:36:56.480  3919  3993 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 14:37:06.536] [LOGCAT] 04-02 14:36:56.481  3919  3993 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 14:37:06.537] [LOGCAT] 04-02 14:36:56.481  3919  3993 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 14:37:06.537] [LOGCAT] 04-02 14:36:56.482  3919  3993 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 14:37:06.538] [LOGCAT] 04-02 14:36:56.482  3919  3993 D Sdk_EmvHandler2Impl.java: [line:2314] - emvTransData.countryCode 30383430
+[2026-04-02 14:37:06.539] [LOGCAT] 04-02 14:36:56.482  3919  3993 D Sdk_EmvHandler2Impl.java: [line:2319] - emvTransData.currencyCode 30383430
+[2026-04-02 14:37:06.539] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.540] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: ====== start emvProcessFlow1 ======
+[2026-04-02 14:37:06.541] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.542] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.543] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.544] [LOGCAT] 04-02 14:36:56.482  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.545] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:pstTransOption LEN:176 
+[2026-04-02 14:37:06.546] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.547] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: ====pstTransOption->ucEmvContactSetConfig=0
+[2026-04-02 14:37:06.548] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.549] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.549] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvGetRupayCardUnlockFlag = 1
+[2026-04-02 14:37:06.550] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.551] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreGetRupayForceOnline gucRupayForceOnline = 0
+[2026-04-02 14:37:06.552] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.554] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: isQpbocForGlobal rslt = 0
+[2026-04-02 14:37:06.555] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.556] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: isQpbocForceOnline rslt = 0
+[2026-04-02 14:37:06.556] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:TerminalAttr LEN:15 
+[2026-04-02 14:37:06.557] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug:  TAG:emv  INFO:UserSetTlv LEN:19 
+[2026-04-02 14:37:06.558] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.558] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreGetContactlessSupportSPI ucSupportCtlsSPI = 0
+[2026-04-02 14:37:06.559] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.560] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreSetPrivateTagToKernel gsUserSetPrivateTagNum:0
+[2026-04-02 14:37:06.560] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.561] [LOGCAT] 04-02 14:36:56.483  3919  3993 D jnidebug: EmvCoreSetPrivateTagToKernel =========no private tag==========
+[2026-04-02 14:37:06.562] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.563] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.563] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.564] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: EmvCoreGetContactlessAppSelectCallbackSupport gucCtlsAppSelectCabback = 1
+[2026-04-02 14:37:06.564] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.565] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: === goto EmvCoreProcessContactlessTransFlow1_CTLSCallback ===
+[2026-04-02 14:37:06.565] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:20 
+[2026-04-02 14:37:06.566] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:20 
+[2026-04-02 14:37:06.566] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:20 
+[2026-04-02 14:37:06.566] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:06.567] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.567] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:06.568] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:95 
+[2026-04-02 14:37:06.568] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:95 
+[2026-04-02 14:37:06.569] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:93 
+[2026-04-02 14:37:06.569] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:06.570] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:06.570] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.571] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:37:06.571] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.572] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.572] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: *ExtendedSelectionFlag=0
+[2026-04-02 14:37:06.573] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.573] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: match aid by gEmvbaseAidIndex.contactorcontectless==0 && gEmvbaseAidIndex.tradetypevalue==FF
+[2026-04-02 14:37:06.574] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.574] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:37:06.575] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.575] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: emv error ! not match aid
+[2026-04-02 14:37:06.575] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectDFRetData-retCode: 0
+[2026-04-02 14:37:06.576] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.576] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectPPSE ret = 0
+[2026-04-02 14:37:06.577] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.577] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_ChooseApp ret = 0
+[2026-04-02 14:37:06.578] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-rfu:  LEN:10 
+[2026-04-02 14:37:06.578] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:1 
+[2026-04-02 14:37:06.579] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.579] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 3
+[2026-04-02 14:37:06.579] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:2 
+[2026-04-02 14:37:06.580] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.581] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 2
+[2026-04-02 14:37:06.582] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:Entry Point Select Aid: LEN:7 
+[2026-04-02 14:37:06.583] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:monitor tempaid LEN:7 
+[2026-04-02 14:37:06.583] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.584] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBaseEntryPoint rslt = 1, aidlen =7
+[2026-04-02 14:37:06.585] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.586] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.586] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.587] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: aid list num form entrypoint:1,gstEMVBase_EntryPoint->AppListCandidateMaxNum=8
+[2026-04-02 14:37:06.588] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.589] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.589] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.590] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.591] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetUserAppendContactlessAidFirst gucUserAppendContactlessAidFirst = 0
+[2026-04-02 14:37:06.591] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.592] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetCardBrand: Match default Aid
+[2026-04-02 14:37:06.593] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.594] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline[Brand:0]
+[2026-04-02 14:37:06.594] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.595] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline standard flow!!!
+[2026-04-02 14:37:06.596] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.596] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, bedore setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:37:06.597] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, after setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:37:06.598] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: paywave-info: ---final select---
+[2026-04-02 14:37:06.598] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:13 
+[2026-04-02 14:37:06.599] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:13 
+[2026-04-02 14:37:06.600] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:13 
+[2026-04-02 14:37:06.601] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:06.601] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.602] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:06.603] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:83 
+[2026-04-02 14:37:06.604] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:83 
+[2026-04-02 14:37:06.605] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:81 
+[2026-04-02 14:37:06.605] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:06.606] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:06.607] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: paywave-info: ---response message of final select parsing---
+[2026-04-02 14:37:06.608] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.608] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: paywave_FinalSelectedApp retCode = 51
+[2026-04-02 14:37:06.609] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.610] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.610] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: open newPath=/data/user/0/com.charrg.pos/files/emv/app1/EmvCore/emvbaseaid
+[2026-04-02 14:37:06.611] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:termaidparam + i)->cl_cvmlimit LEN:6 
+[2026-04-02 14:37:06.612] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:rmaidparam + i)->cl_translimit LEN:6 
+[2026-04-02 14:37:06.613] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:aidparam + i)->cl_offlinelimit LEN:6 
+[2026-04-02 14:37:06.614] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: after sdkPaywaveFinalSelectedApp:
+[2026-04-02 14:37:06.615] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.615] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: sdkPaywaveFinalSelectedApp ret = 1
+[2026-04-02 14:37:06.616] [LOGCAT] 04-02 14:36:56.523  3919  3993 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 14:37:06.617] [LOGCAT] 04-02 14:36:56.524  3919  3993 D Sdk_EmvHandler2Impl.java: [line:1442] - isSupportFasterEMV false
+[2026-04-02 14:37:06.617] [LOGCAT] 04-02 14:36:56.524  3919  3993 D NexGoSDK: [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:37:06.618] [LOGCAT] 04-02 14:36:56.526  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 14:37:06.619] [LOGCAT] 04-02 14:36:56.527  3919  3993 D NexGoSDK: [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:37:06.620] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug: EMVB_PaywavePreProcessing paywavepredealparam[0]=fa
+[2026-04-02 14:37:06.620] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug:  TAG:emv  INFO:PreProcessing RCFL Check:  LEN:6 
+[2026-04-02 14:37:06.621] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.622] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.623] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.623] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  tempApp_UnionStruct->EMVTradeParam->VisaAPFlag=0
+[2026-04-02 14:37:06.624] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.625] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.625] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.626] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.627] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.627] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.628] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.629] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.629] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.630] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.631] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.632] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:AmtAuthNum:  LEN:6 
+[2026-04-02 14:37:06.632] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.633] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.634] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.634] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.635] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.636] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  EMVTradeParam->PaywaveCANAI = 0
+[2026-04-02 14:37:06.637] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: before GPO,TTQ:
+[2026-04-02 14:37:06.638] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: paywave-info: ---GPO---
+[2026-04-02 14:37:06.638] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:41 
+[2026-04-02 14:37:06.639] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:41 
+[2026-04-02 14:37:06.640] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:41 
+[2026-04-02 14:37:06.641] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:06.641] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.642] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:06.643] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:99 
+[2026-04-02 14:37:06.644] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:99 
+[2026-04-02 14:37:06.644] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:97 
+[2026-04-02 14:37:06.645] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:06.646] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:06.646] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: paywave-info: GPO template 77
+[2026-04-02 14:37:06.647] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.648] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.649] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:5 
+[2026-04-02 14:37:06.649] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:5 
+[2026-04-02 14:37:06.650] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:5 
+[2026-04-02 14:37:06.651] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:06.652] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.653] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:06.653] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:14 
+[2026-04-02 14:37:06.654] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:14 
+[2026-04-02 14:37:06.655] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:12 
+[2026-04-02 14:37:06.655] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:06.656] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:06.657] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: paywave-info: Mandatory Data Check: AFL Exist              = 1
+[2026-04-02 14:37:06.657] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:06.658] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: EmvCoreDispCardOutCb
+[2026-04-02 14:37:06.659] [LOGCAT] 04-02 14:36:56.686  3919  3993 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 14:37:06.659] [LOGCAT] 04-02 14:36:56.687  3919  3993 D NexGoSDK: [EMV] onRemoveCard
+[2026-04-02 14:37:06.660] [LOGCAT] 04-02 14:36:56.688  3919  3993 D NexGoSDK: [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 14:37:06.661] [LOGCAT] 04-02 14:36:56.690  3919  3993 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 14:37:06.661] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:724] - ==========准备下电===========
+[2026-04-02 14:37:06.662] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:726] - 非接卡槽关闭
+[2026-04-02 14:37:06.663] [LOGCAT] === END NATIVE EMV LOGCAT ===
+[2026-04-02 14:37:06.666] [EMV] onFinish retCode=-8020 — discarded (contactless timeout already fired)
+[2026-04-02 14:37:08.246] [INIT] initialize() called — context=MainActivity
+[2026-04-02 14:37:08.247] [INIT] DeviceEngine obtained OK
+[2026-04-02 14:37:08.248] [INIT] CardReader obtained: true
+[2026-04-02 14:37:08.249] [INIT] Beeper obtained: true
+[2026-04-02 14:37:08.250] [INIT] EmvHandler2 obtained: true
+[2026-04-02 14:37:08.251] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 14:37:08.253] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:37:08.256] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 14:37:08.346] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 14:37:08.367] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.369] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.372] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.374] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.375] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.376] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.378] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.379] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.381] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.382] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.384] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.385] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:08.387] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 14:37:08.458] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 14:37:08.459] [INIT] initialize() complete — AIDs=12
+[2026-04-02 14:37:08.461] [CARD] startCardRead() amount=6500.0
+[2026-04-02 14:37:08.463] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 14:37:14.785] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 14:37:14.786] [CARD] Card inserted (chip/ICC)
+[2026-04-02 14:37:14.792] [EMV] processEmvCard() entryMode=chip amount=6500.0
+[2026-04-02 14:37:14.794] [EMV] emvProcess() config — amount=650000 date=260402 time=143714 entryMode=CONTACT AIDsNow=12
+[2026-04-02 14:37:14.795] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 14:37:14.816] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.817] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.818] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.819] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.820] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.821] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.824] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.828] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.830] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.831] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.832] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.833] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:14.834] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 14:37:14.835] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:37:15.018] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:37:15.019] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:37:15.164] [EMV] onConfirmCardNo — last4=2692
+[2026-04-02 14:37:15.265] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 14:37:15.267] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 14:37:15.358] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 14:37:15.365] [EMV] onFinish SUCCESS (retCode=0) — pan=***2692 expiry=3002 brand=Visa entryMode=chip
+[2026-04-02 14:37:44.538] [INIT] initialize() called — context=MainActivity
+[2026-04-02 14:37:44.539] [INIT] DeviceEngine obtained OK
+[2026-04-02 14:37:44.540] [INIT] CardReader obtained: true
+[2026-04-02 14:37:44.541] [INIT] Beeper obtained: true
+[2026-04-02 14:37:44.542] [INIT] EmvHandler2 obtained: true
+[2026-04-02 14:37:44.543] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 14:37:44.546] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:37:44.548] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 14:37:44.671] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 14:37:44.697] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.698] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.700] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.701] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.703] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.704] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.705] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.706] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.707] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.708] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.709] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.710] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:44.712] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 14:37:44.794] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 14:37:44.795] [INIT] initialize() complete — AIDs=12
+[2026-04-02 14:37:44.797] [CARD] startCardRead() amount=45000.0
+[2026-04-02 14:37:44.799] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 14:37:48.910] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 14:37:48.913] [CARD] Card inserted (chip/ICC)
+[2026-04-02 14:37:48.915] [EMV] processEmvCard() entryMode=chip amount=45000.0
+[2026-04-02 14:37:48.917] [EMV] emvProcess() config — amount=4500000 date=260402 time=143748 entryMode=CONTACT AIDsNow=12
+[2026-04-02 14:37:48.919] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 14:37:48.946] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.948] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.949] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.950] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.953] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.956] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.957] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.959] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.960] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.962] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.964] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.965] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:48.966] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 14:37:48.970] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 14:37:49.552] [EMV] onFinish retCode=-8012 (SdkResult.Success=0)
+[2026-04-02 14:37:49.554] [ERROR/EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 14:37:49.556] [EMV] Post-failure AID dump (retCode=-8012):
+[2026-04-02 14:37:49.572] [EMVAID-DUMP[post-8012]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.573] [EMVAID-DUMP[post-8012]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.574] [EMVAID-DUMP[post-8012]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.574] [EMVAID-DUMP[post-8012]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.575] [EMVAID-DUMP[post-8012]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.576] [EMVAID-DUMP[post-8012]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.576] [EMVAID-DUMP[post-8012]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.577] [EMVAID-DUMP[post-8012]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.577] [EMVAID-DUMP[post-8012]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.578] [EMVAID-DUMP[post-8012]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.578] [EMVAID-DUMP[post-8012]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.579] [EMVAID-DUMP[post-8012]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 14:37:49.580] [EMVCAPK] CAPK count post-8012=60
+[2026-04-02 14:37:49.634] [LOGCAT] === NATIVE EMV LOGCAT (200 lines) ===
+[2026-04-02 14:37:49.636] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.637] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.638] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.639] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: EmvCoreGetContactlessAppSelectCallbackSupport gucCtlsAppSelectCabback = 1
+[2026-04-02 14:37:49.640] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.641] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: === goto EmvCoreProcessContactlessTransFlow1_CTLSCallback ===
+[2026-04-02 14:37:49.642] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:20 
+[2026-04-02 14:37:49.643] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:20 
+[2026-04-02 14:37:49.646] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:20 
+[2026-04-02 14:37:49.647] [LOGCAT] 04-02 14:36:56.485  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:49.648] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.649] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:49.650] [LOGCAT] 04-02 14:36:56.504  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:95 
+[2026-04-02 14:37:49.650] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:95 
+[2026-04-02 14:37:49.651] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:93 
+[2026-04-02 14:37:49.652] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:49.652] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:49.653] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.653] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:37:49.654] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.655] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.656] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: *ExtendedSelectionFlag=0
+[2026-04-02 14:37:49.657] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.658] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: match aid by gEmvbaseAidIndex.contactorcontectless==0 && gEmvbaseAidIndex.tradetypevalue==FF
+[2026-04-02 14:37:49.658] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.659] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:contactless aid:
+[2026-04-02 14:37:49.660] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.661] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: emv error ! not match aid
+[2026-04-02 14:37:49.662] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectDFRetData-retCode: 0
+[2026-04-02 14:37:49.662] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.663] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_SelectPPSE ret = 0
+[2026-04-02 14:37:49.664] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.664] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EMVBase_ChooseApp ret = 0
+[2026-04-02 14:37:49.665] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-rfu:  LEN:10 
+[2026-04-02 14:37:49.666] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:1 
+[2026-04-02 14:37:49.666] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.666] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 3
+[2026-04-02 14:37:49.667] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:sdkEMVBase_FinalSelect-Tag:  LEN:2 
+[2026-04-02 14:37:49.667] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.668] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBase_FinalSelect-len: 2
+[2026-04-02 14:37:49.668] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:Entry Point Select Aid: LEN:7 
+[2026-04-02 14:37:49.669] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug:  TAG:emv  INFO:monitor tempaid LEN:7 
+[2026-04-02 14:37:49.669] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.670] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: sdkEMVBaseEntryPoint rslt = 1, aidlen =7
+[2026-04-02 14:37:49.670] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.671] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.671] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.672] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: aid list num form entrypoint:1,gstEMVBase_EntryPoint->AppListCandidateMaxNum=8
+[2026-04-02 14:37:49.673] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.673] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.674] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.675] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.675] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetUserAppendContactlessAidFirst gucUserAppendContactlessAidFirst = 0
+[2026-04-02 14:37:49.676] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.677] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvCoreGetCardBrand: Match default Aid
+[2026-04-02 14:37:49.678] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.678] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline[Brand:0]
+[2026-04-02 14:37:49.679] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.680] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: EmvOptTransFlowBeforeOnline standard flow!!!
+[2026-04-02 14:37:49.681] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.681] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, bedore setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:37:49.682] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: after differ, after setAidExParam EMVTAG_TermTransPredicable(tag 9F66):
+[2026-04-02 14:37:49.683] [LOGCAT] 04-02 14:36:56.505  3919  3993 D jnidebug: paywave-info: ---final select---
+[2026-04-02 14:37:49.683] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:13 
+[2026-04-02 14:37:49.684] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:13 
+[2026-04-02 14:37:49.684] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:13 
+[2026-04-02 14:37:49.685] [LOGCAT] 04-02 14:36:56.506  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:49.685] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.686] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:49.687] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:83 
+[2026-04-02 14:37:49.688] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:83 
+[2026-04-02 14:37:49.688] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:81 
+[2026-04-02 14:37:49.689] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:49.690] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:49.690] [LOGCAT] 04-02 14:36:56.522  3919  3993 D jnidebug: paywave-info: ---response message of final select parsing---
+[2026-04-02 14:37:49.691] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.692] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: paywave_FinalSelectedApp retCode = 51
+[2026-04-02 14:37:49.693] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.694] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.694] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: open newPath=/data/user/0/com.charrg.pos/files/emv/app1/EmvCore/emvbaseaid
+[2026-04-02 14:37:49.695] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:termaidparam + i)->cl_cvmlimit LEN:6 
+[2026-04-02 14:37:49.696] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:rmaidparam + i)->cl_translimit LEN:6 
+[2026-04-02 14:37:49.697] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug:  TAG:emv  INFO:aidparam + i)->cl_offlinelimit LEN:6 
+[2026-04-02 14:37:49.697] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: after sdkPaywaveFinalSelectedApp:
+[2026-04-02 14:37:49.698] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.699] [LOGCAT] 04-02 14:36:56.523  3919  3993 D jnidebug: sdkPaywaveFinalSelectedApp ret = 1
+[2026-04-02 14:37:49.699] [LOGCAT] 04-02 14:36:56.523  3919  3993 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 14:37:49.700] [LOGCAT] 04-02 14:36:56.524  3919  3993 D Sdk_EmvHandler2Impl.java: [line:1442] - isSupportFasterEMV false
+[2026-04-02 14:37:49.700] [LOGCAT] 04-02 14:36:56.524  3919  3993 D NexGoSDK: [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 14:37:49.701] [LOGCAT] 04-02 14:36:56.526  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 14:37:49.701] [LOGCAT] 04-02 14:36:56.527  3919  3993 D NexGoSDK: [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 14:37:49.702] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug: EMVB_PaywavePreProcessing paywavepredealparam[0]=fa
+[2026-04-02 14:37:49.702] [LOGCAT] 04-02 14:36:56.527  3919  3993 D jnidebug:  TAG:emv  INFO:PreProcessing RCFL Check:  LEN:6 
+[2026-04-02 14:37:49.703] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.703] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.704] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.705] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  tempApp_UnionStruct->EMVTradeParam->VisaAPFlag=0
+[2026-04-02 14:37:49.705] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.706] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.707] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.707] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.708] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.708] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.709] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.710] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.710] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.711] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.712] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.713] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:AmtAuthNum:  LEN:6 
+[2026-04-02 14:37:49.714] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.714] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.715] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.716] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.716] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.717] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  EMVTradeParam->PaywaveCANAI = 0
+[2026-04-02 14:37:49.717] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: before GPO,TTQ:
+[2026-04-02 14:37:49.718] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: paywave-info: ---GPO---
+[2026-04-02 14:37:49.718] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:41 
+[2026-04-02 14:37:49.719] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:41 
+[2026-04-02 14:37:49.719] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:41 
+[2026-04-02 14:37:49.719] [LOGCAT] 04-02 14:36:56.528  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:49.720] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.720] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:49.721] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:99 
+[2026-04-02 14:37:49.721] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:99 
+[2026-04-02 14:37:49.721] [LOGCAT] 04-02 14:36:56.662  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:97 
+[2026-04-02 14:37:49.722] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:49.723] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:49.725] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: paywave-info: GPO template 77
+[2026-04-02 14:37:49.726] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.726] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.727] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless send apdu: LEN:5 
+[2026-04-02 14:37:49.728] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:contactless c-apdu: LEN:5 
+[2026-04-02 14:37:49.728] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduSend gApduSend: LEN:5 
+[2026-04-02 14:37:49.729] [LOGCAT] 04-02 14:36:56.663  3919  3993 D jnidebug: Enter smartposApdu
+[2026-04-02 14:37:49.730] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.731] [LOGCAT] 04-02 14:36:56.685  3919  3993 D jnidebug: ddi_rf_exchange_apdu rslt: 0
+[2026-04-02 14:37:49.732] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless r-apdu: LEN:14 
+[2026-04-02 14:37:49.732] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:sdkDevSaveApduRecv gApduRecv: LEN:14 
+[2026-04-02 14:37:49.733] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug:  TAG:emv  INFO:contactless recv apdu: LEN:12 
+[2026-04-02 14:37:49.734] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:apdu file: FUN:  LINE:0 
+[2026-04-02 14:37:49.734] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: gPaypassApduErrorID.L3 = 0
+[2026-04-02 14:37:49.735] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: paywave-info: Mandatory Data Check: AFL Exist              = 1
+[2026-04-02 14:37:49.736] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: TAG:emv file: FUN:  LINE:0 
+[2026-04-02 14:37:49.736] [LOGCAT] 04-02 14:36:56.686  3919  3993 D jnidebug: EmvCoreDispCardOutCb
+[2026-04-02 14:37:49.737] [LOGCAT] 04-02 14:36:56.686  3919  3993 I Sdk_EmvHandler2Impl.java: [line:529] - call onRemoveCard
+[2026-04-02 14:37:49.737] [LOGCAT] 04-02 14:36:56.687  3919  3993 D NexGoSDK: [EMV] onRemoveCard
+[2026-04-02 14:37:49.738] [LOGCAT] 04-02 14:36:56.688  3919  3993 D NexGoSDK: [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 14:37:49.738] [LOGCAT] 04-02 14:36:56.690  3919  3993 I Sdk_EmvHandler2Impl.java: [line:288] - =========onRemoveCard powerOff==========
+[2026-04-02 14:37:49.739] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:724] - ==========准备下电===========
+[2026-04-02 14:37:49.739] [LOGCAT] 04-02 14:36:56.690  3919  3993 D Sdk_EmvHandler2Impl.java: [line:726] - 非接卡槽关闭
+[2026-04-02 14:37:49.740] [LOGCAT] 04-02 14:37:06.665  3919  3919 I Sdk_EmvHandler2Impl.java: [line:933] - call emvProcessCancel
+[2026-04-02 14:37:49.741] [LOGCAT] 04-02 14:37:08.250  3919  3948 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 14:37:49.742] [LOGCAT] 04-02 14:37:08.253  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 14:37:49.743] [LOGCAT] 04-02 14:37:08.253  3919  3948 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 14:37:49.743] [LOGCAT] 04-02 14:37:08.255  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 14:37:49.744] [LOGCAT] 04-02 14:37:08.257  3919  3948 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 14:37:49.745] [LOGCAT] 04-02 14:37:08.407  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 14:37:49.745] [LOGCAT] 04-02 14:37:14.835  3919  3964 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 14:37:49.746] [LOGCAT] 04-02 14:37:14.835  3919  3964 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 14:37:49.747] [LOGCAT] 04-02 14:37:14.836  3919  3964 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 14:37:49.748] [LOGCAT] 04-02 14:37:14.837  3919  3993 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 14:37:49.748] [LOGCAT] 04-02 14:37:14.837  3919  3993 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 14:37:49.749] [LOGCAT] 04-02 14:37:14.858  3919  3993 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 14:37:49.750] [LOGCAT] 04-02 14:37:14.858  3919  3993 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 14:37:49.750] [LOGCAT] 04-02 14:37:14.916  3919  3993 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 14:37:49.751] [LOGCAT] 04-02 14:37:14.921  3919  3993 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 14:37:49.752] [LOGCAT] 04-02 14:37:14.921  3919  3993 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 14:37:49.752] [LOGCAT] 04-02 14:37:14.922  3919  3993 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 14:37:49.753] [LOGCAT] 04-02 14:37:15.017  3919  3993 I Sdk_EmvHandler2Impl.java: [line:504] - call onAfterFinalSelectedApp
+[2026-04-02 14:37:49.754] [LOGCAT] 04-02 14:37:15.019  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1492] - call onSetTransInitBeforeGPOResponse
+[2026-04-02 14:37:49.755] [LOGCAT] 04-02 14:37:15.160  3919  3993 I Sdk_EmvHandler2Impl.java: [line:357] - call onConfirmCardNo
+[2026-04-02 14:37:49.755] [LOGCAT] 04-02 14:37:15.160  3919  3993 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 14:37:49.756] [LOGCAT] 04-02 14:37:15.160  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 14:37:49.757] [LOGCAT] 04-02 14:37:15.163  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 14:37:49.758] [LOGCAT] 04-02 14:37:15.165  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1500] - call onSetConfirmCardNoResponse
+[2026-04-02 14:37:49.758] [LOGCAT] 04-02 14:37:15.265  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 14:37:49.759] [LOGCAT] 04-02 14:37:15.265  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 14:37:49.759] [LOGCAT] 04-02 14:37:15.266  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1512] - call onSetOnlineProcResponse
+[2026-04-02 14:37:49.760] [LOGCAT] 04-02 14:37:15.360  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 14:37:49.760] [LOGCAT] 04-02 14:37:15.361  3919  3993 I Sdk_EmvHandler2Impl.java: [line:568] - call getTk2Ex
+[2026-04-02 14:37:49.761] [LOGCAT] 04-02 14:37:15.361  3919  3993 I Sdk_EmvHandler2Impl.java: [line:1289] - call getTlv
+[2026-04-02 14:37:49.761] [LOGCAT] 04-02 14:37:44.542  3919  3948 E Sdk_DeviceEngineImpl.java: [line:360] - getEmvHandler2
+[2026-04-02 14:37:49.762] [LOGCAT] 04-02 14:37:44.545  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 14:37:49.763] [LOGCAT] 04-02 14:37:44.545  3919  3948 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 14:37:49.764] [LOGCAT] 04-02 14:37:44.548  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1611] - call delAllAid
+[2026-04-02 14:37:49.764] [LOGCAT] 04-02 14:37:44.550  3919  3948 I Sdk_EmvHandler2Impl.java: [line:980] - call setAidParaList
+[2026-04-02 14:37:49.765] [LOGCAT] 04-02 14:37:44.728  3919  3948 I Sdk_EmvHandler2Impl.java: [line:1243] - call setCAPKList
+[2026-04-02 14:37:49.766] [LOGCAT] 04-02 14:37:48.969  3919  3964 I Sdk_EmvHandler2Impl.java: [line:1305] - call setTlv
+[2026-04-02 14:37:49.766] [LOGCAT] 04-02 14:37:48.970  3919  3964 I Sdk_EmvHandler2Impl.java: [line:972] - call initTermConfig
+[2026-04-02 14:37:49.767] [LOGCAT] 04-02 14:37:48.975  3919  3964 I Sdk_EmvHandler2Impl.java: [line:821] - call emvProcess
+[2026-04-02 14:37:49.768] [LOGCAT] 04-02 14:37:48.975  3919  3993 I Sdk_EmvHandler2Impl.java: [line:826] - emvProcess thread ：Thread[EmvThread2,5,main]
+[2026-04-02 14:37:49.768] [LOGCAT] 04-02 14:37:48.976  3919  3993 I Sdk_EmvHandler2Impl.java: [line:840] - before initEmvConfiguration
+[2026-04-02 14:37:49.769] [LOGCAT] 04-02 14:37:48.998  3919  3993 I Sdk_EmvHandler2Impl.java: [line:844] - after initEmvConfiguration
+[2026-04-02 14:37:49.770] [LOGCAT] 04-02 14:37:48.998  3919  3993 I Sdk_EmvHandler2Impl.java: [line:849] - before powerOn
+[2026-04-02 14:37:49.771] [LOGCAT] 04-02 14:37:49.048  3919  3993 I Sdk_EmvHandler2Impl.java: [line:860] - after powerOn
+[2026-04-02 14:37:49.772] [LOGCAT] 04-02 14:37:49.051  3919  3993 W System.err: at com.nexgo.oaf.apiv3.device.pinpad.P2PEUtils.isP2PEMode(P2PEUtils.java:120)
+[2026-04-02 14:37:49.773] [LOGCAT] 04-02 14:37:49.051  3919  3993 W System.err: at com.nexgo.oaf.apiv3.emv.EmvHandler2Impl$3.run(EmvHandler2Impl.java:870)
+[2026-04-02 14:37:49.773] [LOGCAT] 04-02 14:37:49.051  3919  3993 I Sdk_EmvHandler2Impl.java: [line:891] - emvProcessFlow1 start
+[2026-04-02 14:37:49.774] [LOGCAT] 04-02 14:37:49.555  3919  3993 E NexGoSDK: [EMV] onFinish FAILED retCode=-8012 — check SdkResult constants for meaning
+[2026-04-02 14:37:49.775] [LOGCAT] === END NATIVE EMV LOGCAT ===

@@ -975,29 +975,17 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
             // before every emvProcess() — state may be reset between transactions).
             setupTerminalConfig()
 
-            // For M/Chip contactless: set Terminal Transaction Qualifiers (TTQ, tag 9F66)
-            // with "Online Cryptogram Required" (byte1 bit 0x01) BEFORE emvProcess.
+            // NOTE: TTQ (tag 9F66) must NOT be set here.
             //
-            // TTQ is included in the PDOL response the kernel sends to the card during GPO.
-            // The card reads TTQ to decide its GenAC1 response: ARQC (online), TC (offline
-            // approve), or AAC (offline decline).
+            // The NexGo kernel runs initEmvConfiguration() inside emvProcess() on startup.
+            // This clears ALL user-set TLVs, including any setTlv(9F66) call made before
+            // emvProcess().  The kernel then reads TTQ during EMVB_PaywavePreProcessing,
+            // which fires AFTER onTransInitBeforeGPO returns.
             //
-            // Without Online Required (0x01) the card treats the terminal as "offline capable"
-            // and may return AAC when its internal risk management says the transaction must
-            // not go offline — instead of returning ARQC to request online auth. Setting
-            // 0x01 forces the card to always return ARQC for M/Chip contactless, which then
-            // triggers onOnlineProc → online approval.
-            //
-            // Byte1 = 0x2D breakdown:
-            //   0x20 = EMV contactless mode supported (M/Chip kernel path)
-            //   0x08 = Online PIN supported
-            //   0x04 = Signature supported
-            //   0x01 = Online Cryptogram Required ← card MUST return ARQC, not AAC
-            // Bytes 2-4 = 0x00 (no ODA for online, standard CVM flags)
-            if (isContactless) {
-                emvHandler?.setTlv(hexToBytes("9F66"), hexToBytes("2D000000"))
-                log("EMV", "setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless")
-            }
+            // The correct place to set TTQ is inside onTransInitBeforeGPO (below) — that
+            // callback fires AFTER initEmvConfiguration but BEFORE the kernel reads TTQ for
+            // GPO construction.  Setting it here has no effect and the card sees an empty
+            // TTQ (0x00000000), which causes it to deliberately deselect after one exchange.
 
             // ── Contactless hang protection ───────────────────────────────────
             // Always reset the force-cancelled flag and clear any stale timers at
@@ -1063,11 +1051,28 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                     // directly is safe (no re-entry, no deadlock).
                     try {
                         log("EMV", "onTransInitBeforeGPO — responding directly on SDK callback thread")
-                        // Fire contactless_processing before the GPO response so the UI
-                        // can show "HOLD CARD STILL" before the card records are read.
-                        // This is the last moment we can instruct the user because after
-                        // GPO the card MUST stay in the RF field until onFinish fires.
                         if (isContactless) {
+                            // ── Set TTQ here, NOT before emvProcess() ─────────────────
+                            // initEmvConfiguration() runs inside emvProcess() and wipes
+                            // all user TLVs including any setTlv(9F66) called earlier.
+                            // This callback fires AFTER initEmvConfiguration but BEFORE
+                            // EMVB_PaywavePreProcessing reads TTQ for GPO construction —
+                            // the only safe window where setTlv(9F66) actually sticks.
+                            //
+                            // TTQ = 0x80000000:
+                            //   Byte 1: 0x80 = 1000 0000
+                            //     b8=1  Online Cryptogram Required — card MUST return
+                            //           ARQC (online auth request), not TC/AAC.
+                            //           Without this bit, empty TTQ causes the card to
+                            //           deselect (EmvCoreDispCardOutCb) after one READ
+                            //           RECORD because it can't resolve the transaction
+                            //           online without a terminal online-required signal.
+                            //   Bytes 2-4: 0x00 — no ODA, no offline PIN, no signature.
+                            //     This is the correct profile for an online-only terminal.
+                            val ttqResult = emvHandler?.setTlv(hexToBytes("9F66"), hexToBytes("80000000"))
+                            log("EMV", "onTransInitBeforeGPO: setTlv(9F66=80000000) result=$ttqResult — set AFTER initEmvConfiguration, BEFORE GPO")
+
+                            // Fire contactless_processing so the UI shows "HOLD CARD STILL".
                             beepHoldCard()
                             sendEvent("contactless_processing")
                         }
@@ -1333,9 +1338,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                                 log("EMVCAPK", "CAPK count post-8012=${emvHandler?.capkListNum ?: -1}")
                                 // Best-effort logcat capture: NexGo's emvDebugLog(true) writes
                                 // APDU traces and PPSE/SELECT results to Android logcat.
-                                // Capturing it here gives us the exact card AID(s) being advertised
-                                // so we can match them against our registered terminal AID table.
-                                captureNativeEmvLog()
+                                // Run on a thread with a short delay so the SDK's own native
+                                // logcat lines have time to flush before we read them.
+                                Thread {
+                                    Thread.sleep(300)
+                                    captureNativeEmvLog()
+                                }.start()
                             } else if (retCode == -8034) {
                                 // -8034 = Emv_Offline_Declined: card returned AAC in GPO (M/Chip
                                 // contactless) or in GenAC1 (contact). Capture native logcat to
