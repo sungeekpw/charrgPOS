@@ -175,6 +175,9 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
         contactlessGeneralTimeout = null
         if (!isReading) return   // transaction already completed normally
         log("EMV", "forceContactlessFallback($reason) — emitting contactless_failed immediately")
+        // Capture native APDU trace before we cancel the kernel so the log
+        // includes the last command the SDK was waiting on when the hang fired.
+        captureNativeEmvLog()
         beepError()
         isReading = false
         // CRITICAL: cancel the active emvProcess BEFORE stopSearch().
@@ -557,7 +560,7 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
      */
     private fun captureNativeEmvLog() {
         try {
-            val proc = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", "400"))
+            val proc = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", "600"))
             val raw = proc.inputStream.bufferedReader().readText()
             proc.destroy()
             val filtered = raw.lines().filter { line ->
@@ -565,8 +568,12 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                 l.contains("emv") || l.contains("pboc") || l.contains("apdu") ||
                 l.contains("ppse") || l.contains("2pay") || l.contains("1pay") ||
                 l.contains("nexgo") || l.contains("candidat") || l.contains("select") ||
-                l.contains("df01") || l.contains("df23") || l.contains("9f06")
-            }.takeLast(120)
+                l.contains("df01") || l.contains("df23") || l.contains("9f06") ||
+                l.contains("read record") || l.contains("00b2") || l.contains("sfi") ||
+                l.contains("afl") || l.contains("gpo") || l.contains("00a4") ||
+                l.contains("genac") || l.contains("80ae") || l.contains("remove") ||
+                l.contains("deselect") || l.contains("-8020") || l.contains("comm")
+            }.takeLast(200)
             if (filtered.isEmpty()) {
                 log("LOGCAT", "No EMV-related logcat lines found (READ_LOGS may be unavailable)")
             } else {
@@ -1195,6 +1202,10 @@ class NexGoSDKModule(private val reactCtx: ReactApplicationContext) :
                         // (contactlessGeneralTimeout) is the only hard backstop we need.
                         if (isContactless) {
                             log("EMV", "onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)")
+                            // Capture native APDU trace immediately at the moment of RF disconnect
+                            // so we can see exactly which READ RECORD or GenAC command was last
+                            // sent before the card dropped the field.
+                            Thread { captureNativeEmvLog() }.start()
                         }
                     } catch (e: Exception) {
                         logError("EMV", "onRemoveCard threw", e)

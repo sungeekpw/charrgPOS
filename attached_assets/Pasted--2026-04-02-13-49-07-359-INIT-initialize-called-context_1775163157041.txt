@@ -1,0 +1,185 @@
+[2026-04-02 13:49:07.359] [INIT] initialize() called — context=MainActivity
+[2026-04-02 13:49:07.883] [INIT] DeviceEngine obtained OK
+[2026-04-02 13:49:07.902] [INIT] CardReader obtained: true
+[2026-04-02 13:49:07.911] [INIT] Beeper obtained: true
+[2026-04-02 13:49:08.964] [INIT] EmvHandler2 obtained: true
+[2026-04-02 13:49:08.970] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 13:49:08.984] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:49:08.994] [EMVAID] Configuring US payment AIDs (cleared 0 stale AID(s))
+[2026-04-02 13:49:09.048] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 13:49:09.070] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.071] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.072] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.073] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.073] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.074] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.075] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.075] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.076] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.077] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.078] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.079] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:09.083] [EMVCAPK] CAPK count after setup=0
+[2026-04-02 13:49:09.164] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 13:49:09.166] [INIT] initialize() complete — AIDs=12
+[2026-04-02 13:49:09.170] [CARD] startCardRead() amount=2681.0
+[2026-04-02 13:49:09.173] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 13:49:10.638] [CARD] onCardInfo OK — slot=ICC1
+[2026-04-02 13:49:10.640] [CARD] Card inserted (chip/ICC)
+[2026-04-02 13:49:10.644] [EMV] processEmvCard() entryMode=chip amount=2681.0
+[2026-04-02 13:49:10.646] [EMV] emvProcess() config — amount=268100 date=260402 time=134910 entryMode=CONTACT AIDsNow=12
+[2026-04-02 13:49:10.651] [EMV] initReader(INNER, 0) asserted before chip emvProcess
+[2026-04-02 13:49:10.684] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.685] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.686] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.688] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.691] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.693] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.695] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.696] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.697] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.699] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.700] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.702] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:49:10.703] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 13:49:10.707] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:49:11.186] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 13:49:11.285] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 13:49:11.287] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 13:49:11.599] [EMV] onConfirmCardNo — last4=3191
+[2026-04-02 13:49:11.793] [EMV] AIP patch: byte0 0x18 → 0x10 setTlv=0
+[2026-04-02 13:49:11.796] [EMV] onOnlineProc — sent approved (authCode=000000 rejCode=00 field55=null, no forced decision)
+[2026-04-02 13:49:11.988] [EMV] onFinish retCode=0 (SdkResult.Success=0)
+[2026-04-02 13:49:11.997] [EMV] onFinish SUCCESS (retCode=0) — pan=***3191 expiry=2610 brand=Mastercard entryMode=chip
+[2026-04-02 13:50:48.670] [INIT] initialize() called — context=MainActivity
+[2026-04-02 13:50:48.671] [INIT] DeviceEngine obtained OK
+[2026-04-02 13:50:48.672] [INIT] CardReader obtained: true
+[2026-04-02 13:50:48.673] [INIT] Beeper obtained: true
+[2026-04-02 13:50:48.674] [INIT] EmvHandler2 obtained: true
+[2026-04-02 13:50:48.674] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 13:50:48.676] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:50:48.677] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 13:50:48.749] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 13:50:48.766] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.767] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.768] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.769] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.770] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.771] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.772] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.773] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.774] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.776] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.777] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.778] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:48.779] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 13:50:48.865] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 13:50:48.866] [INIT] initialize() complete — AIDs=12
+[2026-04-02 13:50:48.869] [CARD] startCardRead() amount=2880.0
+[2026-04-02 13:50:48.871] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 13:50:51.433] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 13:50:51.435] [CARD] Card tapped (contactless/RF)
+[2026-04-02 13:50:51.438] [EMV] processEmvCard() entryMode=contactless amount=2880.0
+[2026-04-02 13:50:51.440] [EMV] emvProcess() config — amount=288000 date=260402 time=135051 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 13:50:51.468] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.470] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.472] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.474] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.475] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.476] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.478] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.479] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.480] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.483] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.484] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.486] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:50:51.487] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 13:50:51.489] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:50:51.491] [EMV] setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless
+[2026-04-02 13:50:51.493] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 13:50:51.602] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 13:50:51.630] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 13:50:51.633] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 13:50:52.289] [EMV] onRemoveCard
+[2026-04-02 13:50:52.292] [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 13:51:01.494] [EMV] forceContactlessFallback(general-10s) — emitting contactless_failed immediately
+[2026-04-02 13:51:01.501] [EMV] onFinish retCode=-8020 — discarded (contactless timeout already fired)
+[2026-04-02 13:51:03.078] [INIT] initialize() called — context=MainActivity
+[2026-04-02 13:51:03.079] [INIT] DeviceEngine obtained OK
+[2026-04-02 13:51:03.081] [INIT] CardReader obtained: true
+[2026-04-02 13:51:03.083] [INIT] Beeper obtained: true
+[2026-04-02 13:51:03.085] [INIT] EmvHandler2 obtained: true
+[2026-04-02 13:51:03.086] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 13:51:03.089] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:51:03.092] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 13:51:03.217] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 13:51:03.236] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.238] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.240] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.241] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.243] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.245] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.246] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.247] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.248] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.249] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.250] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.251] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.252] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 13:51:03.344] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 13:51:03.345] [INIT] initialize() complete — AIDs=12
+[2026-04-02 13:51:03.349] [CARD] startCardRead() amount=2880.0
+[2026-04-02 13:51:03.351] [CARD] searchCard() — waiting for card presentation (60 s timeout)
+[2026-04-02 13:51:03.647] [CARD] onCardInfo OK — slot=RF
+[2026-04-02 13:51:03.649] [CARD] Card tapped (contactless/RF)
+[2026-04-02 13:51:03.651] [EMV] processEmvCard() entryMode=contactless amount=2880.0
+[2026-04-02 13:51:03.653] [EMV] emvProcess() config — amount=288000 date=260402 time=135103 entryMode=CONTACTLESS AIDsNow=12
+[2026-04-02 13:51:03.674] [EMVAID-DUMP[pre-emvProcess]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.676] [EMVAID-DUMP[pre-emvProcess]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.677] [EMVAID-DUMP[pre-emvProcess]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.678] [EMVAID-DUMP[pre-emvProcess]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.679] [EMVAID-DUMP[pre-emvProcess]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.680] [EMVAID-DUMP[pre-emvProcess]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.681] [EMVAID-DUMP[pre-emvProcess]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.682] [EMVAID-DUMP[pre-emvProcess]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.683] [EMVAID-DUMP[pre-emvProcess]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.684] [EMVAID-DUMP[pre-emvProcess]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.685] [EMVAID-DUMP[pre-emvProcess]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.685] [EMVAID-DUMP[pre-emvProcess]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:03.686] [EMVCAPK] CAPK count pre-emvProcess=60
+[2026-04-02 13:51:03.687] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:51:03.688] [EMV] setTlv(9F66=2D000000) — Online Cryptogram Required set for M/Chip contactless
+[2026-04-02 13:51:03.689] [EMV] Contactless general timeout armed (10 s)
+[2026-04-02 13:51:03.802] [EMV] onSelApp REACHED — names=[Mastercard Debit, US Debit] aids=[4130303030303030303431303130, 4130303030303030303432323033] isFirstSelect=false — auto-selecting 1st app (response=1)
+[2026-04-02 13:51:03.823] [EMV] onTransInitBeforeGPO — responding directly on SDK callback thread
+[2026-04-02 13:51:03.827] [EMV] onSetTransInitBeforeGPOResponse sent OK
+[2026-04-02 13:51:04.126] [EMV] onRemoveCard
+[2026-04-02 13:51:04.128] [EMV] onRemoveCard: contactless — letting SDK resolve via onFinish (10s general timer is backstop)
+[2026-04-02 13:51:13.689] [EMV] forceContactlessFallback(general-10s) — emitting contactless_failed immediately
+[2026-04-02 13:51:13.700] [EMV] onFinish retCode=-8020 — discarded (contactless timeout already fired)
+[2026-04-02 13:51:15.270] [INIT] initialize() called — context=MainActivity
+[2026-04-02 13:51:15.272] [INIT] DeviceEngine obtained OK
+[2026-04-02 13:51:15.273] [INIT] CardReader obtained: true
+[2026-04-02 13:51:15.275] [INIT] Beeper obtained: true
+[2026-04-02 13:51:15.277] [INIT] EmvHandler2 obtained: true
+[2026-04-02 13:51:15.278] [INIT] emvDebugLog(true) + LogUtils.setDebugEnable(true) — native EMV trace enabled
+[2026-04-02 13:51:15.281] [TERM] configureTerminal: setTlv(9F33=E0F800) + initTermConfig(9F1A+5F2A+9F3C) result=0
+[2026-04-02 13:51:15.283] [EMVAID] Configuring US payment AIDs (cleared 12 stale AID(s))
+[2026-04-02 13:51:15.397] [EMVAID] setAidParaList result=0 — AIDs after=12 (expected 12)
+[2026-04-02 13:51:15.413] [EMVAID-DUMP[post-setup]] [0] aid=A0000000031010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.415] [EMVAID-DUMP[post-setup]] [1] aid=A0000000032010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.416] [EMVAID-DUMP[post-setup]] [2] aid=A0000000041010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.417] [EMVAID-DUMP[post-setup]] [3] aid=A0000000042203 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.418] [EMVAID-DUMP[post-setup]] [4] aid=A0000000043060 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.420] [EMVAID-DUMP[post-setup]] [5] aid=A0000000250101 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.421] [EMVAID-DUMP[post-setup]] [6] aid=A000000025010402 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.422] [EMVAID-DUMP[post-setup]] [7] aid=A0000001523010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.423] [EMVAID-DUMP[post-setup]] [8] aid=A0000001524010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.424] [EMVAID-DUMP[post-setup]] [9] aid=A0000000651010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.425] [EMVAID-DUMP[post-setup]] [10] aid=A0000002771010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.426] [EMVAID-DUMP[post-setup]] [11] aid=A0000002761010 mode=AID_ENTRY_CONTACT_CONTACTLESS
+[2026-04-02 13:51:15.427] [EMVCAPK] CAPK count after setup=60
+[2026-04-02 13:51:15.526] [CAPK] Loaded 60 CAPKs from assets → kernel reports 60
+[2026-04-02 13:51:15.528] [INIT] initialize() complete — AIDs=12
+[2026-04-02 13:51:15.531] [CARD] startCardRead() amount=2880.0
+[2026-04-02 13:51:15.533] [CARD] searchCard() — waiting for card presentation (60 s timeout)
